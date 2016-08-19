@@ -4,14 +4,12 @@ MAINTAINER Marios Andreopoulos <marios@landoop.com>
 # Update, install tooling and some basic setup
 RUN sed '/tsflags=nodocs/d' -i /etc/yum.conf && \
     rm -f /etc/rpm/macros.imgcreate && \
-    yum install -y epel-release deltarpm wget curl && \
-    yum -y update && \
-    echo "progress = dot:mega" | tee /etc/wgetrc && \
+    yum install -y epel-release deltarpm wget && \
+    echo "progress = dot:giga" | tee /etc/wgetrc && \
     yum install -y \
+        curl \
         which \
         tar \
-        sudo \
-        git \
         supervisor \
         java-1.8.0-openjdk-headless
 
@@ -19,12 +17,9 @@ RUN sed '/tsflags=nodocs/d' -i /etc/yum.conf && \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
-ADD http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz /opt/
-RUN tar -xzf /opt/confluent-3.0.0-2.11.tar.gz -C /opt/ && \
+RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz -O /opt/confluent-3.0.0-2.11.tar.gz && \
+    tar -xzf /opt/confluent-3.0.0-2.11.tar.gz -C /opt/ && \
     rm -f /opt/confluent-3.0.0-2.11.tar.gz
-# For local development, download confluent tar, disable the ADD and RUN above
-# and enable the ADD below.
-# ADD confluent-3.0.0-2.11.tar.gz /opt/
 
 # Create system symlinks to Confluent's binaries
 ADD bin-install /opt/confluent-3.0.0/bin-install
@@ -35,16 +30,16 @@ RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.
     chmod 0755 /usr/local/bin/dumb-init
 
 # Add Coyote and tests
-ADD https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/coyote /usr/local/bin/
 ADD kafka-tests.yml /usr/share/landoop
 ADD smoke-tests.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/coyote /usr/local/bin/smoke-tests.sh && \
+RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/coyote -O /usr/local/bin/coyote && \
+    chmod +x /usr/local/bin/coyote /usr/local/bin/smoke-tests.sh && \
     mkdir -p /var/www/tests
 ADD index-tests.html /var/www/tests/index.html
 
 # Add and setup Caddy Server
-ADD https://caddyserver.com/download/build?os=linux&arch=amd64&features=minify /caddy.tgz
-RUN mkdir -p /opt/caddy && \
+RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=minify' -O /caddy.tgz && \
+    mkdir -p /opt/caddy && \
     tar xzf /caddy.tgz -C /opt/caddy && \
     rm -f /caddy.tgz && \
     mkdir -p /var/www
@@ -52,8 +47,9 @@ ADD Caddyfile /usr/share/landoop
 ADD index.html /var/www
 
 # Add and Setup Schema-Registry-Ui
-ADD https://github.com/Landoop/schema-registry-ui/releases/download/v0.6/schema-registry-ui-0.6.tar.gz /schema-registry-ui.tar.gz
-RUN mkdir -p /var/www/schema-registry-ui && \
+RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/v0.6/schema-registry-ui-0.6.tar.gz \
+         -O /schema-registry-ui.tar.gz && \
+    mkdir -p /var/www/schema-registry-ui && \
     tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui && \
     rm -f /schema-registry-ui.tar.gz && \
     sed -e 's|http://localhost:8081|../api/schema-registry|g' \
@@ -61,8 +57,9 @@ RUN mkdir -p /var/www/schema-registry-ui && \
         -i /var/www/schema-registry-ui/combined.js
 
 # Add and Setup Kafka-Topics-Ui
-ADD https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka-topics-ui-0.2.tar.gz /kafka-topics-ui.tar.gz
-RUN mkdir /var/www/kafka-topics-ui && \
+RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka-topics-ui-0.2.tar.gz \
+         -O /kafka-topics-ui.tar.gz && \
+    mkdir /var/www/kafka-topics-ui && \
     tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui && \
     rm -f /kafka-topics-ui.tar.gz && \
     sed -e 's|http://localhost:8081|../api/schema-registry|g' \
