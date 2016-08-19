@@ -1,0 +1,5 @@
+0.0.0.0:3030
+tls off
+root /var/www
+log /var/log/access.log
+minify
