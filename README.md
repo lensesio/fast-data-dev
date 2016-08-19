@@ -20,10 +20,11 @@ find web UIs for kafka topics, schema registry and a test report.
 
 Hit control+c and everything is stopped and removed it.
 
-Do you need some kafka console tools? Try something like:
+Do you need some kafka console tools? Whilst your Kafka containers is running,
+try something like:
 
-    docker run --rm -it --net=host landoop/confluent kafka-topics --zookeeper localhost:2181 --list
+    docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 --list
 
 Or enter the container to use the tools as you like:
 
-    docker run --rm -it --net=host landoop/confluent bash
+    docker run --rm -it --net=host landoop/fast-data-dev bash
