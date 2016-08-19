@@ -6,12 +6,12 @@
   entries:
 # BASIC / PERFORMANCE
     - name: Create Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_01 --partition 3 --replication 1 --create
+      command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_01_%UNIQUE_BASIC% --partition 1 --replication 1 --create
     - name: List Topics (basic kafka)
       command: kafka-topics --zookeeper localhost:2181 --list
     - name: Performance Test (basic kafka)
       command: |
-        kafka-producer-perf-test --topic coyote_test_01 --throughput 100000 --record-size 1000 --num-records 2000000
+        kafka-producer-perf-test --topic coyote_test_01_%UNIQUE_BASIC% --throughput 100000 --record-size 1000 --num-records 500000
                                  --producer-props bootstrap.servers="localhost:9092"
       timeout: 90s
 
@@ -23,13 +23,13 @@
       command: curl -vs --stderr - "http://localhost:8082/topics"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Topic Information (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_test_01"
+      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_test_01_%UNIQUE_BASIC%"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Topic Partitions (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_test_01/partitions"
+      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_test_01_%UNIQUE_BASIC%/partitions"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_01 --delete
+      command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_01_%UNIQUE_BASIC% --delete
     - name: Produce Avro Message (rest proxy, schema registry)
       # Please do not change the formatting (e.g. add new lines) of the JSON message below, REST Proxy is very sensitive.
       command: |
@@ -156,12 +156,12 @@
                "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"coyote_connect_distributed_test-%UNIQUE_CD%","file":"/etc/fstab"}}'
              "http://localhost:8083/connectors"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - name: Sleep a bit to let the connector spawn and work
+      command: sleep 15
+      nolog: true
     - name: Get Connector s Configuration (connect distributed)
       command: curl -vs --stderr - -XGET -i "http://localhost:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
       stdout_has: [ '/etc/fstab' ]
-    - name: Sleep a bit to let the connector work
-      command: sleep 9
-      nolog: true
     - name: "Run Console Consumer to fix Kafka's transient state (basic kafka)"
       command: |
         timeout 5
@@ -222,12 +222,12 @@
         port=38081
         kafka.logs.dir=logs/
     - name: Read SQLite into Topic (connect standalone)
-      command: timeout -k 5 9 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
+      command: timeout -k 5 15 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
       stdout_not_has: [ 'ERROR' ]
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)
       command: |
-        timeout 5
+        timeout 15
         kafka-console-consumer --new-consumer
                                --bootstrap-server localhost:9092
                                --topic coyote-test-connect-standalone-accounts

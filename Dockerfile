@@ -37,8 +37,10 @@ RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.
 # Add Coyote and tests
 ADD https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/coyote /usr/local/bin/
 ADD kafka-tests.yml /usr/share/landoop
-RUN chmod +x /usr/local/bin/coyote && \
+ADD smoke-tests.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/coyote /usr/local/bin/smoke-tests.sh && \
     mkdir -p /var/www/tests
+ADD index-tests.html /var/www/tests/index.html
 
 # Add and setup Caddy Server
 ADD https://caddyserver.com/download/build?os=linux&arch=amd64&features=minify /caddy.tgz
@@ -53,13 +55,19 @@ ADD index.html /var/www
 ADD https://github.com/Landoop/schema-registry-ui/releases/download/v0.6/schema-registry-ui-0.6.tar.gz /schema-registry-ui.tar.gz
 RUN mkdir -p /var/www/schema-registry-ui && \
     tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui && \
-    rm -f /schema-registry-ui.tar.gz
+    rm -f /schema-registry-ui.tar.gz && \
+    sed -e 's|http://localhost:8081|../api/schema-registry|g' \
+        -e 's|http://localhost:8082|../api/kafka-rest|g' \
+        -i /var/www/schema-registry-ui/combined.js
 
 # Add and Setup Kafka-Topics-Ui
 ADD https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka-topics-ui-0.2.tar.gz /kafka-topics-ui.tar.gz
 RUN mkdir /var/www/kafka-topics-ui && \
     tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui && \
-    rm -f /kafka-topics-ui.tar.gz
+    rm -f /kafka-topics-ui.tar.gz && \
+    sed -e 's|http://localhost:8081|../api/schema-registry|g' \
+        -e 's|http://localhost:8082|../api/kafka-rest|g' \
+        -i /var/www/kafka-topics-ui/combined.js
 
 # Clean up
 RUN yum -y clean all
