@@ -10,7 +10,9 @@ RUN apk add --no-cache \
         supervisor \
         sqlite \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
-    && mkdir /opt
+    && mkdir /opt \
+    && wget https://gitlab.com/andmarios/checkport/uploads/c5c89f7d8b7708865f8b943510337cd2/checkport -O /usr/local/bin/checkport \
+    && chmod +x /usr/local/bin/checkport
 
 # Create Landoop configuration directory
 RUN mkdir /usr/share/landoop
@@ -70,6 +72,10 @@ RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka
 
 
 ADD supervisord.conf /etc/supervisord.conf
+ADD setup-and-run.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/setup-and-run.sh
+
 EXPOSE 2181 3030 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/local/bin/setup-and-run.sh"]
+
