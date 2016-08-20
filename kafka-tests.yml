@@ -177,7 +177,7 @@
                                --bootstrap-server localhost:9092
                                --topic coyote_connect_distributed_test-%UNIQUE_CD%
                                --from-beginning
-      stdout_has: [ '/etc/fstab' ]
+      stdout_has: [ 'cdrom' ]
       ignore_exit_code: true
     - name: Delete connector
       command:  curl -vs --stderr - -XDELETE "http://localhost:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"

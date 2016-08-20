@@ -1,17 +1,16 @@
-FROM centos:7
+FROM alpine
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
 # Update, install tooling and some basic setup
-RUN sed '/tsflags=nodocs/d' -i /etc/yum.conf \
-    && rm -f /etc/rpm/macros.imgcreate \
-    && yum install -y epel-release deltarpm wget \
+RUN apk add --no-cache \
+        bash coreutils \
+        wget curl \
+        openjdk8-jre-base \
+        tar gzip bzip2 \
+        supervisor \
+        sqlite \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
-    && yum install -y \
-           curl \
-           which \
-           tar \
-           supervisor \
-           java-1.8.0-openjdk-headless
+    && mkdir /opt
 
 # Create Landoop configuration directory
 RUN mkdir /usr/share/landoop
@@ -19,7 +18,10 @@ RUN mkdir /usr/share/landoop
 # Add Confluent Distribution
 RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz -O /opt/confluent-3.0.0-2.11.tar.gz \
     && tar -xzf /opt/confluent-3.0.0-2.11.tar.gz -C /opt/ \
-    && rm -f /opt/confluent-3.0.0-2.11.tar.gz
+    && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
+    && chmod +x /duphard \
+    && /duphard -d=0 /opt/confluent-3.0.0/share/java/ \
+    && rm /opt/confluent-3.0.0-2.11.tar.gz /duphard
 
 # Create system symlinks to Confluent's binaries
 ADD bin-install /opt/confluent-3.0.0/bin-install
@@ -65,9 +67,6 @@ RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka
     && sed -e 's|http://localhost:8081|../api/schema-registry|g' \
            -e 's|http://localhost:8082|../api/kafka-rest|g' \
            -i /var/www/kafka-topics-ui/combined.js
-
-# Clean up
-RUN yum -y clean all
 
 
 ADD supervisord.conf /etc/supervisord.conf

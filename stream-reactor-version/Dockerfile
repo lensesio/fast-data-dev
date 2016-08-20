@@ -1,7 +1,7 @@
 FROM landoop/fast-data-dev
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
-RUN wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160810-cp-3.0.0-693b638.tar.gz \
+RUN wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160819-cp-3.0.0-4c160a7.tar.gz \
          -O /stream-reactor.tar.gz \
     && tar -xzf /stream-reactor.tar.gz \
     && mv /stream-reactor/* /opt/confluent-3.0.0/share/java/ \
