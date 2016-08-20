@@ -13,7 +13,7 @@ connect distributed instances with extra tools, such as web UI's for schema
 registry and kafka topic management, extra connectors and integrated testing,
 just run:
 
-    docker run -rm -it --net=host landoop/fast-data-dev
+    docker run --rm -it --net=host landoop/fast-data-dev
 
 That's it. Your broker is at localhost:9092, your kafka-rest at localhost:8082,
 your schema-registry at localhost:8081, your connect-distributed at
