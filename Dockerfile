@@ -51,25 +51,34 @@ ADD Caddyfile /usr/share/landoop
 ADD index.html /var/www
 
 # Add and Setup Schema-Registry-Ui
-RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/v0.6/schema-registry-ui-0.6.tar.gz \
+RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/schema-registry-ui-0.7.tar.gz \
          -O /schema-registry-ui.tar.gz \
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
     && rm -f /schema-registry-ui.tar.gz \
-    && sed -e 's|http://localhost:8081|../api/schema-registry|g' \
-           -e 's|http://localhost:8082|../api/kafka-rest|g' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "'"/api/kafka-rest-proxy"'",|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "'"/api/schema-registry"'";|' \
+           -e 's|^SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "'"/schema-registry-ui/"'",|' \
+           -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
            -i /var/www/schema-registry-ui/combined.js
+## Alternate regexp that also works:
+#           -r -e 's|https{0,1}://localhost:8081|../api/schema-registry|g' \
+#           -e 's|https{0,1}://localhost:8082|../api/kafka-rest-proxy|g' \
+#           -e 's|https{0,1}://schema-registry\.demo\.landoop\.com|../api/schema-registry|g' \
+#           -e 's|https{0,1}://kafka-rest-proxy\.demo\.landoop\.com|../api/kafka-rest-proxy|g' \
+#           -e 's|https{0,1}://schema-registry-ui\.landoop\.com|/schema-registry-ui/|g' \
 
-# Add and Setup Kafka-Topics-Ui
+# Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
 RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka-topics-ui-0.2.tar.gz \
          -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
     && rm -f /kafka-topics-ui.tar.gz \
-    && sed -e 's|http://localhost:8081|../api/schema-registry|g' \
-           -e 's|http://localhost:8082|../api/kafka-rest|g' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "'"/api/kafka-rest-proxy"'",|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "'"/api/schema-registry"'";|' \
+           -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "'"/schema-registry-ui/"'",|' \
+           -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
            -i /var/www/kafka-topics-ui/combined.js
-
 
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh /usr/local/bin
