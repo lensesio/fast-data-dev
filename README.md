@@ -45,6 +45,9 @@ directory:
 
 ## FAQ
 
+- Schema Registry UI and Kafka Topics UI need some time to start working. 
+  That is because the services (Schema Registry and Kafka REST Proxy) have
+  to start and initialize before the UIs can read data.
 - When you start the container, Schema Registry and REST Proxy fail. 
   This happens because the Broker isn't up yet. It is normal. Supervisord will
   restart them and they will work when Broker is up.

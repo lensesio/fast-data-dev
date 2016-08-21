@@ -6,12 +6,12 @@
   entries:
 # BASIC / PERFORMANCE
     - name: Create Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_01_%UNIQUE_BASIC% --partition 1 --replication 1 --create
+      command: kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --partition 1 --replication 1 --create
     - name: List Topics (basic kafka)
       command: kafka-topics --zookeeper localhost:2181 --list
     - name: Performance Test (basic kafka)
       command: |
-        kafka-producer-perf-test --topic coyote_test_01_%UNIQUE_BASIC% --throughput 100000 --record-size 1000 --num-records 500000
+        kafka-producer-perf-test --topic coyote_basic_%UNIQUE_BASIC% --throughput 100000 --record-size 1000 --num-records 500000
                                  --producer-props bootstrap.servers="localhost:9092"
       timeout: 90s
 
@@ -23,13 +23,13 @@
       command: curl -vs --stderr - "http://localhost:8082/topics"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Topic Information (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_test_01_%UNIQUE_BASIC%"
+      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_basic_%UNIQUE_BASIC%"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Topic Partitions (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_test_01_%UNIQUE_BASIC%/partitions"
+      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_basic_%UNIQUE_BASIC%/partitions"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_01_%UNIQUE_BASIC% --delete
+      command: kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --delete
     - name: Produce Avro Message (rest proxy, schema registry)
       # Please do not change the formatting (e.g. add new lines) of the JSON message below, REST Proxy is very sensitive.
       command: |
@@ -111,18 +111,18 @@
       command: |
         curl  -vs --stderr - -XPOST -i -H "Content-Type: application/vnd.schemaregistry.v1+json"
              --data '{"schema": "{\"type\": \"string\"}"}'
-             "http://localhost:8081/subjects/coyote_test_01/versions"
+             "http://localhost:8081/subjects/coyote_basic/versions"
     - name: List subjects (schema registry)
       command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects"
-      stdout_has: [ 'coyote_test_01' ]
+      stdout_has: [ 'coyote_basic' ]
     - name: List Schema versions (schema registry)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects/coyote_test_01/versions"
+      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects/coyote_basic/versions"
     # - name: Fetch Schema by globally unique id 1 (schema registry)
     #   command: curl -vs --stderr - -XGET -i "http://localhost:8081/schemas/ids/1"
     #   stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Fetch Schema by name and version (schema registry)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects/coyote_test_01/versions/1"
-      stdout_has: [ '"subject":"coyote_test_01","version":1' ]
+      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects/coyote_basic/versions/1"
+      stdout_has: [ '"subject":"coyote_basic","version":1' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Register Complex Schema (schema registry)
       command: |
@@ -153,7 +153,7 @@
       command: |
         curl -vs --stderr - -X POST -H "Content-Type: application/json"
              --data '{ "name": "coyote_test_console_source-%UNIQUE_CD%",
-               "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"coyote_connect_distributed_test-%UNIQUE_CD%","file":"/etc/fstab"}}'
+               "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"coyote_cd-%UNIQUE_CD%","file":"/etc/fstab"}}'
              "http://localhost:8083/connectors"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Sleep a bit to let the connector spawn and work
@@ -167,7 +167,7 @@
         timeout 5
         kafka-console-consumer --new-consumer
                                --bootstrap-server localhost:9092
-                               --topic coyote_connect_distributed_test-%UNIQUE_CD%
+                               --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)
@@ -175,7 +175,7 @@
         timeout 5
         kafka-console-consumer --new-consumer
                                --bootstrap-server localhost:9092
-                               --topic coyote_connect_distributed_test-%UNIQUE_CD%
+                               --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
       stdout_has: [ 'cdrom' ]
       ignore_exit_code: true
@@ -183,7 +183,7 @@
       command:  curl -vs --stderr - -XDELETE "http://localhost:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Connect Distributes Test Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_connect_distributed_test-%UNIQUE_CD% --delete
+      command: kafka-topics --zookeeper localhost:2181 --topic coyote_cd-%UNIQUE_CD% --delete
 
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset
       nolog: true
@@ -196,13 +196,13 @@
     - name: Create coyote_sqlite_connector.properties
       command: tee coyote_sqlite_connector.properties
       stdin: |
-        name=coyote-test-connect-standalone-%UNIQUE%
+        name=coyote-ca-%UNIQUE%
         connector.class=io.confluent.connect.jdbc.JdbcSourceConnector
         tasks.max=1
         connection.url=jdbc:sqlite:coyote_test.sqlite
         mode=incrementing
         incrementing.column.name=id
-        topic.prefix=coyote-test-connect-standalone-
+        topic.prefix=coyote-ca-
     - name: Create coyote_connect_standalone.properties
       command: tee coyote_connect_standalone.properties
       stdin: |
@@ -230,11 +230,11 @@
         timeout 15
         kafka-console-consumer --new-consumer
                                --bootstrap-server localhost:9092
-                               --topic coyote-test-connect-standalone-accounts
+                               --topic coyote-ca-accounts
                                --from-beginning
       stdout_has: [ 'alice', 'bob' ]
       ignore_exit_code: true
     - name: Delete Connect Standalone Test Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-connect-standalone-accounts --delete
+      command: kafka-topics --zookeeper localhost:2181 --topic coyote-ca-accounts --delete
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset
       nolog: true
