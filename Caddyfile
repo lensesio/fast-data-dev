@@ -1,11 +1,13 @@
 0.0.0.0:3030
 tls off
-root /var/www
 log /var/log/access.log
-minify
+
+root /var/www
+
 proxy /api/schema-registry localhost:8081 {
     without /api/schema-registry
 }
+
 proxy /api/kafka-rest-proxy localhost:8082 {
     without /api/kafka-rest-proxy
 }

@@ -42,7 +42,7 @@ RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/co
 ADD index-tests.html /var/www/tests/index.html
 
 # Add and setup Caddy Server
-RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=minify' -O /caddy.tgz \
+RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz \
