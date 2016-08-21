@@ -62,9 +62,11 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/sch
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
     && rm -f /schema-registry-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "'"/api/kafka-rest-proxy"'",|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "'"/api/schema-registry"'";|' \
-           -e 's|^SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "'"/schema-registry-ui/"'",|' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
+           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
+           -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
+           -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
            -i /var/www/schema-registry-ui/combined.js
 ## Alternate regexp that also works:
@@ -75,14 +77,16 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/sch
 #           -e 's|https{0,1}://schema-registry-ui\.landoop\.com|/schema-registry-ui/|g' \
 
 # Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
-RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.2/kafka-topics-ui-0.2.tar.gz \
+RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7/kafka-topics-ui-0.7.tar.gz \
          -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
     && rm -f /kafka-topics-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "'"/api/kafka-rest-proxy"'",|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "'"/api/schema-registry"'";|' \
-           -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "'"/schema-registry-ui/"'",|' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
+           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
+           -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
+           -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
            -i /var/www/kafka-topics-ui/combined.js
 
