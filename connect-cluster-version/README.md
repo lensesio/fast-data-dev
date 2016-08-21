@@ -21,15 +21,25 @@ cluster by just spawning a couple containers.
            -e HOST=<IP OR FQDN>
            landoop/fast-data-dev-connect-cluster
 
-It is **important** to give a full URL (including schema —`http://`) for schema
-registry.
-`ID` should be unique to the Connect cluster you setup, for current and old
-instances. This is because Connect stores data in Brokers and Schema Registry.
-Thus even if you destroyed a Connect cluster, its data remains in your Kafka
-setup.
+Things to look out for in configuration options:
 
-If you don't want to run with `--net=host` you have to expose Connect's port.
-There is more option, `PORT`, that allows you to set Connect's port explicitly
+1. It is **important** to give a full URL (including schema —`http://`) for schema
+registry.
+2. `ID` should be unique to the Connect cluster you setup, for current and old
+instances. This is because Connect stores data in Brokers and Schema Registry.
+Thus even if you destroyed a Connect cluster, its data remain in your Kafka
+setup.
+3. `HOST` should be set to an IP address or domain name that other connect
+   instances and clients can use to reach the current instance. We chose not
+   to try to autodetect this IP because such a feat would fail more often than
+   not. Good choices are your local network ip (e.g `10.240.0.2`) if you work
+   inside a local network, your public ip (if you have one and want to use it)
+   or a domain name that is resolvable by all the hosts you will use to talk
+   to Connect.
+
+If you don't want to run with `--net=host` you have to expose Connect's port
+which at default settings is `8083`.
+There a `PORT` option, that allows you to set Connect's port explicitly
 if you can't use the default `8083`. Please remember that it is important to
 expose Connect's port on the same port at the host. This is a choice we had to
 make for simplicity's sake.
