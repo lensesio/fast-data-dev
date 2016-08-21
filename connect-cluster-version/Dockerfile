@@ -1,4 +1,4 @@
-FROM landoop/fast-data-dev-stream-reactor
+FROM landoop/fast-data-dev
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
 ADD connect-distributed.properties /usr/share/landoop

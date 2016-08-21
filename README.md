@@ -8,17 +8,18 @@ A docker image for demonstration and development of Kafka related technology.
 
 ## Basics
 
-If you need zookeeper, kafka broker, schema registry, kafka rest proxy, kafka
-connect distributed instances with extra tools, such as web UI's for schema
-registry and kafka topic management, extra connectors and integrated testing,
-just run:
+If you need Kafka Broker, ZooKeeper, Schema Registry, Kafka REST Proxy, Kafka
+Connect Distributed instances with extra tools, such as Landoop's Web UIs for
+Schema Registry and Kafka Topic management, DataMountaineer Connectors and
+integrated testing, just run:
 
     docker run --rm -it --net=host landoop/fast-data-dev
 
-That's it. Your broker is at localhost:9092, your kafka-rest at localhost:8082,
-your schema-registry at localhost:8081, your connect-distributed at
-localhost:8083, your zookeeper at localhost:2181 and at localhost:3030 you will
-find web UIs for kafka topics, schema registry and a test report.
+That's it. Your Broker is at <localhost:9092>, your Kafka REST Proxy at
+<localhost:8082>, your Schema Registry at <localhost:8081>, your Connect
+Distributed at <localhost:8083>, your ZooKeeper at <localhost:2181> and at
+<http://localhost:3030> you will find Landoop's Web UIs for Kafka Topics and
+Schema Registry, as well as a test report.
 
 Hit control+c and everything is stopped and removed it.
 
