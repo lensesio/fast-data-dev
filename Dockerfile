@@ -12,7 +12,8 @@ RUN apk add --no-cache \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir /opt \
     && wget https://gitlab.com/andmarios/checkport/uploads/c5c89f7d8b7708865f8b943510337cd2/checkport -O /usr/local/bin/checkport \
-    && chmod +x /usr/local/bin/checkport
+    && chmod +x /usr/local/bin/checkport \
+    && mkdir /connectors
 
 # Create Landoop configuration directory
 RUN mkdir /usr/share/landoop
@@ -25,7 +26,7 @@ RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz -O
     && tar --no-same-owner -xzf /stream-reactor.tar.gz \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
     && chmod +x /duphard \
-    && /duphard -d=0 /opt/confluent-3.0.0 \
+    && /duphard -d=0 /opt/confluent-3.0.0/share/java \
     && /duphard -d=0 /stream-reactor \
     && mv /stream-reactor/* /opt/confluent-3.0.0/share/java/ \
     && rm -rf /opt/confluent-3.0.0-2.11.tar.gz /stream-reactor.tar.gz /stream-reactor /duphard
@@ -92,4 +93,3 @@ RUN chmod +x /usr/local/bin/setup-and-run.sh
 EXPOSE 2181 3030 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 CMD ["/usr/local/bin/setup-and-run.sh"]
-

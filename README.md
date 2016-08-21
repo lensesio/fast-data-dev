@@ -31,3 +31,20 @@ try something like:
 Or enter the container to use the tools as you like:
 
     docker run --rm -it --net=host landoop/fast-data-dev bash
+
+## Advanced
+
+If you have a custom connector you would like to use, you can mount it at
+`/connectors`. We've setup the `CLASSPATH` variable for Connect as
+`/connectors/*`, so it will use any jar files it will find inside this
+directory:
+
+    docker run --rm -it --net=host \
+           -v /path/to/my/connector/jar/files:/connectors \
+           landoop/fast-data-dev
+
+## FAQ
+
+- When you start the container, Schema Registry and REST Proxy fail. 
+  This happens because the Broker isn't up yet. It is normal. Supervisord will
+  restart them and they will work when Broker is up.
