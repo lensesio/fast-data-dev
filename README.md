@@ -51,3 +51,19 @@ directory:
 - When you start the container, Schema Registry and REST Proxy fail. 
   This happens because the Broker isn't up yet. It is normal. Supervisord will
   restart them and they will work when Broker is up.
+- I want to see some logs. 
+  Every application stores its logs under `/var/log` inside the container.
+  If you have your container's ID, or name, you could do something like:
+  
+      docker exec -it <ID> cat /var/log/broker.log
+  
+- Fast-data-dev does not start properly, broker fails with:
+  > [2016-08-23 15:54:36,772] FATAL [Kafka Server 0], Fatal error during
+  > KafkaServer startup. Prepare to shutdown (kafka.server.KafkaServer)
+  > java.net.UnknownHostException: [HOSTNAME]: [HOSTNAME]: unknown error
+  JVM based apps tend to be a bit sensitive to hostname issues.
+  Either run the image without `--net=host` and expose all ports
+  (2181, 3030, 8081, 8082, 8083, 9092 to the same port at the host), or
+  better yet make sure your hostname resolves to the localhost address
+  (127.0.0.1). Usually to do this, you need to add you hostname (it is
+  case sensitive) at `/etc/hosts` as the first name after 127.0.0.1.
