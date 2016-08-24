@@ -4,10 +4,10 @@ log /var/log/access.log
 
 root /var/www
 
-proxy /api/schema-registry localhost:8081 {
-    without /api/schema-registry
-}
+# proxy /api/schema-registry localhost:8081 {
+#     without /api/schema-registry
+# }
 
-proxy /api/kafka-rest-proxy localhost:8082 {
-    without /api/kafka-rest-proxy
-}
+# proxy /api/kafka-rest-proxy localhost:8082 {
+#     without /api/kafka-rest-proxy
+# }

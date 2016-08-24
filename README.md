@@ -67,7 +67,10 @@ directory:
   
   JVM based apps tend to be a bit sensitive to hostname issues.
   Either run the image without `--net=host` and expose all ports
-  (2181, 3030, 8081, 8082, 8083, 9092 to the same port at the host), or
+  (2181, 3030, 8081, 8082, 8083, 9092) to the same port at the host, or
   better yet make sure your hostname resolves to the localhost address
-  (127.0.0.1). Usually to do this, you need to add you hostname (it is
-  case sensitive) at `/etc/hosts` as the first name after 127.0.0.1.
+  (127.0.0.1). Usually to achieve this, you need to add your hostname (case
+  sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
+  
+      127.0.0.1 MyHost localhost
+

@@ -11,7 +11,7 @@ RUN apk add --no-cache \
         sqlite \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir /opt \
-    && wget https://gitlab.com/andmarios/checkport/uploads/c5c89f7d8b7708865f8b943510337cd2/checkport -O /usr/local/bin/checkport \
+    && wget https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport -O /usr/local/bin/checkport \
     && chmod +x /usr/local/bin/checkport \
     && mkdir /connectors
 
@@ -34,6 +34,18 @@ RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz -O
 # Create system symlinks to Confluent's binaries
 ADD bin-install /opt/confluent-3.0.0/bin-install
 RUN bash -c 'for i in $(find /opt/confluent-3.0.0/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+
+# Configure Confluent
+RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.0/etc/schema-registry/schema-registry.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.0/etc/schema-registry/schema-registry.properties \
+    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.0/etc/kafka-rest/kafka-rest.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.0/etc/kafka-rest/kafka-rest.properties
+
+# # Add and setup Kafka Manager
+# RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.1.6.zip \
+#          -O /kafka-manager-1.3.1.6.zip \
+#     && unzip /kafka-manager-1.3.1.6.zip -d /opt \
+#     && rm -rf /kafka-manager-1.3.1.6.zip
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 -O /usr/local/bin/dumb-init \
@@ -62,9 +74,9 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/sch
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
     && rm -f /schema-registry-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
-           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "http://localhost:8082",|' \
+           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "http://localhost:8082";|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "http://localhost:8081";|' \
            -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
            -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
@@ -82,18 +94,18 @@ RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7/kafka
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
     && rm -f /kafka-topics-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
-           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "http://localhost:8082",|' \
+           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "http://localhost:8082";|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "http://localhost:8081";|' \
            -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
            -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
-           -i /var/www/kafka-topics-ui/combined.js
+           -i /var/www/schema-registry-ui/combined.js
 
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh /usr/local/bin
 RUN chmod +x /usr/local/bin/setup-and-run.sh
 
-EXPOSE 2181 3030 8081 8082 8083 9092
+EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 CMD ["/usr/local/bin/setup-and-run.sh"]
