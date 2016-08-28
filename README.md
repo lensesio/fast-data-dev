@@ -53,6 +53,12 @@ directory:
   
   This happens because the Broker isn't up yet. It is normal. Supervisord will
   restart them and they will work when Broker is up.
+- What resources does this need?
+  
+  An idle, fresh ran container will need about 1.5GiB of RAM. We spawn 4 JVM
+  based apps after all. Once you start working, your mileage will vary. In our
+  experience it is Connect that can turn to a memory hog. We set its heap size
+  to 1GiB but this may not be enough.
 - I want to see some logs.
   
   Every application stores its logs under `/var/log` inside the container.
