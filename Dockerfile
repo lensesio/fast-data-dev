@@ -74,9 +74,9 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/sch
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
     && rm -f /schema-registry-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "http://localhost:8082",|' \
-           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "http://localhost:8082";|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "http://localhost:8081";|' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
+           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
            -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
            -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
@@ -94,13 +94,13 @@ RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7/kafka
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
     && rm -f /kafka-topics-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "http://localhost:8082",|' \
-           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "http://localhost:8082";|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "http://localhost:8081";|' \
+    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
+           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
+           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
            -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
            -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
-           -i /var/www/schema-registry-ui/combined.js
+           -i /var/www/kafka-topics-ui/combined.js
 
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh /usr/local/bin
