@@ -15,6 +15,13 @@ integrated testing, just run:
 
     docker run --rm -it --net=host landoop/fast-data-dev
 
+If you are on Mac OS X, you have to expose the ports instead:
+
+    docker run --rm -it \
+               -p 2181:2181 -p 3030:3030 -p 8081:8081 \
+               -p 8082:8082 -p 8083:8083 -p 9092:9092 \
+               landoop/fast-data-dev
+
 That's it. Your Broker is at <localhost:9092>, your Kafka REST Proxy at
 <localhost:8082>, your Schema Registry at <localhost:8081>, your Connect
 Distributed at <localhost:8083>, your ZooKeeper at <localhost:2181> and at
@@ -31,6 +38,12 @@ try something like:
 Or enter the container to use the tools as you like:
 
     docker run --rm -it --net=host landoop/fast-data-dev bash
+
+### Note
+
+_Fast-data-dev_ isn't thoroughly tested on Mac OS X. Due to not being able
+to use `--net=host`, some components may have networking issues. We are
+interested in hearing about your experience.
 
 ## Advanced
 
@@ -79,4 +92,3 @@ directory:
   sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
   
       127.0.0.1 MyHost localhost
-
