@@ -19,27 +19,27 @@ RUN apk add --no-cache \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution and Stream Reactor
-RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.0-2.11.tar.gz -O /opt/confluent-3.0.0-2.11.tar.gz \
-    && tar --no-same-owner -xzf /opt/confluent-3.0.0-2.11.tar.gz -C /opt/ \
+RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
+    && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
     && wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160819-cp-3.0.0-4c160a7.tar.gz \
             -O /stream-reactor.tar.gz \
     && tar --no-same-owner -xzf /stream-reactor.tar.gz \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
     && chmod +x /duphard \
-    && /duphard -d=0 /opt/confluent-3.0.0/share/java \
+    && /duphard -d=0 /opt/confluent-3.0.1/share/java \
     && /duphard -d=0 /stream-reactor \
-    && mv /stream-reactor/* /opt/confluent-3.0.0/share/java/ \
-    && rm -rf /opt/confluent-3.0.0-2.11.tar.gz /stream-reactor.tar.gz /stream-reactor /duphard
+    && mv /stream-reactor/* /opt/confluent-3.0.1/share/java/ \
+    && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /stream-reactor.tar.gz /stream-reactor /duphard
 
 # Create system symlinks to Confluent's binaries
-ADD bin-install /opt/confluent-3.0.0/bin-install
-RUN bash -c 'for i in $(find /opt/confluent-3.0.0/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+ADD bin-install /opt/confluent-3.0.1/bin-install
+RUN bash -c 'for i in $(find /opt/confluent-3.0.1/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Configure Confluent
-RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.0/etc/schema-registry/schema-registry.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.0/etc/schema-registry/schema-registry.properties \
-    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.0/etc/kafka-rest/kafka-rest.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.0/etc/kafka-rest/kafka-rest.properties
+RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.1/etc/schema-registry/schema-registry.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.1/etc/schema-registry/schema-registry.properties \
+    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.1/etc/kafka-rest/kafka-rest.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.1/etc/kafka-rest/kafka-rest.properties
 
 # # Add and setup Kafka Manager
 # RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.1.6.zip \
