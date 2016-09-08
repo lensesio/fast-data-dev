@@ -30,6 +30,11 @@ Schema Registry, as well as a test report.
 
 Hit control+c and everything is stopped and removed it.
 
+Do you need remote access? Then you have one more knob to turn; your machine's
+IP address or hostname that other machines can use to access it:
+
+    docker run --rm -it --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
+
 Do you need some kafka console tools? Whilst your Kafka containers is running,
 try something like:
 
@@ -41,8 +46,8 @@ Or enter the container to use the tools as you like:
 
 ### Note
 
-_Fast-data-dev_ isn't thoroughly tested on Mac OS X. Due to not being able
-to use `--net=host`, some components may have networking issues. We are
+_Fast-data-dev_ isn't thoroughly tested on Mac OS X and/or with remote access
+scenarios. Some components may have networking issues in such setups. We are
 interested in hearing about your experience.
 
 ## Advanced
