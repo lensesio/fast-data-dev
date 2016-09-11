@@ -52,6 +52,15 @@ Or enter the container to use any tool as you like:
 
     docker run --rm -it --net=host landoop/fast-data-dev bash
 
+## Versions
+
+The latest version of this docker image packages: 
+
++ Confluent 3.0.1
++ Apache Kafka 0.10.0.1
++ DataMountaineer Stream Reactor 0.2
++ Landoop Fast Data Web UIs 0.7
+
 ## Advanced
 
 If you have a custom connector you would like to use, you can mount it at folder
