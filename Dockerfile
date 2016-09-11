@@ -32,7 +32,7 @@ RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O
     && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /stream-reactor.tar.gz /stream-reactor /duphard
 
 # Create system symlinks to Confluent's binaries
-ADD bin-install /opt/confluent-3.0.1/bin-install
+ADD binaries /opt/confluent-3.0.1/bin-install
 RUN bash -c 'for i in $(find /opt/confluent-3.0.1/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Configure Confluent
