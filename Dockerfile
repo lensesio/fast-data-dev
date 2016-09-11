@@ -21,7 +21,7 @@ RUN mkdir /usr/share/landoop
 # Add Confluent Distribution and Stream Reactor
 RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
     && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
-    && wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160819-cp-3.0.0-4c160a7.tar.gz \
+    && wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160824-cp-3.0.0-a0ce8d0.tar.gz \
             -O /stream-reactor.tar.gz \
     && tar --no-same-owner -xzf /stream-reactor.tar.gz \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
@@ -56,12 +56,12 @@ RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.
     && chmod 0755 /usr/local/bin/dumb-init
 
 # Add Coyote and tests
-ADD kafka-tests.yml /usr/share/landoop
-ADD smoke-tests.sh /usr/local/bin
+ADD integration-tests/kafka-tests.yml /usr/share/landoop
+ADD integration-tests/smoke-tests.sh /usr/local/bin
 RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/coyote -O /usr/local/bin/coyote \
     && chmod +x /usr/local/bin/coyote /usr/local/bin/smoke-tests.sh \
     && mkdir -p /var/www/tests
-ADD index-tests.html /var/www/tests/index.html
+ADD integration-tests/index-tests.html /var/www/tests/index.html
 
 # Add and setup Caddy Server
 RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
@@ -69,8 +69,8 @@ RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' 
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz \
     && mkdir -p /var/www
-ADD Caddyfile /usr/share/landoop
-ADD index.html /var/www
+ADD web/Caddyfile /usr/share/landoop
+ADD web/index.html /var/www
 
 # Add and Setup Schema-Registry-Ui
 RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/schema-registry-ui-0.7.tar.gz \
