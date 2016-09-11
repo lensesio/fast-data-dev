@@ -2,16 +2,24 @@
 
 [![](https://images.microbadger.com/badges/image/landoop/fast-data-dev.svg)](http://microbadger.com/images/landoop/fast-data-dev) [![Join the chat at https://gitter.im/Landoop/fast-data-dev](https://badges.gitter.im/Landoop/fast-data-dev.svg)](https://gitter.im/Landoop/fast-data-dev?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-A docker image for demonstration and development of Kafka related technology.
+A docker image for demonstration and development of Kafka related technology by Landoop ™
 
 ---
 
 ## Basics
 
-If you need Kafka Broker, ZooKeeper, Schema Registry, Kafka REST Proxy, Kafka
-Connect Distributed instances with extra tools, such as Landoop's Web UIs for
-Schema Registry and Kafka Topic management, DataMountaineer Connectors and
-integrated testing, just run:
+If you need 
+
+1. A Kafka Broker
+2. ZooKeeper
+3. Schema Registry
+4. Kafka REST Proxy
+5. Kafka Connect Distributed
+6. Certified DataMountaineer Connectors (ElasticSearch, Cassandra, Redis ..)
+6. Landoop's Fast Data Web UIs : schema-registry , kafka-topics , kafka-connect) and 
+7. Embedded integration tests with examples
+
+just run:
 
     docker run --rm -it --net=host landoop/fast-data-dev
 
@@ -26,34 +34,28 @@ That's it. Your Broker is at <localhost:9092>, your Kafka REST Proxy at
 <localhost:8082>, your Schema Registry at <localhost:8081>, your Connect
 Distributed at <localhost:8083>, your ZooKeeper at <localhost:2181> and at
 <http://localhost:3030> you will find Landoop's Web UIs for Kafka Topics and
-Schema Registry, as well as a test report.
+Schema Registry, as well as a [Coyote](https://github.com/landoop/coyote) test report.
 
-Hit control+c and everything is stopped and removed it.
+> Hit **control+c** to stop and remove everything
 
 Do you need remote access? Then you have one more knob to turn; your machine's
 IP address or hostname that other machines can use to access it:
 
     docker run --rm -it --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
 
-Do you need some kafka console tools? Whilst your Kafka containers is running,
+Do you need to execute kafka related console tools? Whilst your Kafka containers is running,
 try something like:
 
     docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 --list
 
-Or enter the container to use the tools as you like:
+Or enter the container to use any tool as you like:
 
     docker run --rm -it --net=host landoop/fast-data-dev bash
 
-### Note
-
-_Fast-data-dev_ isn't thoroughly tested on Mac OS X and/or with remote access
-scenarios. Some components may have networking issues in such setups. We are
-interested in hearing about your experience.
-
 ## Advanced
 
-If you have a custom connector you would like to use, you can mount it at
-`/connectors`. We've setup the `CLASSPATH` variable for Connect as
+If you have a custom connector you would like to use, you can mount it at folder
+`/connectors`. `CLASSPATH` variable for Kafka Connect is set up as
 `/connectors/*`, so it will use any jar files it will find inside this
 directory:
 
@@ -63,20 +65,21 @@ directory:
 
 ## FAQ
 
-- Schema Registry UI and Kafka Topics UI need some time to start working.
+- Landoop's Fast Data Web UI tools and integration test requires a few seconds till they fully work.
   
   That is because the services (Schema Registry and Kafka REST Proxy) have
   to start and initialize before the UIs can read data.
 - When you start the container, Schema Registry and REST Proxy fail.
   
   This happens because the Broker isn't up yet. It is normal. Supervisord will
-  restart them and they will work when Broker is up.
-- What resources does this need?
+  make sure they will work automatically once the Broker starts.
+- What resources does this container need?
   
-  An idle, fresh ran container will need about 1.5GiB of RAM. We spawn 4 JVM
-  based apps after all. Once you start working, your mileage will vary. In our
-  experience it is Connect that can turn to a memory hog. We set its heap size
-  to 1GiB but this may not be enough.
+  An idle, fresh container will need about 1.5GiB of RAM. As at least 4 JVM
+  applications will be working in it, your mileage will vary. In our
+  experience Kafka Connect usually requires a lot of memory. It's heap size is set by default 
+  to 1GiB but you'll might need more than that.
+ 
 - I want to see some logs.
   
   Every application stores its logs under `/var/log` inside the container.
@@ -97,3 +100,9 @@ directory:
   sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
   
       127.0.0.1 MyHost localhost
+
+### Troubleshooting
+
+_Fast-data-dev_ isn't thoroughly tested on Mac OS X and/or with remote access
+scenarios. Some components may have networking issues in such setups. We are
+interested in hearing about your experience.
