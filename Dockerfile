@@ -21,7 +21,7 @@ RUN mkdir /usr/share/landoop
 # Add Confluent Distribution and Stream Reactor
 RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
     && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
-    && wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160824-cp-3.0.0-a0ce8d0.tar.gz \
+    && wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160912-v0.2-3f17b28.tar.gz \
             -O /stream-reactor.tar.gz \
     && tar --no-same-owner -xzf /stream-reactor.tar.gz \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
