@@ -18,18 +18,21 @@ RUN apk add --no-cache \
 # Create Landoop configuration directory
 RUN mkdir /usr/share/landoop
 
-# Add Confluent Distribution and Stream Reactor
+# Add Confluent Distribution
 RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
     && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
-    && wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160824-cp-3.0.0-a0ce8d0.tar.gz \
-            -O /stream-reactor.tar.gz \
-    && tar --no-same-owner -xzf /stream-reactor.tar.gz \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
     && chmod +x /duphard \
     && /duphard -d=0 /opt/confluent-3.0.1/share/java \
-    && /duphard -d=0 /stream-reactor \
-    && mv /stream-reactor/* /opt/confluent-3.0.1/share/java/ \
-    && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /stream-reactor.tar.gz /stream-reactor /duphard
+    && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /duphard
+
+# Add Stream Reactor
+RUN wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2/stream-reactor-release-0.2-3.0.0.tar.gz \
+         -O /stream-reactor.tar.gz \
+    && mkdir /opt/stream-reactor \
+    && echo "stream-reactor-release-0.2-3.0.0" > /opt/stream-reactor/RELEASE \
+    && tar --no-same-owner -xzf /stream-reactor.tar.gz --strip-components=1 -C /opt/stream-reactor \
+    && rm /stream-reactor.tar.gz
 
 # Create system symlinks to Confluent's binaries
 ADD binaries /opt/confluent-3.0.1/bin-install
