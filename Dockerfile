@@ -27,7 +27,7 @@ RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O
     && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /duphard
 
 # Add Stream Reactor
-RUN wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2/stream-reactor-release-0.2-3.0.0.tar.gz \
+RUN wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.1/stream-reactor-0.2-3.0.0.tar.gz \
          -O /stream-reactor.tar.gz \
     && mkdir /opt/stream-reactor \
     && echo "stream-reactor-release-0.2-3.0.0" > /opt/stream-reactor/RELEASE \
