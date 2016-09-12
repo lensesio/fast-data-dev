@@ -8,7 +8,7 @@ Docker image packaging the best Kafka tools
 
 ## Basics
 
-If you need 
+If you need
 
 1. Kafka Broker
 2. ZooKeeper
@@ -16,7 +16,7 @@ If you need
 4. Kafka REST Proxy
 5. Kafka Connect Distributed
 6. Certified DataMountaineer Connectors (ElasticSearch, Cassandra, Redis ..)
-6. Landoop's Fast Data Web UIs : schema-registry , kafka-topics , kafka-connect) and 
+6. Landoop's Fast Data Web UIs : schema-registry , kafka-topics , kafka-connect) and
 7. Embedded integration tests with examples
 
 just run:
@@ -54,7 +54,7 @@ Or enter the container to use any tool as you like:
 
 ## Versions
 
-The latest version of this docker image packages: 
+The latest version of this docker image packages:
 
 + Confluent 3.0.1
 + Apache Kafka 0.10.0.1
@@ -62,6 +62,8 @@ The latest version of this docker image packages:
 + Landoop Fast Data Web UIs 0.7
 
 ## Advanced
+
+### Custom Connectors
 
 If you have a custom connector you would like to use, you can mount it at folder
 `/connectors`. `CLASSPATH` variable for Kafka Connect is set up as
@@ -72,9 +74,17 @@ directory:
            -v /path/to/my/connector/jar/files:/connectors \
            landoop/fast-data-dev
 
+### Connect Heap Size
+
+You can configure Connect's heap size via the environment variable
+`CONNECT_HEAP`. The default is `1G`:
+
+    docker run -e CONNECT_HEAP=5G -d landoop/fast-data-dev
+
 ## FAQ
 
-- Landoop's Fast Data Web UI tools and integration test requires a few seconds till they fully work.
+- Landoop's Fast Data Web UI tools and integration test requires a few seconds
+  till they fully work.
   
   That is because the services (Schema Registry and Kafka REST Proxy) have
   to start and initialize before the UIs can read data.

@@ -23,4 +23,7 @@ PRINT_HOST="${ADV_HOST:-localhost}"
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:3030\e[34m in about a minute.\e[39m"
 
+CONNECT_HEAP="${CONNECT_HEAP:-1G}"
+sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.conf
+
 exec /usr/bin/supervisord -c /etc/supervisord.conf
