@@ -38,7 +38,7 @@ Schema Registry, as well as a [Coyote](https://github.com/landoop/coyote) test r
 
 > Hit **control+c** to stop and remove everything
 
-Do you need remote access? Then you have one more knob to turn; your machine's
+Do you need **remote access**? Then you have one more knob to turn; your machine's
 IP address or hostname that other machines can use to access it:
 
     docker run --rm -it --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
@@ -58,7 +58,7 @@ The latest version of this docker image packages:
 
 + Confluent 3.0.1
 + Apache Kafka 0.10.0.1
-+ DataMountaineer Stream Reactor 0.2
++ DataMountaineer Stream Reactor 0.2.1
 + Landoop Fast Data Web UIs 0.7
 
 ## Advanced
@@ -81,6 +81,13 @@ You can configure Connect's heap size via the environment variable
 
     docker run -e CONNECT_HEAP=5G -d landoop/fast-data-dev
 
+### Advertised Hostname
+
+To set the _advertised hostname_ use the `ADV_HOST` environment variable.
+Internally we convert it to an _advertised listener_ string as the advertised
+hostname setting is deprecated.
+
+
 ## FAQ
 
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds
@@ -96,9 +103,9 @@ You can configure Connect's heap size via the environment variable
   
   An idle, fresh container will need about 1.5GiB of RAM. As at least 4 JVM
   applications will be working in it, your mileage will vary. In our
-  experience Kafka Connect usually requires a lot of memory. It's heap size is set by default 
-  to 1GiB but you'll might need more than that.
- 
+  experience Kafka Connect usually requires a lot of memory. It's heap size is
+  set by default to 1GiB but you'll might need more than that.
+  
 - I want to see some logs.
   
   Every application stores its logs under `/var/log` inside the container.
@@ -119,6 +126,12 @@ You can configure Connect's heap size via the environment variable
   sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
   
       127.0.0.1 MyHost localhost
+  
+- I want custom ports.
+  
+  For start we focused on simplicity and then to other important features.
+  In the future we may add support for setting custom ports for the various
+  components.
 
 ### Troubleshooting
 
