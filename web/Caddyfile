@@ -11,3 +11,7 @@ proxy /api/schema-registry localhost:8081 {
 proxy /api/kafka-rest-proxy localhost:8082 {
     without /api/kafka-rest-proxy
 }
+
+proxy /api/kafka-connect localhost:8083 {
+    without /api/kafka-connect
+}
