@@ -38,6 +38,8 @@ Schema Registry, as well as a [Coyote](https://github.com/landoop/coyote) test r
 
 > Hit **control+c** to stop and remove everything
 
+<img src="https://storage.googleapis.com/wch/fast-data-dev-ui.png" alt="fast-data-dev web UI screenshot" type="image/png" width="900">
+
 Do you need **remote access**? Then you have one more knob to turn; your machine's
 IP address or hostname that other machines can use to access it:
 
