@@ -63,8 +63,8 @@ ADD integration-tests/kafka-tests.yml /usr/share/landoop
 ADD integration-tests/smoke-tests.sh /usr/local/bin
 RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/coyote -O /usr/local/bin/coyote \
     && chmod +x /usr/local/bin/coyote /usr/local/bin/smoke-tests.sh \
-    && mkdir -p /var/www/tests
-ADD integration-tests/index-tests.html /var/www/tests/index.html
+    && mkdir -p /var/www/coyote-tests
+ADD integration-tests/index.html integration-tests/results /var/www/coyote-tests/
 
 # Add and Setup Schema-Registry-Ui
 RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/schema-registry-ui-0.7.tar.gz \
