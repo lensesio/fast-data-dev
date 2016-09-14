@@ -31,31 +31,17 @@
   </style>
 </head>
 
-<body ng-app="BlankApp" ng-cloak>
+<body ng-app="DockerPage" ng-cloak>
 
 <div ng-controller="MainCtrl" style="background-color: #F5F5F5;">
 <!--Header-->
 <div flex layout="row" layout-xs="column">
   <div flex="20"></div>
   <div flex="60">
-
-    <!--<md-card>-->
-      <!--<md-card-header style="border-bottom:1px solid #ccc;">-->
-        <!--<md-card-avatar>-->
-          <!--<img src="landoop-blue.svg"/>-->
-        <!--</md-card-avatar>-->
-        <!--<md-card-header-text>-->
-          <!--<span class="md-title">Kafka Development Environment</span>-->
-          <!--<span class="md-subhead"><code>docker container powered by Landoop</code></span>-->
-        <!--</md-card-header-text>-->
-      <!--</md-card-header>-->
-    <!--</md-card>-->
-
-    <h3> <img ng-src="landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
+    <h3> <img ng-src="img/landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
       Kafka Development Environment <br><code style="font-size:14px">docker container powered by Landoop</code>
     </h3>
   </div>
-  <!--<div flex="20"></div>-->
 </div>
 
 <!--summaries-->
@@ -171,10 +157,12 @@
 <div flex layout="row" layout-xs="column">
   <div flex="20"></div>
   <div flex="30">
+
+    <!--Running Services card-->
     <md-card>
       <md-card-header style="border-bottom:1px solid #ccc;">
         <md-card-avatar>
-          <img src="docker.png"/>
+          <img src="img/docker.png"/>
         </md-card-avatar>
         <md-card-header-text>
           <span class="md-title">RUNNING SERVICES</span>
@@ -183,40 +171,18 @@
       </md-card-header>
       <md-card-content>
         <md-list>
-
-          <md-list-item class="md-3-line md-long-text" style="margin: -0.4em;">
-            <img src="ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
+          <md-list-item ng-repeat="service in runningServices" class="md-3-line md-long-text" style="margin: -0.4em;">
+            <img src="img/ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
             <div class="md-list-item-text">
-              <h4>Confluent v3.0.1 - Kafka v0.10.0.1</h4>
-              <p style="font-size:12px;">
-                1 broker, including kafka connect distributed, schema registry, kafka rest, etc
-              </p>
-            </div>
-          </md-list-item>
-
-          <md-list-item class="md-3-line md-long-text" style="margin: -0.4em;">
-            <img src="ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
-            <div class="md-list-item-text">
-              <h4>Datamountaineer Stream Reactor v0.2.2</h4>
-              <p style="font-size:12px;">
-                Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc
-              </p>
-            </div>
-          </md-list-item>
-
-          <md-list-item class="md-3-line md-long-text" style="margin: -0.4em;">
-            <img src="ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
-            <div class="md-list-item-text">
-              <h4>Landoop Fast Data platform v0.7 </h4>
-              <p style="font-size:12px;">
-                Manage schemas, view history, browse topics & configure your cluster from your browser.
-              </p>
+              <h4>{{service.name}}</h4>
+              <p style="font-size:12px;">{{service.description}}</p>
             </div>
           </md-list-item>
         </md-list>
       </md-card-content>
       </md-card>
 
+      <!--Services information card-->
       <md-card>
         <md-card-title style="padding-bottom:5px;">
           <md-card-title-text>
@@ -225,42 +191,11 @@
         </md-card-title>
         <md-card-content>
           <md-list>
-            <md-list-item flex class="md-list-item-short">
+            <md-list-item ng-repeat="i in servicesInfo" flex class="md-list-item-short">
               <div class="md-list-item-text">
-                <h5> 9092 : Kafka Broker</h5>
+                <h5> {{i.port}} : {{i.name}}</h5>
               </div>
             </md-list-item>
-
-            <md-list-item flex class="md-list-item-short">
-              <div class="md-list-item-text">
-                <h5>8081 : Schema Registry</h5>
-              </div>
-            </md-list-item>
-
-            <md-list-item flex class="md-list-item-short">
-              <div class="md-list-item-text">
-                <h5>8082 : Kafka REST Proxy</h5>
-              </div>
-            </md-list-item>
-
-            <md-list-item flex class="md-list-item-short">
-              <div class="md-list-item-text">
-                <h5>8083 : Kafka Connect Distributed</h5>
-              </div>
-            </md-list-item>
-
-            <md-list-item flex class="md-list-item-short">
-              <div class="md-list-item-text">
-                <h5>2181 : ZooKeeper</h5>
-              </div>
-            </md-list-item>
-
-            <md-list-item flex class="md-list-item-short">
-              <div class="md-list-item-text">
-                <h5>3030 : Web Server</h5>
-              </div>
-            </md-list-item>
-
         </md-list>
       </md-card-content>
     </md-card>
@@ -271,19 +206,22 @@
       <md-card-title style="padding-bottom:5px;">
         <md-card-title-text>
           <span class="md-headline tile-heading"><b>Coyote Health Checks</b></span>
+          <p style="font-size:12px; text-align:center;">
+            Your set up is being verified using the Coyote integration testing tool and generates working examples.
+          </p>
         </md-card-title-text>
       </md-card-title>
       <md-card-content style="background-color:#fff; padding: 15px;">
-        <div flex layout="center center">
-          <md-progress-circular md-mode="indeterminate" ></md-progress-circular>
-          <h5>Running...</h5>
+        <div flex layout="row" layout-align="center center">
+          <md-progress-circular md-mode="indeterminate" ng-show="showme"></md-progress-circular>
+          <h5 ng-show="showme">Running...</h5>
+          <md-button class="md-raised md-primary" ng-hide="showme" href="./coyote-tests/">View Results</md-button>
         </div>
       </md-card-content>
       <md-card-content style="background-color:#f4f4f4;">
-        <div flex layout="center center">
+        <div flex layout-align="center center">
           <p class="summary">
-            Your set up is being verified using the Coyote automation tool for integrated tests.
-            To test your clusters end to end with Coyote and find out more have a look <a href="https://github.com/Landoop" target="_blank">here</a>.
+            Find out more about Coyote awesome tool <a href="https://github.com/Landoop" target="_blank">here</a>.
           </p>
         </div>
       </md-card-content>
@@ -294,28 +232,38 @@
 
 <!--Footer-->
 <div flex layout="row" layout-align="center center">
-  <img ng-src="landoop-blue.svg" style="width:20px;float: left;padding-right:5px;">
+  <img ng-src="img/landoop-blue.svg" style="width:20px;float: left;padding-right:5px;">
   <p style="font-size:10px;">powered by <a href="http://www.landoop.com">Landoop</a>TODO - lisence stuff</p>
 </div>
 
 </div>
 
 <!-- Angular Material requires Angular.js Libraries -->
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+<script src="schema-registry-ui/bower_components/angular/angular.min.js"></script>
+<script src="schema-registry-ui/bower_components/angular-animate/angular-animate.min.js"></script>
+<script src="schema-registry-ui/bower_components/angular-aria/angular-aria.min.js"></script>
 
 <!-- Angular Material Library -->
-<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+<script src="schema-registry-ui/bower_components/angular-material/angular-material.min.js"></script>
 
-<!-- Your application bootstrap  -->
+<!-- Custom js -->
+<script src="env.js"></script>
+
 <script type="text/javascript">
 
     angular
-    .module('BlankApp', ['ngMaterial'])
-    .controller('MainCtrl', function ($scope, $http, $log) {
+    .module('DockerPage', ['ngMaterial'])
+    .controller('MainCtrl', function ($scope, $http, $log, $timeout) {
 
+    //LOAD ENV vars
+    $scope.runningServices = runningServices;
+    $scope.servicesInfo = servicesInfo;
+
+    //COYOTE
+    $scope.showme = true;
+    $timeout(function () { $scope.showme = false; }, 3000); //TODO
+
+    //SUMMARIES
     $http.get('/api/schema-registry/subjects/')
       .then(
         function successCallback(response) {
