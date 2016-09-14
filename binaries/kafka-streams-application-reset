@@ -1,0 +1,14 @@
+#!/bin/bash
+  # Reference: http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+  SOURCE="${BASH_SOURCE[0]}"
+  BIN_INSTALL_DIR="$( dirname "$SOURCE" )"
+  while [ -h "$SOURCE" ]
+  do
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+    BIN_INSTALL_DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+  done
+  BIN_INSTALL_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  BIN_DIR=$BIN_INSTALL_DIR/../bin
+
+  exec $BIN_DIR/kafka-streams-application-reset "$@"
