@@ -122,11 +122,11 @@ RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' 
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz
-
 ADD web/Caddyfile /usr/share/landoop
-ADD web/index.html /var/www
-ADD web/*.png /var/www/
-ADD web/*.svg /var/www/
+
+# Add fast-data-dev UI
+COPY web/index.html web/env.js /var/www/
+COPY web/img /var/www/img
 
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh /usr/local/bin
