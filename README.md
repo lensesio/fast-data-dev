@@ -58,7 +58,7 @@ The latest version of this docker image packages:
 
 + Confluent 3.0.1
 + Apache Kafka 0.10.0.1
-+ DataMountaineer Stream Reactor 0.2.1
++ DataMountaineer Stream Reactor 0.2.2
 + Landoop Fast Data Web UIs 0.7
 
 ## Advanced
