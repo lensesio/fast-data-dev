@@ -16,7 +16,7 @@ if [[ ! -z "${ADV_HOST}" ]]; then
          >> /opt/confluent-3.0.1/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
          >> /opt/confluent-3.0.1/etc/kafka/connect-distributed.properties
-    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml
+    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js
 fi
 
 PRINT_HOST="${ADV_HOST:-localhost}"
