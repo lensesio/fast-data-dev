@@ -165,7 +165,7 @@
           <img src="img/docker.png"/>
         </md-card-avatar>
         <md-card-header-text>
-          <span class="md-title">RUNNING SERVICES</span>
+          <span class="md-headline tile-heading" style="text-align:left;"><b>RUNNING SERVICES</b></span>
           <span class="md-subhead"><code> fast-data-dev</code></span>
         </md-card-header-text>
       </md-card-header>
@@ -186,7 +186,7 @@
       <md-card>
         <md-card-title style="padding-bottom:5px;">
           <md-card-title-text>
-            <span class="md-headline tile-heading">Services Ports</span>
+            <span class="md-headline tile-heading"><b>Services Ports</b></span>
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
@@ -206,34 +206,54 @@
       <md-card-title style="padding-bottom:5px;">
         <md-card-title-text>
           <span class="md-headline tile-heading"><b>Coyote Health Checks</b></span>
-          <p style="font-size:12px; text-align:center;">
+          <p class="summary" style="font-size:12px; text-align:center; padding: 5px 0px;">
             Your set up is being verified using the Coyote integration testing tool and generates working examples.
           </p>
         </md-card-title-text>
       </md-card-title>
       <md-card-content style="background-color:#fff; padding: 15px;">
-        <div flex layout="row" layout-align="center center">
-          <md-progress-circular md-mode="indeterminate" ng-show="showme"></md-progress-circular>
-          <h5 ng-show="showme">Running...</h5>
-          <md-button class="md-raised md-primary" ng-hide="showme" href="./coyote-tests/">View Results</md-button>
+
+        <!--while running-->
+        <div flex layout="row" layout-align="center center" ng-show="running">
+          <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+          <h5>Running...</h5>
+        </div>
+        <!--after run-->
+        <div flex layout="column" layout-align="center center" ng-hide="running">
+          <svg width="40%" height="40%" viewbox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="transparent"/>
+            <circle cx="50" cy="50" r="40" fill="transparent" stroke-width="15" stroke="#f4f4f4"/>
+            <circle cx="50" cy="50" r="40" fill="transparent" stroke-width="15" stroke="#00CCFF" stroke-dasharray="251.2" stroke-dashoffset="{{chartValue}}"/>
+            <text x="30" y="55" fill="black" font-size="15" style="padding-top:50px;">
+              {{chartPercentage}}%
+            </text>
+          </svg>
+          <p class="summary">Passed: {{coyoteResults.passed}} | Failed: {{coyoteResults.failed}}</p>
+          <md-button class="md-raised" href="./coyote-tests/">View Results</md-button>
         </div>
       </md-card-content>
       <md-card-content style="background-color:#f4f4f4;">
         <div flex layout-align="center center">
           <p class="summary">
-            Find out more about Coyote awesome tool <a href="https://github.com/Landoop" target="_blank">here</a>.
+            Find out more about Coyote awesome tool <a href="https://github.com/Landoop/coyote" target="_blank">here</a>.
           </p>
         </div>
       </md-card-content>
-
     </md-card>
   </div>
 </div>
 
 <!--Footer-->
+<h6 style="text-align:center;margin-bottom:5px;">Report Issues & Stars!</h6>
+<div flex layout="row" layout-align="center center">
+
+  <a class="github-button" href="https://github.com/Landoop/fast-data-dev/issues" data-count-api="/repos/Landoop/fast-data-dev#open_issues_count" data-count-aria-label="# issues on GitHub" aria-label="Issue Landoop/fast-data-dev on GitHub">Issue</a>
+  <a class="github-button" href="https://github.com/Landoop/fast-data-dev" data-count-href="/Landoop/fast-data-dev/stargazers" data-count-api="/repos/Landoop/fast-data-dev#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Landoop/fast-data-dev on GitHub">Star</a>
+</div>
+
 <div flex layout="row" layout-align="center center">
   <img ng-src="img/landoop-blue.svg" style="width:20px;float: left;padding-right:5px;">
-  <p style="font-size:10px;">powered by <a href="http://www.landoop.com">Landoop</a>TODO - lisence stuff</p>
+  <p style="font-size:10px;">powered by <a href="http://www.landoop.com" style="text-decoration:none;color:blue;" target="_blank">Landoop</a></p>
 </div>
 
 </div>
@@ -246,6 +266,10 @@
 <!-- Angular Material Library -->
 <script src="schema-registry-ui/bower_components/angular-material/angular-material.min.js"></script>
 
+<!--Github Buttons-->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- Place this tag where you want the button to render. -->
 <!-- Custom js -->
 <script src="env.js"></script>
 
@@ -253,65 +277,79 @@
 
     angular
     .module('DockerPage', ['ngMaterial'])
-    .controller('MainCtrl', function ($scope, $http, $log, $timeout) {
+    .controller('MainCtrl', function ($scope, $http, $log, $timeout, $interval) {
 
     //LOAD ENV vars
     $scope.runningServices = runningServices;
     $scope.servicesInfo = servicesInfo;
 
-    //COYOTE
-    $scope.showme = true;
-    $timeout(function () { $scope.showme = false; }, 3000); //TODO
-
     //SUMMARIES
+     this.getSummaries = function (){
     $http.get('/api/schema-registry/subjects/')
       .then(
-        function successCallback(response) {
-            $scope.schemas = response.data.length
-        },
-        function errorCallback(response) {
-          $log.error("Failure with : " + response)
-        });
+        function successCallback(response) { $scope.schemas = response.data.length },
+        function errorCallback(response) { $log.error("Failure with : " + response) });
 
     $http.get('/api/kafka-rest-proxy/topics/')
       .then(
-        function successCallback(response) {
-            $scope.topics = response.data.length
-        },
-        function errorCallback(response) {
-          $log.error("Failure with : " + response)
-        });
+        function successCallback(response) { $scope.topics = response.data.length },
+        function errorCallback(response) { $log.error("Failure with : " + response) });
 
     $http.get('/api/kafka-connect/connectors')
       .then(
-        function successCallback(response) {
-            $scope.connectors = response.data.length
-        },
-        function errorCallback(response) {
-          $log.error("Failure with : " + response)
-        });
+        function successCallback(response) { $scope.connectors = response.data.length},
+        function errorCallback(response) { $log.error("Failure with : " + response) });
 
     $http.get('/api/kafka-rest-proxy/brokers')
       .then(
-        function successCallback(response) {
-            $scope.brokers = response.data.brokers.length
-        },
-        function errorCallback(response) {
-          $log.error("Failure with : " + response)
-        });
+        function successCallback(response) { $scope.brokers = response.data.brokers.length },
+        function errorCallback(response) { $log.error("Failure with : " + response) });
+    };
+    //initial invoke
+    this.getSummaries();
 
-      $http.get('/tests')
-      .then(
-        function successCallback(response) {
-            $scope.coyote = response
-        },
-        function errorCallback(response) {
-          $log.error("Failure with : " + response)
-        });
+    //COYOTE
+    $scope.running = true;
 
-    //end of controller
+    function calculateChart(passed, failed) {
+      var c = Math.PI * ( 40 * 2); //r=40
+      var percentage = (passed * 100) / (passed + failed);
+      percentage = Math.round( percentage * 10 ) / 10;
+      console.log("percentage " + percentage);
+      if (percentage < 0) { percentage = 0;}
+      if (percentage > 100) { percentage = 100;}
+      $scope.chartValue = ((100-percentage)/100)*c;
+      $scope.chartPercentage = percentage;
+    }
+
+   this.loadCoyoteResults = function (){
+      $http.get('/coyote-tests/results').then(function(response){
+              passed = response.data.passed;
+              failed = response.data.failed;
+              if (passed != 0 || failed != 0) {
+                $scope.running = false;
+                $scope.coyoteResults = response.data;
+                calculateChart(response.data.passed, response.data.failed);
+                return;
+              }
+      });
+   };
+
+   //Put in interval, first trigger after 10 seconds
+   var theInterval = $interval(function(){
+      this.loadCoyoteResults();
+      this.getSummaries();
+   }.bind(this), 10000);
+
+    $scope.$on('$destroy', function () {
+        $interval.cancel(theInterval)
     });
 
+   //invoke initialy
+   this.loadCoyoteResults();
+
+    //--- end of controller
+    });
 
 </script>
 
