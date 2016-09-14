@@ -1,12 +1,9 @@
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>Landoop Kafka Development Environment</title>
-  <link rel="stylesheet" href="schema-registry-ui/bower_components/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="schema-registry-ui/bower_components/angular-material/angular-material.min.css">
-  <link rel="stylesheet" href="schema-registry-ui/src/assets/css/styles.css">
-  <!-- <script src="src/go.js"></script>
-       <script src="src/connector-visualization.js"></script> -->
+
   <meta charset=utf-8/>
   <meta name="viewport" content="width=device-width">
   <meta name="description" content="Landoop Kafka Development Environment">
@@ -14,14 +11,361 @@
        content="kafka,schema registry,topics,kafka-topic,kafka-rest,kafka-rest-proxy,kafka management,avro"> -->
   <meta name="author" content="Landoop Team">
   <link rel="shortcut icon" href="schema-registry-ui/src/assets/icons/favicon.png">
+
+  <!-- Angular Material style sheet -->
+  <link rel="stylesheet" href="schema-registry-ui/bower_components/angular-material/angular-material.min.css">
+  <link rel="stylesheet" href="schema-registry-ui/bower_components/font-awesome/css/font-awesome.min.css">
+  <style>
+     body {background-color: #F5F5F5;}
+    .bigTotal,.details,.tile-heading{text-align:center}
+    .bigTotal{font-size:3em;margin:0;padding:0}
+    .details{font-size:13px;color:#333}
+    .tile-heading{height:16px;line-height:16px;font-weight:400;opacity:.7;font-size:14px;text-transform:uppercase;display:block}
+    .summary, .summary-title{text-align:center;font-weight: 500; letter-spacing: .010em; margin: 0;line-height: 1.6em; font-size:12px}
+    .summary-title{text-transform:uppercase;padding:10px;text-decoration:none}
+    .summary{opacity:.7;padding:0 10px;min-height:30px}
+    h1,h2,h3,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px}
+    .card-link{text-decoration:none;cursor:hand}
+    .ok{color:#7CAF57; font-size:12px; font-family:Tahoma;}
+    .md-list-item-short { height: 25px; min-height: 25px;}
+  </style>
 </head>
 
-<body>
-    <div layout="row" layout-margin layout-sm="column" layout-xs="column">
-        <ul>
-            <li><a href="./schema-registry-ui/">Schema Registry UI</a></li>
-            <li><a href="./kafka-topics-ui/">Kafka Topics UI</a></li>
-            <li><a href="./tests/">Smoke Tests</a></li>
-        </ul>
+<body ng-app="BlankApp" ng-cloak>
+
+<div ng-controller="MainCtrl" style="background-color: #F5F5F5;">
+<!--Header-->
+<div flex layout="row" layout-xs="column">
+  <div flex="20"></div>
+  <div flex="60">
+
+    <!--<md-card>-->
+      <!--<md-card-header style="border-bottom:1px solid #ccc;">-->
+        <!--<md-card-avatar>-->
+          <!--<img src="landoop-blue.svg"/>-->
+        <!--</md-card-avatar>-->
+        <!--<md-card-header-text>-->
+          <!--<span class="md-title">Kafka Development Environment</span>-->
+          <!--<span class="md-subhead"><code>docker container powered by Landoop</code></span>-->
+        <!--</md-card-header-text>-->
+      <!--</md-card-header>-->
+    <!--</md-card>-->
+
+    <h3> <img ng-src="landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
+      Kafka Development Environment <br><code style="font-size:14px">docker container powered by Landoop</code>
+    </h3>
+  </div>
+  <!--<div flex="20"></div>-->
+</div>
+
+<!--summaries-->
+<div flex layout="row" layout-xs="column">
+  <div flex="20"></div>
+  <div flex="60">
+    <!--<h1>Applications</h1>-->
+    <!--<span class="md-headline tile-heading"><b>Applications</b></span>-->
+
+    <div flex layout="row" layout-xs="column">
+
+      <!--Schemas-->
+      <div flex id="schema-registry">
+        <a href="./schema-registry-ui/" class="card-link">
+          <md-card style="background-color: #2196F3; color: #fff; ">
+            <md-card-title style="padding-bottom:5px;">
+              <md-card-title-text>
+                <span class="md-headline tile-heading ">SCHEMAS</span>
+              </md-card-title-text>
+              <!--<md-button class="md-fab md-mini md-primary">S</md-button>-->
+            </md-card-title>
+            <md-card-content>
+              <div layout="row" layout-xs="column" layout-wrap>
+                <div flex>
+                  <p class="bigTotal">{{schemas}}</p>
+                </div>
+              </div>
+            </md-card-content>
+            <md-card-actions layout="column" layout-align="start"  style="background-color:#fff;color:#333;margin:0px;">
+              <div class="summary-title">Schema Registry UI</div>
+              <div class="summary">Manage Avro schemas of your Kafka cluster</div>
+              <md-button class="md-primary summary" style="margin:5px">ENTER</md-button>
+            </md-card-actions>
+          </md-card>
+        </a>
+      </div>
+
+      <!--Topics-->
+      <div flex>
+        <md-card style="background-color: #7C4DFF; color: #fff; ">
+          <md-card-title style="padding-bottom:5px;">
+            <md-card-title-text>
+              <span class="md-headline tile-heading ">TOPICS</span>
+            </md-card-title-text>
+          </md-card-title>
+          <md-card-content>
+            <div layout="row" layout-xs="column" layout-wrap>
+              <div flex>
+                <p class="bigTotal">{{topics}}</p>
+              </div>
+            </div>
+          </md-card-content>
+          <md-card-actions layout="column" layout-align="start" style="background-color:#fff;color:#333;margin:0px;">
+            <div class="summary-title">Kafka Topics UI</div>
+            <div class="summary">Browse topics and download data</div>
+            <md-button class="md-primary summary" style="margin:5px" ng-href="./kafka-topics-ui/">ENTER</md-button>
+          </md-card-actions>
+        </md-card>
+      </div>
+
+      <!--Connectors-->
+      <div flex>
+        <md-card style="background-color: #AD1457; color: #fff; ">
+          <md-card-title style="padding-bottom:5px;">
+            <md-card-title-text>
+              <span class="md-headline tile-heading ">CONNECTORS</span>
+            </md-card-title-text>
+          </md-card-title>
+          <md-card-content>
+            <div layout="row" layout-xs="column" layout-wrap>
+              <div flex>
+                <p class="bigTotal">{{connectors}}</p>
+              </div>
+            </div>
+          </md-card-content>
+          <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
+            <div class="summary-title">Kafka connect UI</div>
+            <div class="summary">Easy configure and manage connectors</div>
+            <md-button class="summary disabled" style="margin:5px;color:#558B2F;">Coming soon</md-button>
+          </md-card-actions>
+        </md-card>
+      </div>
+
+      <!--Brokers-->
+      <div flex>
+        <md-card style="background-color: #00BCD4; color: #fff; ">
+          <md-card-title style="padding-bottom:5px;">
+            <md-card-title-text>
+              <span class="md-headline tile-heading ">Brokers</span>
+            </md-card-title-text>
+          </md-card-title>
+          <md-card-content>
+            <div layout="row" layout-xs="column" layout-wrap>
+              <div flex>
+                <p class="bigTotal">{{brokers}}</p>
+              </div>
+            </div>
+          </md-card-content>
+          <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
+            <div class="summary-title">Kafka brokers</div>
+            <div class="summary">Kafka management and monitoring</div>
+            <md-button class="md-primary summary" style="margin:5px;color:#558B2F;">Coming soon</md-button>
+          </md-card-actions>
+        </md-card>
+      </div>
     </div>
+
+  </div>
+
+</div>
+
+<!--List-->
+<div flex layout="row" layout-xs="column">
+  <div flex="20"></div>
+  <div flex="30">
+    <md-card>
+      <md-card-header style="border-bottom:1px solid #ccc;">
+        <md-card-avatar>
+          <img src="docker.png"/>
+        </md-card-avatar>
+        <md-card-header-text>
+          <span class="md-title">RUNNING SERVICES</span>
+          <span class="md-subhead"><code> fast-data-dev</code></span>
+        </md-card-header-text>
+      </md-card-header>
+      <md-card-content>
+        <md-list>
+
+          <md-list-item class="md-3-line md-long-text" style="margin: -0.4em;">
+            <img src="ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
+            <div class="md-list-item-text">
+              <h4>Confluent v3.0.1 - Kafka v0.10.0.1</h4>
+              <p style="font-size:12px;">
+                1 broker, including kafka connect distributed, schema registry, kafka rest, etc
+              </p>
+            </div>
+          </md-list-item>
+
+          <md-list-item class="md-3-line md-long-text" style="margin: -0.4em;">
+            <img src="ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
+            <div class="md-list-item-text">
+              <h4>Datamountaineer Stream Reactor v0.2.2</h4>
+              <p style="font-size:12px;">
+                Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc
+              </p>
+            </div>
+          </md-list-item>
+
+          <md-list-item class="md-3-line md-long-text" style="margin: -0.4em;">
+            <img src="ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
+            <div class="md-list-item-text">
+              <h4>Landoop Fast Data platform v0.7 </h4>
+              <p style="font-size:12px;">
+                Manage schemas, view history, browse topics & configure your cluster from your browser.
+              </p>
+            </div>
+          </md-list-item>
+        </md-list>
+      </md-card-content>
+      </md-card>
+
+      <md-card>
+        <md-card-title style="padding-bottom:5px;">
+          <md-card-title-text>
+            <span class="md-headline tile-heading">Services Ports</span>
+          </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+          <md-list>
+            <md-list-item flex class="md-list-item-short">
+              <div class="md-list-item-text">
+                <h5> 9092 : Kafka Broker</h5>
+              </div>
+            </md-list-item>
+
+            <md-list-item flex class="md-list-item-short">
+              <div class="md-list-item-text">
+                <h5>8081 : Schema Registry</h5>
+              </div>
+            </md-list-item>
+
+            <md-list-item flex class="md-list-item-short">
+              <div class="md-list-item-text">
+                <h5>8082 : Kafka REST Proxy</h5>
+              </div>
+            </md-list-item>
+
+            <md-list-item flex class="md-list-item-short">
+              <div class="md-list-item-text">
+                <h5>8083 : Kafka Connect Distributed</h5>
+              </div>
+            </md-list-item>
+
+            <md-list-item flex class="md-list-item-short">
+              <div class="md-list-item-text">
+                <h5>2181 : ZooKeeper</h5>
+              </div>
+            </md-list-item>
+
+            <md-list-item flex class="md-list-item-short">
+              <div class="md-list-item-text">
+                <h5>3030 : Web Server</h5>
+              </div>
+            </md-list-item>
+
+        </md-list>
+      </md-card-content>
+    </md-card>
+  </div>
+  <div flex="30">
+
+    <md-card>
+      <md-card-title style="padding-bottom:5px;">
+        <md-card-title-text>
+          <span class="md-headline tile-heading"><b>Coyote Health Checks</b></span>
+        </md-card-title-text>
+      </md-card-title>
+      <md-card-content style="background-color:#fff; padding: 15px;">
+        <div flex layout="center center">
+          <md-progress-circular md-mode="indeterminate" ></md-progress-circular>
+          <h5>Running...</h5>
+        </div>
+      </md-card-content>
+      <md-card-content style="background-color:#f4f4f4;">
+        <div flex layout="center center">
+          <p class="summary">
+            Your set up is being verified using the Coyote automation tool for integrated tests.
+            To test your clusters end to end with Coyote and find out more have a look <a href="https://github.com/Landoop" target="_blank">here</a>.
+          </p>
+        </div>
+      </md-card-content>
+
+    </md-card>
+  </div>
+</div>
+
+<!--Footer-->
+<div flex layout="row" layout-align="center center">
+  <img ng-src="landoop-blue.svg" style="width:20px;float: left;padding-right:5px;">
+  <p style="font-size:10px;">powered by <a href="http://www.landoop.com">Landoop</a>TODO - lisence stuff</p>
+</div>
+
+</div>
+
+<!-- Angular Material requires Angular.js Libraries -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+<!-- Angular Material Library -->
+<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+<!-- Your application bootstrap  -->
+<script type="text/javascript">
+
+    angular
+    .module('BlankApp', ['ngMaterial'])
+    .controller('MainCtrl', function ($scope, $http, $log) {
+
+    $http.get('/api/schema-registry/subjects/')
+      .then(
+        function successCallback(response) {
+            $scope.schemas = response.data.length
+        },
+        function errorCallback(response) {
+          $log.error("Failure with : " + response)
+        });
+
+    $http.get('/api/kafka-rest-proxy/topics/')
+      .then(
+        function successCallback(response) {
+            $scope.topics = response.data.length
+        },
+        function errorCallback(response) {
+          $log.error("Failure with : " + response)
+        });
+
+    $http.get('/api/kafka-connect/connectors')
+      .then(
+        function successCallback(response) {
+            $scope.connectors = response.data.length
+        },
+        function errorCallback(response) {
+          $log.error("Failure with : " + response)
+        });
+
+    $http.get('/api/kafka-rest-proxy/brokers')
+      .then(
+        function successCallback(response) {
+            $scope.brokers = response.data.brokers.length
+        },
+        function errorCallback(response) {
+          $log.error("Failure with : " + response)
+        });
+
+      $http.get('/tests')
+      .then(
+        function successCallback(response) {
+            $scope.coyote = response
+        },
+        function errorCallback(response) {
+          $log.error("Failure with : " + response)
+        });
+
+    //end of controller
+    });
+
+
+</script>
+
 </body>
+</html>

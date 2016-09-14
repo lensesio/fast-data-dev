@@ -66,15 +66,6 @@ RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/co
     && mkdir -p /var/www/tests
 ADD integration-tests/index-tests.html /var/www/tests/index.html
 
-# Add and setup Caddy Server
-RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
-    && mkdir -p /opt/caddy \
-    && tar xzf /caddy.tgz -C /opt/caddy \
-    && rm -f /caddy.tgz \
-    && mkdir -p /var/www
-ADD web/Caddyfile /usr/share/landoop
-ADD web/index.html /var/www
-
 # Add and Setup Schema-Registry-Ui
 RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/schema-registry-ui-0.7.tar.gz \
          -O /schema-registry-ui.tar.gz \
@@ -108,6 +99,17 @@ RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7/kafka
            -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
            -i /var/www/kafka-topics-ui/combined.js
+
+# Add and setup Caddy Server
+RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
+    && mkdir -p /opt/caddy \
+    && tar xzf /caddy.tgz -C /opt/caddy \
+    && rm -f /caddy.tgz
+
+ADD web/Caddyfile /usr/share/landoop
+ADD web/index.html /var/www
+ADD web/*.png /var/www/
+ADD web/*.svg /var/www/
 
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh /usr/local/bin
