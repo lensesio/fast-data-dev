@@ -15,3 +15,5 @@ proxy /api/kafka-rest-proxy localhost:8082 {
 proxy /api/kafka-connect localhost:8083 {
     without /api/kafka-connect
 }
+
+header /coyote-tests/results Cache-Control "no-store"
