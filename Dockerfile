@@ -27,29 +27,10 @@ RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O
     && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /duphard
 
 # Add Stream Reactor
-RUN mkdir -p /stream-reactor/archives /stream-reactor/connectors \
-    && cd /stream-reactor/archives \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-blockchain.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-bloomberg.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-cassandra.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-druid.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-elastic.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-hazelcast.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-hbase.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-influxdb.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-jms.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-kudu.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-redis.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-rethink.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-voltdb.tar.gz \
-    && wget https://github.com/datamountaineer/stream-reactor/releases/download/v0.2.2/kafka-connect-yahoo.tar.gz \
-    && bash -c 'for i in $(ls *.tar.gz); do tar -xzf $i --no-same-owner -C /stream-reactor/connectors; done' \
-    && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
-    && chmod +x /duphard \
-    && /duphard -d=0 /stream-reactor/connectors \
-    && mv /stream-reactor/connectors/* /opt/confluent-3.0.1/share/java/ \
-    && rm -rf /stream-reactor /duphard \
-    && cd /
+RUN wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160915-v0.2.2-09da116.tar.gz \
+         -O stream-reactor.tar.gz \
+    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent-3.0.1/share/java \
+    && rm /stream-reactor.tar.gz
 
 # Create system symlinks to Confluent's binaries
 ADD binaries /opt/confluent-3.0.1/bin-install
