@@ -67,9 +67,9 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 #     && unzip /kafka-manager-1.3.1.6.zip -d /opt \
 #     && rm -rf /kafka-manager-1.3.1.6.zip
 
-# # Add Twitter Connector
-# RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar \
-#          -O /connectors/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
+# Add Twitter Connector
+RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar \
+         -O /connectors/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 -O /usr/local/bin/dumb-init \
@@ -129,8 +129,8 @@ COPY web/index.html web/env.js /var/www/
 COPY web/img /var/www/img
 
 ADD supervisord.conf /etc/supervisord.conf
-ADD setup-and-run.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/setup-and-run.sh
+ADD setup-and-run.sh logs-to-kafka.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
