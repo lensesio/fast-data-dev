@@ -4,6 +4,8 @@
 
 Docker image packaging the best Kafka tools
 
+[Demo instance](https://fast-data-dev.demo.landoop.com)
+
 ---
 
 ## Basics
