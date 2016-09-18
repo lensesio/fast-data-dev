@@ -91,6 +91,18 @@ To set the _advertised hostname_ use the `ADV_HOST` environment variable.
 Internally we convert it to an _advertised listener_ string as the advertised
 hostname setting is deprecated.
 
+### Basic Auth (password)
+
+The included web server not only serves Landoop UIs but also proxies the
+schema registry and kafa REST proxy services, in order to make it a breeze
+to use and share them remotely. If you would like some basic protection you
+could pass the `PASSWORD` variable and the web server will be protected by
+user `fdd` with your password. If you want to setup the username too, set
+the `USER` variable.
+
+     docker run --rm -it -p 3030:3030 \
+                -e PASSWORD=password \
+                landoop/fast-data-dev
 
 ## FAQ
 

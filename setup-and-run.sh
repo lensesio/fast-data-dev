@@ -9,9 +9,14 @@ for port in 2181 3030 8081 8082 8083 9092 29393; do
     fi
 done
 
+USER="${USER:-fdd}"
+if [[ ! -z "$PASSWORD" ]]; then
+    echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96m${PASSWORD}'\e[34m\e[92m.\e[34m"
+    echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /usr/share/landoop/Caddyfile
+fi
 
 if [[ ! -z "${ADV_HOST}" ]]; then
-    echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m".
+    echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:9092" \
          >> /opt/confluent-3.0.1/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
