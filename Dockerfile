@@ -49,7 +49,7 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 #     && rm -rf /kafka-manager-1.3.1.6.zip
 
 # Add Twitter Connector
-RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar \
+RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-389e621-jar-with-dependencies.jar \
          -O /connectors/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
 
 # Add dumb init
