@@ -104,6 +104,20 @@ the `USER` variable.
                 -e PASSWORD=password \
                 landoop/fast-data-dev
 
+### Web Only Mode
+
+This is a special mode only for Linux hosts, where only Landoop's Web UIs
+are started and expect to find all kafka services available on the local
+machine. It must be run with `--net=host` flag, thus the Linux only
+requisite:
+
+    docker run --rm -it --net=host \
+               -e WEB_ONLY=true \
+               landoop/fast-data-dev
+
+This is useful if you already have a cluster with Confluent's distribution
+install and want a fancy UI.
+
 ## FAQ
 
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds

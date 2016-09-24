@@ -24,6 +24,12 @@ if [[ ! -z "${ADV_HOST}" ]]; then
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js
 fi
 
+
+if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
+    cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.conf
+fi
+
 PRINT_HOST="${ADV_HOST:-localhost}"
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:3030\e[34m in about a minute.\e[39m"

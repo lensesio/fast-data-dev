@@ -109,6 +109,7 @@ ADD web/Caddyfile /usr/share/landoop
 COPY web/index.html web/env.js /var/www/
 COPY web/img /var/www/img
 
+ADD extras/supervisord-web-only.conf /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh logs-to-kafka.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh
