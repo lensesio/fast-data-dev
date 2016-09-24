@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-for port in 2181 3030 8081 8082 8083 9092 29393; do
+PORTS="2181 3030 8081 8082 8083 9092 29393"
+
+if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="3030"
+fi
+
+for port in $PORTS; do
     if ! /usr/local/bin/checkport -port $port; then
         echo "Could not successfully bind to port $port. Maybe some other service"
         echo "in your system is using it? Please free the port and try again."
