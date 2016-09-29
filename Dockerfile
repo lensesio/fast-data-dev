@@ -19,12 +19,9 @@ RUN apk add --no-cache \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
-RUN wget http://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
+RUN wget https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
     && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
-    && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
-    && chmod +x /duphard \
-    && /duphard -d=0 /opt/confluent-3.0.1/share/java \
-    && rm -rf /opt/confluent-3.0.1-2.11.tar.gz /duphard
+    && rm -rf /opt/confluent-3.0.1-2.11.tar.gz
 
 # Add Stream Reactor
 RUN wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160915-v0.2.2-09da116.tar.gz \
