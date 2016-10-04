@@ -18,7 +18,7 @@ If you need
 4. Kafka REST Proxy
 5. Kafka Connect Distributed
 6. Certified DataMountaineer Connectors (ElasticSearch, Cassandra, Redis ..)
-6. Landoop's Fast Data Web UIs : schema-registry , kafka-topics , kafka-connect) and
+6. Landoop's Fast Data Web UIs : schema-registry , kafka-topics , kafka-connect and
 7. Embedded integration tests with examples
 
 just run:
@@ -93,12 +93,11 @@ hostname setting is deprecated.
 
 ### Basic Auth (password)
 
-The included web server not only serves Landoop UIs but also proxies the
-schema registry and kafa REST proxy services, in order to make it a breeze
-to use and share them remotely. If you would like some basic protection you
-could pass the `PASSWORD` variable and the web server will be protected by
-user `fdd` with your password. If you want to setup the username too, set
-the `USER` variable.
+We have included a web server to serve Landoop UIs and proxy the schema registry
+and kafa REST proxy services, in order to share your docker over the web.
+If you want some basic protection, pass the `PASSWORD` variable and the web 
+server will be protected by user `fdd` with your password. If you want to
+setup the username too, set the `USER` variable.
 
      docker run --rm -it -p 3030:3030 \
                 -e PASSWORD=password \
@@ -106,8 +105,8 @@ the `USER` variable.
 
 ### Web Only Mode
 
-This is a special mode only for Linux hosts, where only Landoop's Web UIs
-are started and expect to find all kafka services available on the local
+This is a special mode only for Linux hosts, where *only* Landoop's Web UIs
+are started and kafka services are expected to be running on the local
 machine. It must be run with `--net=host` flag, thus the Linux only
 requisite:
 
@@ -123,7 +122,7 @@ install and want a fancy UI.
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds
   till they fully work.
   
-  That is because the services (Schema Registry and Kafka REST Proxy) have
+  That is because the services (Schema Registry and kafka REST Proxy) have
   to start and initialize before the UIs can read data.
 - When you start the container, Schema Registry and REST Proxy fail.
   
@@ -151,7 +150,7 @@ install and want a fancy UI.
   JVM based apps tend to be a bit sensitive to hostname issues.
   Either run the image without `--net=host` and expose all ports
   (2181, 3030, 8081, 8082, 8083, 9092) to the same port at the host, or
-  better yet make sure your hostname resolves to the localhost address
+  better yet make sure your hostname resolve to the localhost address
   (127.0.0.1). Usually to achieve this, you need to add your hostname (case
   sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
   
