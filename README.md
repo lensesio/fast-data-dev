@@ -30,6 +30,7 @@ If you are on Mac OS X, you have to expose the ports instead:
     docker run --rm -it \
                -p 2181:2181 -p 3030:3030 -p 8081:8081 \
                -p 8082:8082 -p 8083:8083 -p 9092:9092 \
+               -e ADV_HOST=127.0.0.1 \
                landoop/fast-data-dev
 
 That's it. Your Broker is at <localhost:9092>, your Kafka REST Proxy at
@@ -95,13 +96,28 @@ hostname setting is deprecated.
 
 We have included a web server to serve Landoop UIs and proxy the schema registry
 and kafa REST proxy services, in order to share your docker over the web.
-If you want some basic protection, pass the `PASSWORD` variable and the web 
-server will be protected by user `fdd` with your password. If you want to
+If you want some basic protection, pass the `PASSWORD` variable and the web
+server will be protected by user `kafka` with your password. If you want to
 setup the username too, set the `USER` variable.
 
      docker run --rm -it -p 3030:3030 \
                 -e PASSWORD=password \
                 landoop/fast-data-dev
+
+### Custom Ports
+
+To use custom ports for the various services, you can take advantage of the
+`ZK_PORT`, `BROKER_PORT`, `REGISTRY_PORT`, `REST_PORT`, `CONNECT_PORT` and
+`WEB_PORT` environment variables. One catch is that you can't swap ports; e.g
+to assign 8082 (default REST Proxy port) to the brokers.
+
+    docker run --rm -it \
+               -p 3181:3181 -p 3040:3040 -p 7081:7081 \
+               -p 7082:7082 -p 7083:7083 -p 7092:7092 \
+               -e ZK_PORT=3181 -e WEB_PORT=3040 -e REGISTRY_PORT=8081 \
+               -e REST_PORT=7082 -e CONNECT_PORT=7083 -e BROKER_PORT=7092 \
+               -e ADV_HOST=127.0.0.1 \
+               landoop/fast-data-dev
 
 ### Web Only Mode
 
