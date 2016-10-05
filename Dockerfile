@@ -106,10 +106,14 @@ ADD web/Caddyfile /usr/share/landoop
 COPY web/index.html web/env.js /var/www/
 COPY web/img /var/www/img
 
+# Add executables, settings and configuration
 ADD extras/supervisord-web-only.conf /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh logs-to-kafka.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh
+RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
+    && echo \
+         'export PS1="\[\033[1;31m\]\u\[\033[1;33m\]@\[\033[1;34m\]fast-data-dev \[\033[1;36m\]\W\[\033[1;0m\] $ "' \
+         > /root/.bashrc
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
