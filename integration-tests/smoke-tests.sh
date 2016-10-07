@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+RUNTESTS="${RUNTESTS:-1}"
+
+if [[ "$RUNTESTS" == "0" ]]; then
+    echo "Skipping tests due to \$RUNTESTS = 0."
+    cat <<EOF > /var/www/coyote-tests/results
+{
+  "passed": -1,
+  "failed": 0
+}
+EOF
+    exit 0
+fi
 
 cd /tmp
 cat <<EOF > /var/www/coyote-tests/results
