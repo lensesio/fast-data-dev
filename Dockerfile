@@ -13,7 +13,7 @@ RUN apk add --no-cache \
     && mkdir /opt \
     && wget https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport -O /usr/local/bin/checkport \
     && chmod +x /usr/local/bin/checkport \
-    && mkdir /connectors
+    && mkdir /extra-connect-jars /connectors
 
 # Create Landoop configuration directory
 RUN mkdir /usr/share/landoop
@@ -23,11 +23,15 @@ RUN wget https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -
     && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
     && rm -rf /opt/confluent-3.0.1-2.11.tar.gz
 
-# Add Stream Reactor
-RUN wget https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160915-v0.2.2-09da116.tar.gz \
-         -O stream-reactor.tar.gz \
+# Add Stream Reactor and Elastic Search (for elastic connector)
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-20160915-v0.2.2-09da116.tar.gz
+RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent-3.0.1/share/java \
-    && rm /stream-reactor.tar.gz
+    && rm /stream-reactor.tar.gz \
+    && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
+    && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
+    && mv /elasticsearch-2.4.1/lib/*.jar /extra-connect-jars/ \
+    && rm -rf /elasticsearch-2.4.1*
 
 # Create system symlinks to Confluent's binaries
 ADD binaries /opt/confluent-3.0.1/bin-install
@@ -47,7 +51,7 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 
 # Add Twitter Connector
 RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-389e621-jar-with-dependencies.jar \
-         -O /connectors/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
+         -O /extra-connect-jars/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 -O /usr/local/bin/dumb-init \
