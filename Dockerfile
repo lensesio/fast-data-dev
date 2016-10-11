@@ -86,7 +86,7 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/sch
 #           -e 's|https{0,1}://schema-registry-ui\.landoop\.com|/schema-registry-ui/|g' \
 
 # Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
-RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7.1/kafka-topics-ui-0.7.1.tar.gz \
+RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7.2/kafka-topics-ui-0.7.2.tar.gz \
          -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
