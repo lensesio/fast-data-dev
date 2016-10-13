@@ -66,7 +66,7 @@ RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/co
 ADD integration-tests/index.html integration-tests/results /var/www/coyote-tests/
 
 # Add and Setup Schema-Registry-Ui
-RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/schema-registry-ui-0.7.tar.gz \
+RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7.1/schema-registry-ui-0.7.1.tar.gz \
          -O /schema-registry-ui.tar.gz \
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
@@ -86,7 +86,7 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7/sch
 #           -e 's|https{0,1}://schema-registry-ui\.landoop\.com|/schema-registry-ui/|g' \
 
 # Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
-RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7.2/kafka-topics-ui-0.7.2.tar.gz \
+RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7.3/kafka-topics-ui-0.7.3.tar.gz \
          -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
