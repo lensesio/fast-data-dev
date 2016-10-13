@@ -66,7 +66,7 @@ RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/co
 ADD integration-tests/index.html integration-tests/results /var/www/coyote-tests/
 
 # Add and Setup Schema-Registry-Ui
-RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/0.7.1/schema-registry-ui-0.7.1.tar.gz \
+RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/v.0.7.1/schema-registry-ui-0.7.1.tar.gz \
          -O /schema-registry-ui.tar.gz \
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
