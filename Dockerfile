@@ -9,6 +9,7 @@ RUN apk add --no-cache \
         tar gzip bzip2 \
         supervisor \
         sqlite \
+        libstdc++ \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir /opt \
     && wget https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport -O /usr/local/bin/checkport \
