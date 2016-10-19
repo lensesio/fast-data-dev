@@ -74,6 +74,13 @@ sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PO
        /usr/share/landoop/kafka-tests.yml \
        /usr/local/bin/logs-to-kafka.sh
 
+# Remove ElasticSearch if needed
+PREFER_HBASE="${PREFER_HBASE:-false}"
+if echo $PREFER_HBASE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    rm -rf /extra-connect-jars/* /opt/confluent-*/share/java/kafka-connect-elastic*
+    echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
+fi
+
 # Set AV_HOST if needed
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"

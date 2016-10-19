@@ -133,6 +133,17 @@ requisite:
 This is useful if you already have a cluster with Confluent's distribution
 install and want a fancy UI.
 
+### HBase Connector
+
+Due to some issues with dependencies, the ElasticSearch connector and the HBase
+connector cannot coexist. Whilst both are available, HBase won't work. We do provide
+the `PREFER_HBASE` environment variable which will remove ElasticSearch (and the
+Twitter connector) to let HBase work:
+
+    docker run --rm -it --net=host \
+               -e PREFER_HBASE=true \
+               landoop/fast-data-dev
+
 ## FAQ
 
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds

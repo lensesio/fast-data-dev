@@ -4,11 +4,11 @@ var runningServices = [
       "description" : "1 broker, including kafka connect distributed, schema registry, kafka rest, etc"
     },
     {
-      "name" : "Datamountaineer Stream Reactor v0.2.2",
+      "name" : "Datamountaineer Stream Reactor v0.2.2-28-gf9c68d4",
       "description" : "Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc"
     },
     {
-      "name" : "Landoop Fast Data platform v0.7",
+      "name" : "Landoop Fast Data platform v0.7.1 / v0.7.3",
       "description" : "Manage schemas, view history, browse topics & configure your cluster from your browser."
     }
 ];
