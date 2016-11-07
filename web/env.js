@@ -4,7 +4,7 @@ var runningServices = [
       "description" : "1 broker, including kafka connect distributed, schema registry, kafka rest, etc"
     },
     {
-      "name" : "Datamountaineer Stream Reactor v0.2.2-28-gf9c68d4",
+      "name" : "Datamountaineer Stream Reactor v0.2.2-39-ge28cfdc",
       "description" : "Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc"
     },
     {

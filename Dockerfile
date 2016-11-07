@@ -25,7 +25,7 @@ RUN wget https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -
     && rm -rf /opt/confluent-3.0.1-2.11.tar.gz
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.2-28-gf9c68d4.tar.gz
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.2-39-ge28cfdc.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent-3.0.1/share/java \
     && rm -rf /opt/confluent-3.0.1/share/java/kafka-connect-druid \
@@ -46,23 +46,23 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
     && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.1/etc/kafka-rest/kafka-rest.properties
 
 # # Add and setup Kafka Manager
-# RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.1.6.zip \
-#          -O /kafka-manager-1.3.1.6.zip \
-#     && unzip /kafka-manager-1.3.1.6.zip -d /opt \
-#     && rm -rf /kafka-manager-1.3.1.6.zip
+# RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.2.1.zip \
+#          -O /kafka-manager-1.3.2.1.zip \
+#     && unzip /kafka-manager-1.3.2.1.zip -d /opt \
+#     && rm -rf /kafka-manager-1.3.2.1.zip
 
 # Add Twitter Connector
 RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-389e621-jar-with-dependencies.jar \
          -O /extra-connect-jars/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
 
 # Add dumb init
-RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 -O /usr/local/bin/dumb-init \
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
     && chmod 0755 /usr/local/bin/dumb-init
 
 # Add Coyote and tests
 ADD integration-tests/kafka-tests.yml /usr/share/landoop
 ADD integration-tests/smoke-tests.sh /usr/local/bin
-RUN wget https://github.com/Landoop/coyote/releases/download/20160819-7432a8e/coyote -O /usr/local/bin/coyote \
+RUN wget https://github.com/Landoop/coyote/releases/download/v1.1/coyote-1.1-linux-amd64 -O /usr/local/bin/coyote \
     && chmod +x /usr/local/bin/coyote /usr/local/bin/smoke-tests.sh \
     && mkdir -p /var/www/coyote-tests
 ADD integration-tests/index.html integration-tests/results /var/www/coyote-tests/

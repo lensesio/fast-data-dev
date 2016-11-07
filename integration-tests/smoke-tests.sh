@@ -24,8 +24,11 @@ coyote -c /usr/share/landoop/kafka-tests.yml -out /var/www/coyote-tests/index.ht
 
 EXITCODE=$?
 
-PASSED="$(grep -A1 '"label": "passed"' /var/www/coyote-tests/index.html | grep value | sed -re 's/.*"value": ([0-9]*),/\1/')"
-FAILED="$(grep -A1 '"label": "failed"' /var/www/coyote-tests/index.html | grep value | sed -re 's/.*"value": ([0-9]*),/\1/')"
+TOTALTESTS="$(grep -oE '"TotalTests":[0-9]{1,5},' /var/www/coyote-tests/index.html | sed -r -e 's/.*:([0-9]*),/\1/')"
+PASSED="$(expr $TOTALTESTS - $EXITCODE)"
+#PASSED="$(grep -A1 '"label": "passed"' /var/www/coyote-tests/index.html | grep value | sed -re 's/.*"value": ([0-9]*),/\1/')"
+FAILED="$EXITCODE"
+#FAILED="$(grep -A1 '"label": "failed"' /var/www/coyote-tests/index.html | grep value | sed -re 's/.*"value": ([0-9]*),/\1/')"
 
 cat <<EOF > /var/www/coyote-tests/results
 {
