@@ -8,8 +8,8 @@ var runningServices = [
       "description" : "Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc"
     },
     {
-      "name" : "Landoop Fast Data platform v0.7.1 / v0.7.3",
-      "description" : "Manage schemas, view history, browse topics & configure your cluster from your browser."
+      "name" : "Landoop Fast Data platform v0.7.1 / v0.7.3 / v0.8.0",
+      "description" : "Manage schemas, view history, browse topics & configure your cluster from your browser. View and manage connectors."
     }
 ];
 
