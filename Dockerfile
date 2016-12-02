@@ -101,6 +101,14 @@ RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7.3/kaf
            -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
            -i /var/www/kafka-topics-ui/combined.js
 
+# Add and Setup Kafka-Connect-UI
+RUN wget https://github.com/Landoop/kafka-connect-ui/releases/download/v0.8.0/kafka-connect-ui-0.8.0.tar.gz \
+         -O /kafka-connect-ui.tar.gz \
+    && mkdir /var/www/kafka-connect-ui \
+    && tar xzf /kafka-connect-ui.tar.gz -C /var/www/kafka-connect-ui \
+    && rm -f /kafka-connect-ui.tar.gz
+COPY web/connect-ui-env.js /var/www/kafka-connect-ui/env.js
+
 # Add and setup Caddy Server
 RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
     && mkdir -p /opt/caddy \
