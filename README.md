@@ -66,6 +66,11 @@ The latest version of this docker image packages:
 + DataMountaineer Stream Reactor 0.2.2
 + Landoop Fast Data Web UIs 0.7
 
+Please note that Fast Data Web UIs are
+[licensed under BSL](http://www.landoop.com/bsl/), which means you should
+contact us if you plan to use them on production clusters with more than 4
+nodes.
+
 ## Advanced
 
 ### Custom Connectors
