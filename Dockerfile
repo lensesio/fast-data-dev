@@ -88,21 +88,15 @@ RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/v.0.7.1
 #           -e 's|https{0,1}://schema-registry-ui\.landoop\.com|/schema-registry-ui/|g' \
 
 # Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
-RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.7.3/kafka-topics-ui-0.7.3.tar.gz \
+RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.0/kafka-topics-ui-0.8.0.tar.gz \
          -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
-    && rm -f /kafka-topics-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
-           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
-           -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
-           -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
-           -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
-           -i /var/www/kafka-topics-ui/combined.js
+    && rm -f /kafka-topics-ui.tar.gz
+COPY web/topics-ui-env.js /var/www/kafka-topics-ui/env.js
 
 # Add and Setup Kafka-Connect-UI
-RUN wget https://github.com/Landoop/kafka-connect-ui/releases/download/v0.8.0/kafka-connect-ui-0.8.0.tar.gz \
+RUN wget https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.8.1/kafka-connect-ui-0.8.1.tar.gz \
          -O /kafka-connect-ui.tar.gz \
     && mkdir /var/www/kafka-connect-ui \
     && tar xzf /kafka-connect-ui.tar.gz -C /var/www/kafka-connect-ui \

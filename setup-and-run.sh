@@ -82,7 +82,7 @@ if echo $PREFER_HBASE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
 fi
 
-# Set AV_HOST if needed
+# Set ADV_HOST if needed
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
