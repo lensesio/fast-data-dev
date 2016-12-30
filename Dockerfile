@@ -25,7 +25,7 @@ RUN wget https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -
     && rm -rf /opt/confluent-3.0.1-2.11.tar.gz
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.2-39-ge28cfdc.tar.gz
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.3-34-gd0c6bbb.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent-3.0.1/share/java \
     && rm -rf /opt/confluent-3.0.1/share/java/kafka-connect-druid \
