@@ -16,7 +16,7 @@ var runningServices = [
     "description" : "This is a web tool for Kafka Connect for setting up and managing connectors for multiple connect clusters."
   },
   {
-    "name" : "Datamountaineer Stream Reactor v0.2.2-39-ge28cfdc",
+    "name" : "Datamountaineer Stream Reactor v0.2.2-175-g40d3312",
     "description" : "Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc"
   }
 ];
