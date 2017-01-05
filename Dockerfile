@@ -25,7 +25,7 @@ RUN wget https://packages.confluent.io/archive/3.1/confluent-3.1.1-2.11.tar.gz -
     && rm -rf /opt/confluent-3.1.1-2.11.tar.gz
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.2-175-g40d3312_cp311.tar.gz
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.3_cp311.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent-3.1.1/share/java \
     && rm -rf /opt/confluent-3.1.1/share/java/kafka-connect-druid \
@@ -104,7 +104,8 @@ RUN wget https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.8.1/k
 COPY web/connect-ui-env.js /var/www/kafka-connect-ui/env.js
 
 # Add and setup Caddy Server
-RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
+ARG CADDY_URL=https://caddyserver.com/download/build?os=linux&arch=amd64&features=cors%2Cratelimit
+RUN wget "$CADDY_URL" -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz
