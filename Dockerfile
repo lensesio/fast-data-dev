@@ -104,7 +104,8 @@ RUN wget https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.8.1/k
 COPY web/connect-ui-env.js /var/www/kafka-connect-ui/env.js
 
 # Add and setup Caddy Server
-RUN wget 'https://caddyserver.com/download/build?os=linux&arch=amd64&features=' -O /caddy.tgz \
+ARG CADDY_URL=https://caddyserver.com/download/build?os=linux&arch=amd64&features=cors%2Cratelimit
+RUN wget "$CADDY_URL" -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz
