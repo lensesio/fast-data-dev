@@ -4,11 +4,11 @@ var runningServices = [
     "description" : "1 broker, including kafka connect distributed, schema registry, kafka rest, etc"
   },
   {
-    "name" : "Landoop Kafka Topics UI v0.8.0",
+    "name" : "Landoop Kafka Topics UI v0.8.1",
     "description" : "Browse Kafka topics and understand what's happening on your cluster. Find topics / view topic metadata / browse topic data (kafka messages) / view topic configuration / download data."
   },
   {
-    "name" : "Landoop Schema Registry UI v0.7.1",
+    "name" : "Landoop Schema Registry UI v0.8.0",
     "description" : "This is a web tool for the confluentinc/schema-registry in order to create / view / search / evolve / view history & configure Avro schemas of your Kafka cluster."
   },
   {

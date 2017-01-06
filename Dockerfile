@@ -52,8 +52,8 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 #     && rm -rf /kafka-manager-1.3.2.1.zip
 
 # Add Twitter Connector
-RUN wget https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-389e621-jar-with-dependencies.jar \
-         -O /extra-connect-jars/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
+ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-a1120e8-cp301-jar-with-dependencies.jar"
+RUN wget "$TWITTER_CONNECTOR_URL" -O /extra-connect-jars/kafka-connect-twitter-0.1-develop-8624fbe-jar-with-dependencies.jar
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
@@ -68,36 +68,24 @@ RUN wget https://github.com/Landoop/coyote/releases/download/v1.1/coyote-1.1-lin
 ADD integration-tests/index.html integration-tests/results /var/www/coyote-tests/
 
 # Add and Setup Schema-Registry-Ui
-RUN wget https://github.com/Landoop/schema-registry-ui/releases/download/v.0.7.1/schema-registry-ui-0.7.1.tar.gz \
-         -O /schema-registry-ui.tar.gz \
+ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.0.8.0/schema-registry-ui-0.8.0.tar.gz"
+RUN wget "$SCHEMA_REGISTRY_UI_URL" -O /schema-registry-ui.tar.gz \
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
-    && rm -f /schema-registry-ui.tar.gz \
-    && sed -e 's|KAFKA_REST:.*|  KAFKA_REST: "/api/kafka-rest-proxy",|' \
-           -e 's|var KAFKA_REST =.*|var KAFKA_REST = "/api/kafka-rest-proxy";|' \
-           -e 's|^\s*var SCHEMA_REGISTRY =.*|  var SCHEMA_REGISTRY = "/api/schema-registry";|' \
-           -e 's|^\s*SCHEMA_REGISTRY_UI:.*|  SCHEMA_REGISTRY_UI: "/schema-registry-ui/",|' \
-           -e 's|var UI_SCHEMA_REGISTRY =.*|var UI_SCHEMA_REGISTRY = "/schema-registry-ui/";|' \
-           -e 's|^\s*urlSchema:.*|      urlSchema: "/schema-registry-ui/"|' \
-           -i /var/www/schema-registry-ui/combined.js
-## Alternate regexp that also works:
-#           -r -e 's|https{0,1}://localhost:8081|../api/schema-registry|g' \
-#           -e 's|https{0,1}://localhost:8082|../api/kafka-rest-proxy|g' \
-#           -e 's|https{0,1}://schema-registry\.demo\.landoop\.com|../api/schema-registry|g' \
-#           -e 's|https{0,1}://kafka-rest-proxy\.demo\.landoop\.com|../api/kafka-rest-proxy|g' \
-#           -e 's|https{0,1}://schema-registry-ui\.landoop\.com|/schema-registry-ui/|g' \
+    && rm -f /schema-registry-ui.tar.gz
+COPY web/registry-ui-env.js /var/www/schema-registry-ui/env.js
 
 # Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
-RUN wget https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.0/kafka-topics-ui-0.8.0.tar.gz \
-         -O /kafka-topics-ui.tar.gz \
+ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.1/kafka-topics-ui-0.8.1.tar.gz"
+RUN wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
     && rm -f /kafka-topics-ui.tar.gz
 COPY web/topics-ui-env.js /var/www/kafka-topics-ui/env.js
 
 # Add and Setup Kafka-Connect-UI
-RUN wget https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.8.1/kafka-connect-ui-0.8.1.tar.gz \
-         -O /kafka-connect-ui.tar.gz \
+ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.8.1/kafka-connect-ui-0.8.1.tar.gz"
+RUN wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
     && mkdir /var/www/kafka-connect-ui \
     && tar xzf /kafka-connect-ui.tar.gz -C /var/www/kafka-connect-ui \
     && rm -f /kafka-connect-ui.tar.gz
