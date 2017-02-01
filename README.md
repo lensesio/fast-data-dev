@@ -61,7 +61,7 @@ Or enter the container to use any tool as you like:
 
 The latest version of this docker image packages:
 
-+ Confluent 3.1.1
++ Confluent 3.1.2
 + Apache Kafka 0.10.0.1
 + DataMountaineer Stream Reactor 0.2.2
 + Landoop Fast Data Web UIs 0.7

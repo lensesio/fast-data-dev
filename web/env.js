@@ -1,6 +1,6 @@
 var runningServices = [
   {
-    "name" : "Confluent v3.1.1 - Kafka v0.10.1.0",
+    "name" : "Confluent v3.1.2 - Kafka v0.10.1.1",
     "description" : "1 broker, including kafka connect distributed, schema registry, kafka rest, etc"
   },
   {

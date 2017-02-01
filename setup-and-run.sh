@@ -35,26 +35,26 @@ fi
 
 ## Some basic replacements
 sed -e 's/2181/'"$ZK_PORT"'/' -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' -i \
-    /opt/confluent-3.1.1/etc/kafka/zookeeper.properties \
-    /opt/confluent-3.1.1/etc/kafka/server.properties \
-    /opt/confluent-3.1.1/etc/schema-registry/schema-registry.properties \
-    /opt/confluent-3.1.1/etc/schema-registry/connect-avro-distributed.properties
+    /opt/confluent-3.1.2/etc/kafka/zookeeper.properties \
+    /opt/confluent-3.1.2/etc/kafka/server.properties \
+    /opt/confluent-3.1.2/etc/schema-registry/schema-registry.properties \
+    /opt/confluent-3.1.2/etc/schema-registry/connect-avro-distributed.properties
 
 ## Broker specific
-cat <<EOF >>/opt/confluent-3.1.1/etc/kafka/server.properties
+cat <<EOF >>/opt/confluent-3.1.2/etc/kafka/server.properties
 
 listeners=PLAINTEXT://:$BROKER_PORT
 confluent.support.metrics.enable=false
 EOF
 
 ## Disabled because the basic replacements catch it
-# cat <<EOF >>/opt/confluent-3.1.1/etc/schema-registry/schema-registry.properties
+# cat <<EOF >>/opt/confluent-3.1.2/etc/schema-registry/schema-registry.properties
 
 # listeners=http://0.0.0.0:$REGISTRY_PORT
 # EOF
 
 ## REST Proxy specific
-cat <<EOF >>/opt/confluent-3.1.1/etc/kafka-rest/kafka-rest.properties
+cat <<EOF >>/opt/confluent-3.1.2/etc/kafka-rest/kafka-rest.properties
 
 listeners=http://0.0.0.0:$REST_PORT
 schema.registry.url=http://localhost:$REGISTRY_PORT
@@ -62,7 +62,7 @@ zookeeper.connect=localhost:$ZK_PORT
 EOF
 
 ## Schema Registry specific
-cat <<EOF >>/opt/confluent-3.1.1/etc/schema-registry/connect-avro-distributed.properties
+cat <<EOF >>/opt/confluent-3.1.2/etc/schema-registry/connect-avro-distributed.properties
 
 rest.port=$CONNECT_PORT
 EOF
@@ -86,9 +86,9 @@ fi
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
-         >> /opt/confluent-3.1.1/etc/kafka/server.properties
+         >> /opt/confluent-3.1.2/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
-         >> /opt/confluent-3.1.1/etc/kafka/connect-distributed.properties
+         >> /opt/confluent-3.1.2/etc/kafka/connect-distributed.properties
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js
 fi
 
