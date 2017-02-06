@@ -33,6 +33,8 @@ If you are on Mac OS X, you have to expose the ports instead:
                -e ADV_HOST=127.0.0.1 \
                landoop/fast-data-dev
 
+> If using `docker-machine` make sure to advertise the correct host i.e. `-e ADV_HOST=192.168.99.100` ( the one exported on DOCKER_HOST )
+
 That's it. Your Broker is at <localhost:9092>, your Kafka REST Proxy at
 <localhost:8082>, your Schema Registry at <localhost:8081>, your Connect
 Distributed at <localhost:8083>, your ZooKeeper at <localhost:2181> and at
