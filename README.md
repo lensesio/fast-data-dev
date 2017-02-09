@@ -126,6 +126,14 @@ to assign 8082 (default REST Proxy port) to the brokers.
                -e ADV_HOST=127.0.0.1 \
                landoop/fast-data-dev
 
+### Disable tests
+
+By default this docker runs a set of coyote tests, to ensure that your container
+and development environment is all set up. You can disable running the `coyote` tests
+using the flag:
+
+    -e RUNTESTS=0
+
 ### Web Only Mode
 
 This is a special mode only for Linux hosts, where *only* Landoop's Web UIs
