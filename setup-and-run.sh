@@ -82,6 +82,16 @@ if echo $PREFER_HBASE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
 fi
 
+# Disable Connectors
+OLD_IFS="$IFS"
+IFS=","
+for connector in $DISABLE; do
+    echo "Disabling connector: kafka-connect-${connector}"
+    rm -rf "/opt/confluent-3.0.1/share/java/kafka-connect-${connector}"
+    [[ "elastic" == $connector ]] && rm -rf /extra-connect-jars/*
+done
+IFS="$OLD_IFS"
+
 # Set ADV_HOST if needed
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"

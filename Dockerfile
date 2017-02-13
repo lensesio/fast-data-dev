@@ -54,7 +54,8 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 
 # Add Twitter Connector
 ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-a1120e8-cp301-jar-with-dependencies.jar"
-RUN wget "$TWITTER_CONNECTOR_URL" -P /extra-connect-jars
+RUN mkdir -p /opt/confluent-3.0.1/share/java/kafka-connect-twitter \
+    && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent-3.0.1/share/java/kafka-connect-twitter
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \

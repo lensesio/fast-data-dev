@@ -159,6 +159,26 @@ Twitter connector) to let HBase work:
                -e PREFER_HBASE=true \
                landoop/fast-data-dev
 
+### HDFS Connector
+
+HDFS connector currently is incompatbile with the HBase connector due to class
+shadowing. To make HDFS connector work, disable the HBase connector using the
+`DISABLE` environment variable:
+
+    docker run --rm -it --net=host \
+               -e DISABLE=hbase \
+               landoop/fast-data-dev
+
+### Disable Connectors
+
+If one or more connectors create issues for you, you can disable them on
+startup using the `DISABLE` environment variable. It takes a comma separated
+list of connector names you want to disable:
+
+    docker run --rm -it --net=host \
+               -e DISABLE=elastic,hbase \
+               landoop/fast-data-dev
+
 ## FAQ
 
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds
