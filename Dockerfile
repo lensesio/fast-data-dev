@@ -21,15 +21,19 @@ RUN apk add --no-cache \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
-RUN wget https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz -O /opt/confluent-3.0.1-2.11.tar.gz \
-    && tar --no-same-owner -xzf /opt/confluent-3.0.1-2.11.tar.gz -C /opt/ \
-    && rm -rf /opt/confluent-3.0.1-2.11.tar.gz
+ENV CP_VERSION="3.0.1"
+ARG CP_URL="https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz"
+RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
+    && mkdir -p /opt/confluent \
+    && tar --no-same-owner --strip-components 1 -xzf /opt/confluent.tar.gz -C /opt/confluent \
+    && rm -rf /opt/confluent.tar.gz \
+    && ln -s /opt/confluent "/opt/confluent-${CP_VERSION}"
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
 ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.4.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
-    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent-3.0.1/share/java \
-    && rm -rf /opt/confluent-3.0.1/share/java/kafka-connect-druid \
+    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent/share/java \
+    && rm -rf /opt/confluent/share/java/kafka-connect-druid \
     && rm /stream-reactor.tar.gz \
     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
@@ -37,14 +41,14 @@ RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && rm -rf /elasticsearch-2.4.1*
 
 # Create system symlinks to Confluent's binaries
-ADD binaries /opt/confluent-3.0.1/bin-install
-RUN bash -c 'for i in $(find /opt/confluent-3.0.1/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+ADD binaries /opt/confluent/bin-install
+RUN bash -c 'for i in $(find /opt/confluent/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Configure Confluent
-RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.1/etc/schema-registry/schema-registry.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.1/etc/schema-registry/schema-registry.properties \
-    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent-3.0.1/etc/kafka-rest/kafka-rest.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent-3.0.1/etc/kafka-rest/kafka-rest.properties
+RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/schema-registry/schema-registry.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/confluent/etc/schema-registry/schema-registry.properties \
+    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/kafka-rest/kafka-rest.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/confluent/etc/kafka-rest/kafka-rest.properties
 
 # # Add and setup Kafka Manager
 # RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.2.1.zip \
@@ -54,8 +58,8 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 
 # Add Twitter Connector
 ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-a1120e8-cp301-jar-with-dependencies.jar"
-RUN mkdir -p /opt/confluent-3.0.1/share/java/kafka-connect-twitter \
-    && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent-3.0.1/share/java/kafka-connect-twitter
+RUN mkdir -p /opt/confluent/share/java/kafka-connect-twitter \
+    && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent/share/java/kafka-connect-twitter
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
