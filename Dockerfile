@@ -22,7 +22,7 @@ RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
 ENV CP_VERSION="3.0.1"
-ARG CP_URL="https://packages.confluent.io/archive/3.0/confluent-3.0.1-2.11.tar.gz"
+ARG CP_URL="https://packages.confluent.io/archive/3.0/confluent-oss-3.0.1-2.11.tar.gz"
 RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && mkdir -p /opt/confluent \
     && tar --no-same-owner --strip-components 1 -xzf /opt/confluent.tar.gz -C /opt/confluent \

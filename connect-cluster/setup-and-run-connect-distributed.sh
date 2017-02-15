@@ -25,4 +25,4 @@ if ! /usr/local/bin/checkport -port "$PORT"; then
     exit 1
 fi
 
-exec /opt/confluent-3.0.1/bin/connect-distributed /usr/share/landoop/connect-distributed.properties
+exec /opt/confluent/bin/connect-distributed /usr/share/landoop/connect-distributed.properties
