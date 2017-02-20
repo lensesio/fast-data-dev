@@ -106,6 +106,7 @@ fi
 if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.conf
+    cp /var/www/env-webonly.js /var/www/env.js
 fi
 
 PRINT_HOST="${ADV_HOST:-localhost}"

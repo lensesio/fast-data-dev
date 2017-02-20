@@ -106,7 +106,7 @@ RUN wget "$CADDY_URL" -O /caddy.tgz \
 ADD web/Caddyfile /usr/share/landoop
 
 # Add fast-data-dev UI
-COPY web/index.html web/env.js /var/www/
+COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
 
 # Add executables, settings and configuration
