@@ -81,8 +81,8 @@ RUN wget "$SCHEMA_REGISTRY_UI_URL" -O /schema-registry-ui.tar.gz \
     && rm -f /schema-registry-ui.tar.gz
 COPY web/registry-ui-env.js /var/www/schema-registry-ui/env.js
 
-# Add and Setup Kafka-Topics-Ui (the regexp is the exactly the same as for schema-registry-ui
-ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.1/kafka-topics-ui-0.8.1.tar.gz"
+# Add and Setup Kafka-Topics-Ui
+ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.2/kafka-topics-ui-0.8.2.tar.gz"
 RUN wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
