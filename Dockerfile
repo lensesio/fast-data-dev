@@ -22,23 +22,23 @@ RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
 ENV CP_VERSION="3.1.2"
-ARG CP_URL="https://packages.confluent.io/archive/3.1/confluent-oss-3.1.2-2.11.tar.gz"
+ARG CP_URL="https://packages.confluent.io/archive/3.2/confluent-oss-3.2.0-2.11.tar.gz"
 RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && mkdir -p /opt/confluent \
     && tar --no-same-owner --strip-components 1 -xzf /opt/confluent.tar.gz -C /opt/confluent \
     && rm -rf /opt/confluent.tar.gz \
     && ln -s /opt/confluent "/opt/confluent-${CP_VERSION}"
 
-# Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.4_cp311.tar.gz
-RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
-    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent/share/java \
-    && rm -rf /opt/confluent/share/java/kafka-connect-druid \
-    && rm /stream-reactor.tar.gz \
-    && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
-    && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
-    && mv /elasticsearch-2.4.1/lib/*.jar /extra-connect-jars/ \
-    && rm -rf /elasticsearch-2.4.1*
+# # Add Stream Reactor and Elastic Search (for elastic connector)
+# ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.4_cp311.tar.gz
+# RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
+#     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent/share/java \
+#     && rm -rf /opt/confluent/share/java/kafka-connect-druid \
+#     && rm /stream-reactor.tar.gz \
+#     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
+#     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
+#     && mv /elasticsearch-2.4.1/lib/*.jar /extra-connect-jars/ \
+#     && rm -rf /elasticsearch-2.4.1*
 
 # Create system symlinks to Confluent's binaries
 ADD binaries /opt/confluent/bin-install
@@ -56,10 +56,10 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 #     && unzip /kafka-manager-1.3.2.1.zip -d /opt \
 #     && rm -rf /kafka-manager-1.3.2.1.zip
 
-# Add Twitter Connector
-ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-a1120e8-cp311-jar-with-dependencies.jar"
-RUN mkdir -p /opt/confluent/share/java/kafka-connect-twitter \
-    && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent/share/java/kafka-connect-twitter
+# # Add Twitter Connector
+# ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-develop-a1120e8-cp311-jar-with-dependencies.jar"
+# RUN mkdir -p /opt/confluent/share/java/kafka-connect-twitter \
+#     && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent/share/java/kafka-connect-twitter
 
 # Add dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
