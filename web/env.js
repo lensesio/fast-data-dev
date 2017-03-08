@@ -1,6 +1,6 @@
 var runningServices = [
   {
-    "name" : "Confluent OSS v3.1.2 - Kafka v0.10.1.1",
+    "name" : "Confluent OSS v3.2.0 - Kafka v0.10.2.0",
     "description" : "1 broker, including kafka connect distributed, schema registry, kafka rest, etc"
   },
   {
@@ -14,7 +14,10 @@ var runningServices = [
   {
     "name" : "Landoop Kafka Connect UI v0.9.0",
     "description" : "This is a web tool for Kafka Connect for setting up and managing connectors for multiple connect clusters."
-  },
+  }
+];
+
+var disabled = [
   {
     "name" : "Datamountaineer Stream Reactor v0.2.4",
     "description" : "Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc"
