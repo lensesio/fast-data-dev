@@ -7,6 +7,7 @@ REST_PORT="${REST_PORT:-8082}"
 CONNECT_PORT="${CONNECT_PORT:-8083}"
 WEB_PORT="${WEB_PORT:-3030}"
 #KAFKA_MANAGER_PORT="3031"
+RUN_AS_ROOT="${RUN_AS_ROOT:false}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
@@ -100,6 +101,12 @@ if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
          >> /opt/confluent/etc/kafka/connect-distributed.properties
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js
+fi
+
+# Enable root-mode if needed
+if egrep -sq "true|TRUE|y|Y|yes|YES|1" <<<"$RUN_AS_ROOT" ; then
+    sed -e 's/user=nobody/;user=nobody/' -i /etc/supervisord.conf
+    echo -e "\e[92mRunning Kafka as root.\e[34m"
 fi
 
 # Set web-only mode if needed

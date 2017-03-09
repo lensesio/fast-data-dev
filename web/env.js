@@ -1,23 +1,23 @@
 var runningServices = [
   {
     "name" : "Confluent OSS v3.1.2 - Kafka v0.10.1.1",
-    "description" : "1 broker, including kafka connect distributed, schema registry, kafka rest, etc"
+    "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
   {
     "name" : "Landoop Schema Registry UI v0.9.0",
-    "description" : "Create / view / search / validate / evolve / view history & configure Avro schemas of your Kafka cluster"
+    "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {
     "name" : "Landoop Kafka Topics UI v0.8.2",
-    "description" : "Browse Kafka topics and understand what's happening on your cluster. Find topics / view topic metadata / browse topic data (kafka messages) / view topic configuration / download data."
+    "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
     "name" : "Landoop Kafka Connect UI v0.9.0",
-    "description" : "This is a web tool for Kafka Connect for setting up and managing connectors for multiple connect clusters."
+    "description" : "View, create, update and manage connectors"
   },
   {
     "name" : "Datamountaineer Stream Reactor v0.2.4",
-    "description" : "Source & Sink connectors supporting KCQL. ElasticSearch, Cassandra, Redis etc"
+    "description" : "Source & Sink connectors collection (16+ in total) supporting KCQL"
   }
 ];
 
