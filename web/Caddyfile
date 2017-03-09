@@ -1,6 +1,7 @@
 0.0.0.0:3030
 tls off
-log /var/log/access.log
+log stdout
+errors stdout
 
 root /var/www
 
