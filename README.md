@@ -134,6 +134,17 @@ using the flag:
 
     -e RUNTESTS=0
 
+### Run Kafka as root
+
+In the recent versions of fast-data-dev, we switched to running Kafka as user
+`nobody` instead of `root` since it was a bad practice. The old behaviour may
+still be desirable, for example on our
+[HDFS connector tests](http://coyote.landoop.com/connect/kafka-connect-hdfs/),
+Connect worker needs to run as the root user in order to be able to write to the
+HDFS. To switch to the old behaviour, use:
+
+    -e RUN_AS_ROOT=1
+
 ### Web Only Mode
 
 This is a special mode only for Linux hosts, where *only* Landoop's Web UIs

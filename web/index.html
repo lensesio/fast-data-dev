@@ -27,7 +27,9 @@
     h1,h2,h3,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px}
     .card-link{text-decoration:none;cursor:hand}
     .ok{color:#7CAF57; font-size:12px; font-family:Tahoma;}
-    .md-list-item-short { height: 25px; min-height: 25px;}
+   .md-list-item-short { height: 25px; min-height: 25px;}
+   .important-message { color: #ff6f10; }
+   .important-message code { background-color: #FCFCFC; }
   </style>
 </head>
 
@@ -41,11 +43,15 @@
     <h3> <img ng-src="img/landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
         Kafka Development Environment <sup>beta</sup> <br><code style="font-size:14px">docker container powered by Landoop</code>
     </h3>
-    <p style="font-color:#ff6f10;">
+    <p class="important-message">
         <strong>Important:</strong> Fast Data Dev with Confluent Platform 3.2.0 is in beta.
         Some things do not yet work and connectors are missing.<br />
         You can use the latest stable version (cp3.1.2) or
         an older one (cp3.0.1) instead.
+    <p class="important-message">
+        <strong>Important:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
+        as user <code>nobody</code> instead of <code>root</code>. If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
+        on your docker command line.
     </p>
   </div>
 </div>
@@ -78,7 +84,7 @@
             </md-card-content>
             <md-card-actions layout="column" layout-align="start"  style="background-color:#fff;color:#333;margin:0px;">
               <div class="summary-title">Schema Registry UI</div>
-              <div class="summary">Manage Avro schemas of your Kafka cluster</div>
+              <div class="summary">Manage Avro schemas</div>
               <md-button class="md-primary summary" style="margin:5px">ENTER</md-button>
             </md-card-actions>
           </md-card>
@@ -102,7 +108,7 @@
           </md-card-content>
           <md-card-actions layout="column" layout-align="start" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka Topics UI</div>
-            <div class="summary">Browse topics and download data</div>
+            <div class="summary">Browse topics and data</div>
             <md-button class="md-primary summary" style="margin:5px" ng-href="./kafka-topics-ui/">ENTER</md-button>
           </md-card-actions>
         </md-card>
@@ -125,7 +131,7 @@
           </md-card-content>
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka connect UI</div>
-            <div class="summary">Easy configure and manage connectors</div>
+            <div class="summary">Setup &amp; manage connectors</div>
             <md-button class="md-primary summary" style="margin:5px;" ng-href="./kafka-connect-ui/">ENTER</md-button>
           </md-card-actions>
         </md-card>
@@ -148,7 +154,7 @@
           </md-card-content>
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka brokers</div>
-            <div class="summary">Kafka management and monitoring</div>
+            <div class="summary">Management and monitoring</div>
             <md-button class="md-primary summary" style="margin:5px;color:#558B2F;">Coming soon</md-button>
           </md-card-actions>
         </md-card>
