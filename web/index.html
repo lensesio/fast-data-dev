@@ -30,6 +30,8 @@
    .md-list-item-short { height: 25px; min-height: 25px;}
    .important-message { color: #ff6f10; }
    .important-message code { background-color: #FCFCFC; }
+   .fdd-head h3 code a, a:active, a:visited a:hover { text-decoration: none; color: #2a3b4d; font-size: 14px;}
+   .fdd-head h3 code { font-size: 14px;}
   </style>
 </head>
 
@@ -39,15 +41,17 @@
 <!--Header-->
 <div flex layout="row" layout-xs="column">
   <div flex="20"></div>
-  <div flex="60">
+  <div flex="60" class="fdd-head">
     <h3> <img ng-src="img/landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
-      Kafka Development Environment <br><code style="font-size:14px">docker container powered by Landoop</code>
+        Kafka Development Environment <br>
+        <code>docker container powered by <a href="https://www.landoop.com">Landoop</a></code>
     </h3>
-    <p class="important-message">
+    <div class="important-message">
         <strong>Important:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
         as user <code>nobody</code> instead of <code>root</code>. If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
         on your docker command line.
-    </p>
+        <span style="cursor:pointer;color:#e16036;vertical-align:super" onclick="document.getElementsByClassName('important-message')[0].style.display = 'none';"><strong>X<strong></span>
+    </div>
   </div>
 </div>
 
