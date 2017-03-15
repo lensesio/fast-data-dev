@@ -190,6 +190,18 @@ list of connector names you want to disable:
                -e DISABLE=elastic,hbase \
                landoop/fast-data-dev
 
+### JMX Metrics
+
+You can enable JMX metrics for the Kafka components by using the `ENABLE_JMX`
+environment variable:
+
+    docker run --rm -it --net=host \
+               -e ENABLE_JMX=1 \
+               landoop/fast-data-dev
+
+JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
+`9583` for REST proxy and `9584` for connect distributed.
+
 ## FAQ
 
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds
