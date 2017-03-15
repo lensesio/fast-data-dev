@@ -43,16 +43,16 @@
   <div flex="20"></div>
   <div flex="60" class="fdd-head">
     <h3> <img ng-src="img/landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
-        Kafka Development Environment <sup>beta</sup>
+        Kafka Development Environment <sup>beta</sup> <br />
         <code>docker container powered by <a href="https://www.landoop.com">Landoop</a></code>
     </h3>
     <div class="important-message">
-        <strong>Important:</strong> Fast Data Dev with Confluent Platform 3.2.0 is in beta.
+        <strong>Important #1:</strong> Fast Data Dev with Confluent Platform 3.2.0 is in beta.
         Some things do not yet work and connectors are missing.<br />
         You can use the latest stable version (cp3.1.2) or
         an older one (cp3.0.1) instead.
         <br />
-        <strong>Important:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
+        <strong>Important #2:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
         as user <code>nobody</code> instead of <code>root</code>. If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
         on your docker command line.
         <span style="cursor:pointer;color:#e16036;vertical-align:super" onclick="document.getElementsByClassName('important-message')[0].style.display = 'none';"><strong>X<strong></span>
