@@ -118,9 +118,9 @@ if egrep -sq "true|TRUE|y|Y|yes|YES|1" <<<"$ENABLE_JMX" ; then
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
         -i /etc/supervisord.conf
 else
-    sed -r -e 's/,KAFKA_JMX_OPTS="[!"]*"//' \
-        -e 's/,SCHEMA_REGISTRY_JMX_OPTS="[!"]*"//' \
-        -e 's/,KAFKAREST_JMX_OPTS="[!"]*"//' \
+    sed -r -e 's/,KAFKA_JMX_OPTS="[^"]*"//' \
+        -e 's/,SCHEMA_REGISTRY_JMX_OPTS="[^"]*"//' \
+        -e 's/,KAFKAREST_JMX_OPTS="[^"]*"//' \
         -i /etc/supervisord.conf
 fi
 
