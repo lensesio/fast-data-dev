@@ -109,13 +109,18 @@ if [[ ! -z "${ADV_HOST}" ]]; then
          >> /opt/confluent/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
          >> /opt/confluent/etc/kafka/connect-distributed.properties
-    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js
+    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js /etc/supervisord.conf
 fi
 
 # Enable JMX if needed
 if egrep -sq "true|TRUE|y|Y|yes|YES|1" <<<"$ENABLE_JMX" ; then
     sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
+        -i /etc/supervisord.conf
+else
+    sed -r -e 's/,KAFKA_JMX_OPTS="[!"]*"//' \
+        -e 's/,SCHEMA_REGISTRY_JMX_OPTS="[!"]*"//' \
+        -e 's/,KAFKAREST_JMX_OPTS="[!"]*"//' \
         -i /etc/supervisord.conf
 fi
 
