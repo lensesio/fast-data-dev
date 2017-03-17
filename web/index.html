@@ -24,7 +24,7 @@
     .summary, .summary-title{text-align:center;font-weight: 500; letter-spacing: .010em; margin: 0;line-height: 1.6em; font-size:12px}
     .summary-title{text-transform:uppercase;padding:10px;text-decoration:none}
     .summary{opacity:.7;padding:0 10px;min-height:30px}
-    h1,h2,h3,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px;margin:0}
+    h1,h2,h3,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px;margin:10px;}
     .card-link{text-decoration:none;cursor:hand}
     .ok{color:#7CAF57; font-size:12px; font-family:Tahoma;}
    .md-list-item-short { height: 25px; min-height: 25px;}
@@ -47,10 +47,12 @@
         <code>docker container powered by <a href="https://www.landoop.com">Landoop</a></code>
     </h3>
     <div class="important-message">
-        <strong>Important:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
-        as user <code>nobody</code> instead of <code>root</code>. If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
-        on your docker command line.
-        <span style="cursor:pointer;color:#e16036;vertical-align:super" onclick="document.getElementsByClassName('important-message')[0].style.display = 'none';"><strong>X<strong></span>
+        <p>
+            <strong>Important:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
+            as user <code>nobody</code> instead of <code>root</code>. If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
+            on your docker command line.
+            <span style="cursor:pointer;color:#e16036;vertical-align:super" onclick="document.getElementsByClassName('important-message')[0].style.display = 'none';"><strong>X<strong></span>
+        </p>
     </div>
   </div>
 </div>
@@ -83,7 +85,7 @@
             </md-card-content>
             <md-card-actions layout="column" layout-align="start"  style="background-color:#fff;color:#333;margin:0px;">
               <div class="summary-title">Schema Registry UI</div>
-              <div class="summary">Manage Avro schemas</div>
+              <div class="summary">manage avro schemas</div>
               <md-button class="md-primary summary" style="margin:5px">ENTER</md-button>
             </md-card-actions>
           </md-card>
@@ -107,7 +109,7 @@
           </md-card-content>
           <md-card-actions layout="column" layout-align="start" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka Topics UI</div>
-            <div class="summary">Browse topics and data</div>
+            <div class="summary">browse topics and data</div>
             <md-button class="md-primary summary" style="margin:5px" ng-href="./kafka-topics-ui/">ENTER</md-button>
           </md-card-actions>
         </md-card>
@@ -130,7 +132,7 @@
           </md-card-content>
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka connect UI</div>
-            <div class="summary">Setup &amp; manage connectors</div>
+            <div class="summary">setup &amp; manage connectors</div>
             <md-button class="md-primary summary" style="margin:5px;" ng-href="./kafka-connect-ui/">ENTER</md-button>
           </md-card-actions>
         </md-card>
@@ -153,7 +155,7 @@
           </md-card-content>
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka brokers</div>
-            <div class="summary">Management and monitoring</div>
+            <div class="summary">management and monitoring</div>
             <md-button class="md-primary summary" style="margin:5px;color:#558B2F;">Coming soon</md-button>
           </md-card-actions>
         </md-card>
