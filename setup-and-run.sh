@@ -12,14 +12,12 @@ BROKER_JMX_PORT="9581"
 REGISTRY_JMX_PORT="9582"
 REST_JMX_PORT="9583"
 CONNECT_JMX_PORT="9584"
-ENABLE_JMX="${ENABLE_JMX:false}"
+DISABLE_JMX="${DISABLE_JMX:false}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
-if echo $ENABLE_JMX | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if ! echo $DISABLE_JMX | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
-else
-    sed -i -e 's/"jmx"  :.*/"jmx"  : "",/g' /var/www/env.js
 fi
 
 if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
@@ -114,8 +112,8 @@ if [[ ! -z "${ADV_HOST}" ]]; then
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js /etc/supervisord.conf
 fi
 
-# Enable JMX if needed
-if egrep -sq "true|TRUE|y|Y|yes|YES|1" <<<"$ENABLE_JMX" ; then
+# Configure JMX if needed or disable it.
+if ! echo "$DISABLE_JMX" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
         -i /etc/supervisord.conf
@@ -124,6 +122,8 @@ else
         -e 's/,SCHEMA_REGISTRY_JMX_OPTS="[^"]*"//' \
         -e 's/,KAFKAREST_JMX_OPTS="[^"]*"//' \
         -i /etc/supervisord.conf
+    sed -e 's/"jmx"\s*:[^,]*/"jmx"  : ""/' \
+        -i /var/www/env.js
 fi
 
 # Enable root-mode if needed
