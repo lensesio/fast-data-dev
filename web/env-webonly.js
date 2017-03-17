@@ -17,31 +17,37 @@ var servicesInfo = [
   {
     "name" : "Kafka Broker",
     "port" : "9092",
+    "jmx"  : "",
     "url"  : "localhost"
   },
   {
     "name" : "Schema Registry",
     "port" : "8081",
+    "jmx"  : "",
     "url"  : "http://localhost"
   },
   {
     "name" : "Kafka REST Proxy",
     "port" : "8082",
+    "jmx"  : "",
     "url"  : "http://localhost"
   },
   {
     "name" : "Kafka Connect Distributed",
     "port" : "8083",
+    "jmx"  : "",
     "url"  : "http://localhost"
   },
   {
     "name" : "ZooKeeper",
     "port" : "2181",
+    "jmx"  : "",
     "url"  : "localhost"
   },
   {
     "name" : "Web Server",
     "port" : "3030",
+    "jmx"  : "",
     "url"  : "http://localhost"
   }
 ];
