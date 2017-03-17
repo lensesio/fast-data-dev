@@ -17,7 +17,7 @@ When you need:
 
 just run:
 
-    docker run --rm -it --net=host landoop/fast-data-dev
+    docker run --rm --net=host landoop/fast-data-dev
 
 That's it. Visit <http://localhost:3030> to get into the fast-data-dev environment
 
@@ -26,12 +26,12 @@ That's it. Visit <http://localhost:3030> to get into the fast-data-dev environme
 All the service ports are exposed, and can be used from localhost / or within your IntelliJ.
 To access the JMX data of the broker run:
 
-    jconsole localhost:9581 
+    jconsole localhost:9581
 
 If you want to have the services remotely accessible, then you need to pass in your machine's
 IP address or hostname that other machines can use to access it:
 
-    docker run --rm -it --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
+    docker run --rm --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
 
 > Hit **control+c** to stop and remove everything
 
@@ -46,10 +46,11 @@ On Mac OS X allocate at least 6GB RAM to the VM:
 
 And define ports and advertise hostname:
 
-```docker
-docker run --rm -it -p 9581-9584:9581-9584 -p 8081-8083:8081-8083 -p 9092:9092 -p 2181:2181 -p 3030:3030 \
--e ADV_HOST=192.168.99.100 landoop/fast-data-dev:latest              
-```    
+```
+docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
+           -p 9581-9584:9581-9584 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
+           landoop/fast-data-dev:latest
+```
 
 That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev environment
 
@@ -57,30 +58,34 @@ That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev envi
 
 You can further customize the execution of the container with additional flags:
 
- optional_parameters    | usage                                                                                                    
------------------------ | -------------------------------------------------------------------------------------------------------- 
- `-e WEB_ONLY=true`     | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
- `-e CONNECT_HEAP=5G`   | Configure the heap size allocated to Kafka Connect 
- `-e PASSWORD=password` | Protect you kafka resources when running publicly with username `kafka` with the password you set
- `-e USER=username`     | Run in combination with `PASSWORD` to specify the username to use on basic auth 
- `-e RUNTESTS=0`        | Disable the (coyote) integration tests from running when container starts 
- `-e RUN_AS_ROOT=1`     | Run kafka as `root` user - useful to i.e. test HDFS connector
- `-e DISABLE_JMX=1`     | Disable JMX - enabled by default on ports 9581 - 9584
+ optional_parameters     | usage                                                                                                       
+------------------------ | ------------------------------------------------------------------------------------------------------------
+ `WEB_ONLY=1      `      | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
+ `CONNECT_HEAP=3G`       | Configure the heap size allocated to Kafka Connect
+ `PASSWORD=password`     | Protect you kafka resources when running publicly with username `kafka` with the password you set
+ `USER=username`         | Run in combination with `PASSWORD` to specify the username to use on basic auth
+ `RUNTESTS=0`            | Disable the (coyote) integration tests from running when container starts
+ `RUN_AS_ROOT=1`         | Run kafka as `root` user - useful to i.e. test HDFS connector
+ `DISABLE_JMX=1`         | Disable JMX - enabled by default on ports 9581 - 9584
+ `<SERVICE>_PORT=<PORT>` | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `REGISTRY`, `REST`, `CONNECT`
 
-And execute the docker image in `daemon` mode:
+And execute the docker image if needed in `daemon` mode:
 
-    docker run -e CONNECT_HEAP=5G -d landoop/fast-data-dev
+    docker run -e CONNECT_HEAP=3G -d landoop/fast-data-dev
 
 ### Versions
 
-The latest version of this docker image packages:
+The latest version of this docker image tracks our latest stable tag (cp3.1.2). Our
+images include:
 
- Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors     
--------------------------------| ------------- | ------------- | ------------- | ----------- 
+ Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors
+-------------------------------| ------------- | ------------- | ------------- | ------------- 
 landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
 landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
+landoop/fast-data-dev:cp3.2.0  |     3.2.0     |       ✓       |    0.10.2.0   | 6+ connectors
 
-Contains a collection of popular open source connectors including *stream-reactor* v.0.2.4 
+Versions cp3.1.2 (latest) and cp3.0.1 contain a collection of popular open source connectors
+including *stream-reactor* v.0.2.4. Version cp3.2.0 is experimental.
 
 Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
@@ -122,10 +127,10 @@ Or enter the container to use any tool as you like:
     docker run --rm -it --net=host landoop/fast-data-dev bash
 
 #### View logs
-  
+
 Every application stores its logs under `/var/log` inside the container.
 If you have your container's ID, or name, you could do something like:
-  
+
     docker exec -it <ID> cat /var/log/broker.log
 
 #### Enable additional connectors
