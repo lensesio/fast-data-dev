@@ -17,9 +17,11 @@ cluster by just spawning a couple containers.
            -e ID=01 \
            -e BS=broker1:9092,broker2:9092 \
            -e ZK=zk1:2181,zk2:2181 \
-           -e SC=http://schema-registry:8081 \
+           -e SR=http://schema-registry:8081 \
            -e HOST=<IP OR FQDN>
            landoop/fast-data-dev-connect-cluster
+
+For an example take a look in the `docker-compose.yml`.
 
 Things to look out for in configuration options:
 
@@ -48,7 +50,7 @@ make for simplicity's sake.
            -e ID=01 \
            -e BS=broker1:9092,broker2:9092 \
            -e ZK=zk1:2181,zk2:2181 \
-           -e SC=http://schema-registry:8081 \
+           -e SR=http://schema-registry:8081 \
            -e HOST=<IP OR FQDN>
            -e PORT=8085
            -p 8085:8085
