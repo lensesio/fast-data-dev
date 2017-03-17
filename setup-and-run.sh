@@ -18,6 +18,8 @@ PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $
 
 if echo $ENABLE_JMX | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
+else
+    sed -i -e 's/"jmx"  :.*/"jmx"  : "",/g' /var/www/env.js
 fi
 
 if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
