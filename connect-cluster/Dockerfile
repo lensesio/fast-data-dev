@@ -1,8 +1,8 @@
 FROM landoop/fast-data-dev
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
-ADD connect-distributed.properties /usr/share/landoop
 ADD setup-and-run-connect-distributed.sh /usr/local/bin
+ADD supervisord.conf /etc/
 
 RUN chmod +x /usr/local/bin/setup-and-run-connect-distributed.sh
 
