@@ -17,5 +17,7 @@ proxy /api/kafka-connect localhost:8083 {
     without /api/kafka-connect
 }
 
+browse /certs
+
 header /coyote-tests/results Cache-Control "no-store"
 header /coyote-tests/index.html Cache-Control "no-store"
