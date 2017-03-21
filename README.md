@@ -65,6 +65,7 @@ You can further customize the execution of the container with additional flags:
  `PASSWORD=password`     | Protect you kafka resources when running publicly with username `kafka` with the password you set
  `USER=username`         | Run in combination with `PASSWORD` to specify the username to use on basic auth
  `RUNTESTS=0`            | Disable the (coyote) integration tests from running when container starts
+ `FORWARDLOGS=0`         | Disable running 5 file source connectors that bring application logs into Kafka topics
  `RUN_AS_ROOT=1`         | Run kafka as `root` user - useful to i.e. test HDFS connector
  `DISABLE_JMX=1`         | Disable JMX - enabled by default on ports 9581 - 9584
  `<SERVICE>_PORT=<PORT>` | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `REGISTRY`, `REST`, `CONNECT`
