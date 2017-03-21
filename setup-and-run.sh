@@ -150,9 +150,7 @@ if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
         [[ ! -z "$SSL_EXTRA_HOSTS" ]] && SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"
 
         # Create Key-Certificate pairs for Kafka and user
-        quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out fdd-user. -CN "User" -hosts "$SSL_HOSTS" -duration 3650
-
-        for cert in kafka user; do
+        for cert in kafka client; do
             quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
 
             openssl pkcs12 -export \
@@ -199,7 +197,7 @@ EOF
                    -i /opt/confluent/etc/kafka/server.properties
 
         mkdir /var/www/certs/
-        cp user.jks truststore.jks /var/www/certs/
+        cp client.jks truststore.jks /var/www/certs/
 
         popd
     } >/var/log/ssl-setup.log 2>&1
