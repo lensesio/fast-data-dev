@@ -58,17 +58,19 @@ That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev envi
 
 You can further customize the execution of the container with additional flags:
 
- optional_parameters     | usage                                                                                                       
------------------------- | ------------------------------------------------------------------------------------------------------------
- `WEB_ONLY=1      `      | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
- `CONNECT_HEAP=3G`       | Configure the heap size allocated to Kafka Connect
- `PASSWORD=password`     | Protect you kafka resources when running publicly with username `kafka` with the password you set
- `USER=username`         | Run in combination with `PASSWORD` to specify the username to use on basic auth
- `RUNTESTS=0`            | Disable the (coyote) integration tests from running when container starts
- `FORWARDLOGS=0`         | Disable running 5 file source connectors that bring application logs into Kafka topics
- `RUN_AS_ROOT=1`         | Run kafka as `root` user - useful to i.e. test HDFS connector
- `DISABLE_JMX=1`         | Disable JMX - enabled by default on ports 9581 - 9584
- `<SERVICE>_PORT=<PORT>` | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `REGISTRY`, `REST`, `CONNECT`
+ optional_parameters         | usage                                                                                                       
+---------------------------- | ------------------------------------------------------------------------------------------------------------
+ `WEB_ONLY=1      `          | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
+ `CONNECT_HEAP=3G`           | Configure the heap size allocated to Kafka Connect
+ `PASSWORD=password`         | Protect you kafka resources when running publicly with username `kafka` with the password you set
+ `USER=username`             | Run in combination with `PASSWORD` to specify the username to use on basic auth
+ `RUNTESTS=0`                | Disable the (coyote) integration tests from running when container starts
+ `FORWARDLOGS=0`             | Disable running 5 file source connectors that bring application logs into Kafka topics
+ `RUN_AS_ROOT=1`             | Run kafka as `root` user - useful to i.e. test HDFS connector
+ `DISABLE_JMX=1`             | Disable JMX - enabled by default on ports 9581 - 9584
+ `<SERVICE>_PORT=<PORT>`     | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
+ `ENABLE_SSL=1`              | Generate a CA, key-certificate pairs and enable a SSL port on the broker
+ `SSL_EXTRA_HOSTS=IP1,host2` | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
 
 And execute the docker image if needed in `daemon` mode:
 
@@ -148,7 +150,8 @@ directory:
 #### Build Kafka-Connect clusters
 
 If you already have your Kafka brokers and ZKs infrastructure in place and you need
-to spin up a few Kafka-Connect clusters, check the [fast-data-connect-cluster](connect-cluster/)
+to spin up a few Kafka-Connect clusters, check the [fast-data-connect-cluster](https://github.com/landoop/fast-data-connect-cluster),
+a spinoff of fast-data-dev aimed at running many connect clusters concurrently.
 
 In short, you can run a docker Kafka-Connect instance to join the connect-cluster with ID = `01` with:
 
@@ -159,6 +162,45 @@ In short, you can run a docker Kafka-Connect instance to join the connect-cluste
                -e SC=http://schema-registry:8081 \
                -e HOST=<IP OR FQDN>
                landoop/fast-data-dev-connect-cluster
+
+#### Enable SSL on Broker
+
+Do you want to test your application over an authenticated TLS connection to the
+broker? We got you covered. Enable TLS via `-e ENABLE_SSL`:
+
+    docker run --rm --net=host \
+               -e ENABLE_SSL=1 \
+               landoop/fast-data-dev
+
+When fast-data-dev spawns, it will create a self-signed CA. From that it will
+create a truststore and two signed key-certificate pairs, one for the broker,
+one for your client. You can access the truststore and the client's keystore
+from our Web UI, under `/certs` (e.g http://localhost:3030/certs). The password
+for both the keystores and the TLS key is `fastdata`.
+The SSL port of the broker is `9093`, configurable via the `BROKER_SSL_PORT`
+variable.
+
+Here is a simple example of how the SSL functionality can be used. Let's spawn
+a fast-data-dev to act as the server:
+
+    docker run --rm --net=host -e ENABLE_SSL=1 -e RUNTESTS=0 landoop/fast-data-dev
+
+On a new console, run another instance of fast-data-dev only to get access to
+Kafka command line utilities and use TLS to connect to the broker of the former
+container:
+
+    docker run --rm -it --net=host --entrypoint bash landoop/fast-data-dev
+    root@fast-data-dev / $ wget localhost:3030/certs/truststore.jks
+    root@fast-data-dev / $ wget localhost:3030/certs/client.jks
+    root@fast-data-dev / $ kafka-producer-perf-test --topic tls_test \
+      --throughput 100000 --record-size 1000 --num-records 2000 \
+      --producer-props bootstrap.servers="localhost:9093" security.protocol=SSL \
+      ssl.keystore.location=client.jks ssl.keystore.password=fastdata \
+      ssl.key.password=fastdata ssl.truststore.location=truststore.jks \
+      ssl.truststore.password=fastdata
+
+Since the plaintext port is also available, you can test both and find out
+which is faster and by how much. ;)
 
 ### Advanced Connector settings
 

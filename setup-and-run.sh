@@ -141,12 +141,14 @@ fi
 
 # SSL setup
 if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    echo -e "\e[92mTLS enabled. Creating CA and key-cert pairs.\e[34m"
     {
         mkdir /tmp/certs
         pushd /tmp/certs
         # Create Landoop Fast Data Dev CA
         quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
-        SSL_HOSTS="localhost,127.0.0.1,ADV_HOST,192.168.99.100"
+        SSL_HOSTS="localhost,127.0.0.1,192.168.99.100"
+        [[ ! -z "$ADV_HOST" ]] && SSL_HOSTS="$SSL_HOSTS,$ADV_HOST"
         [[ ! -z "$SSL_EXTRA_HOSTS" ]] && SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"
 
         # Create Key-Certificate pairs for Kafka and user
@@ -158,16 +160,16 @@ if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
                     -inkey $cert.key.pem \
                     -out $cert.p12 \
                     -name $cert \
-                    -passout pass:changeit
+                    -passout pass:fastdata
 
             keytool -importkeystore \
                     -noprompt -v \
                     -srckeystore $cert.p12 \
                     -srcstoretype PKCS12 \
-                    -srcstorepass changeit \
+                    -srcstorepass fastdata \
                     -alias $cert \
-                    -deststorepass changeit \
-                    -destkeypass changeit \
+                    -deststorepass fastdata \
+                    -destkeypass fastdata \
                     -destkeystore $cert.jks
         done
 
@@ -176,15 +178,15 @@ if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
                 -keystore truststore.jks \
                 -alias LandoopFastDataDevCA \
                 -file lfddca.crt.pem \
-                -storepass changeit
+                -storepass fastdata
 
         cat <<EOF >>/opt/confluent/etc/kafka/server.properties
 ssl.client.auth=required
-ssl.key.password=changeit
+ssl.key.password=fastdata
 ssl.keystore.location=$PWD/kafka.jks
-ssl.keystore.password=changeit
+ssl.keystore.password=fastdata
 ssl.truststore.location=$PWD/truststore.jks
-ssl.truststore.password=changeit
+ssl.truststore.password=fastdata
 ssl.protocol=TLS
 ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
 ssl.keystore.type=JKS
