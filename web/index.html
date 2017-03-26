@@ -46,14 +46,6 @@
         Kafka Development Environment <br>
         <code>docker container powered by <a href="https://www.landoop.com">Landoop</a></code>
     </h3>
-    <div class="important-message">
-        <p>
-            <strong>Important:</strong> Fast Data Dev’s behaviour changed. Kafka is now running by default
-            as user <code>nobody</code> instead of <code>root</code>. If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
-            on your docker command line.
-            <span style="cursor:pointer;color:#e16036;vertical-align:super" onclick="document.getElementsByClassName('important-message')[0].style.display = 'none';"><strong>X<strong></span>
-        </p>
-    </div>
   </div>
 </div>
 
@@ -253,11 +245,59 @@
       <md-card-content style="background-color:#f4f4f4;">
         <div flex layout-align="center center">
           <p class="summary">
-            Find out more about Coyote awesome tool <a href="https://github.com/Landoop/coyote" target="_blank">here</a>.
+              Find out more about Coyote awesome tool
+              <a style="text-decoration:none;" href="https://github.com/Landoop/coyote" target="_blank">here</a>.
           </p>
         </div>
       </md-card-content>
     </md-card>
+
+    <!--News card-->
+    <md-card>
+        <md-card-title style="padding-bottom:5px;">
+            <md-card-title-text>
+                <span class="md-headline tile-heading"><b>Fast Data News</b></span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+            <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;">
+                <ul style="padding-left:10px;">
+                    <li>
+                        <h4>SSL support hit master</h4>
+                        <p>
+                            We added support for a SSL port for the broker that requires authentication. Upon startup,
+                            fast-data-dev will create a CA and key-certificate pairs for kafka and clients. Learn how easy it is to
+                            <a style="text-decoration:none;" href="https://github.com/Landoop/fast-data-dev#enable-ssl-on-broker">enable and use this feature</a>!
+                        </p>
+                    </li>
+                    <li>
+                        <h4>JMX support added</h4>
+                        <p>
+                            We now enable JMX by default for the Kafka components and make it available at ports <code>9581-9584</code>.
+                            You can optionally disable it via <code>-e DISABLE_JMX=1</code>.
+                        </p>
+                    </li>
+                    <li>
+                        <h4>Kafka does not run as root anymore</h4>
+                        <p>
+                            This is <strong>important</strong>! Fast Data Dev’s behaviour changed. Kafka is now running by default
+                            as user <code>nobody</code> instead of the superuser (<code>root</code>). If you need the old behaviour use <code>-e RUN_AS_ROOT=1</code>
+                            on your docker command line.
+                        </p>
+                    </li>
+                    </ul>
+            </div>
+        </md-card-content>
+        <md-card-content style="background-color:#f4f4f4;">
+            <div flex layout-align="center center">
+                <p class="summary">
+                    Learn more about fast-data-dev from our
+                    <a style="text-decoration:none;" href="https://github.com/Landoop/fast-data-dev" target="_blank">README</a>.
+                </p>
+            </div>
+        </md-card-content>
+    </md-card>
+
   </div>
 </div>
 
