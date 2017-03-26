@@ -10,6 +10,7 @@ RUN apk add --no-cache \
         supervisor \
         sqlite \
         libstdc++ \
+        openssl \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir /opt \
     && wget https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport -O /usr/local/bin/checkport \
@@ -62,9 +63,10 @@ ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect
 RUN mkdir -p /opt/confluent/share/java/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent/share/java/kafka-connect-twitter
 
-# Add dumb init
+# Add dumb init and quickcert
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
-    && chmod 0755 /usr/local/bin/dumb-init
+    && wget https://github.com/andmarios/quickcert/releases/download/1.0/quickcert-1.0-linux-amd64-alpine -O /usr/local/bin/quickcert \
+    && chmod 0755 /usr/local/bin/dumb-init /usr/local/bin/quickcert
 
 # Add Coyote and tests
 ADD integration-tests/kafka-tests.yml /usr/share/landoop

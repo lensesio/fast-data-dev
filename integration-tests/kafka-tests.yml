@@ -6,7 +6,9 @@
   entries:
 # BASIC / PERFORMANCE
     - name: Create Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --partition 1 --replication 1 --create
+      command: |
+        kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --partition 1 --replication 1 --create
+                     --config retention.ms=60000 --config retention.bytes=52428800
     - name: List Topics (basic kafka)
       command: kafka-topics --zookeeper localhost:2181 --list
     - name: Performance Test (basic kafka)

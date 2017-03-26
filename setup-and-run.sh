@@ -2,22 +2,30 @@
 
 ZK_PORT="${ZK_PORT:-2181}"
 BROKER_PORT="${BROKER_PORT:-9092}"
+BROKER_SSL_PORT="${BROKER_SSL_PORT:-9093}"
 REGISTRY_PORT="${REGISTRY_PORT:-8081}"
 REST_PORT="${REST_PORT:-8082}"
 CONNECT_PORT="${CONNECT_PORT:-8083}"
 WEB_PORT="${WEB_PORT:-3030}"
 #KAFKA_MANAGER_PORT="3031"
 RUN_AS_ROOT="${RUN_AS_ROOT:false}"
+ZK_JMX_PORT="9580"
 BROKER_JMX_PORT="9581"
 REGISTRY_JMX_PORT="9582"
 REST_JMX_PORT="9583"
 CONNECT_JMX_PORT="9584"
 DISABLE_JMX="${DISABLE_JMX:false}"
+ENABLE_SSL="${ENABLE_SSL:false}"
+SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
 if ! echo $DISABLE_JMX | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
+fi
+
+if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$PORTS $BROKER_SSL_PORT"
 fi
 
 if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
@@ -130,6 +138,72 @@ fi
 if egrep -sq "true|TRUE|y|Y|yes|YES|1" <<<"$RUN_AS_ROOT" ; then
     sed -e 's/user=nobody/;user=nobody/' -i /etc/supervisord.conf
     echo -e "\e[92mRunning Kafka as root.\e[34m"
+fi
+
+# SSL setup
+if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    echo -e "\e[92mTLS enabled. Creating CA and key-cert pairs.\e[34m"
+    {
+        mkdir /tmp/certs
+        pushd /tmp/certs
+        # Create Landoop Fast Data Dev CA
+        quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
+        SSL_HOSTS="localhost,127.0.0.1,192.168.99.100"
+        [[ ! -z "$ADV_HOST" ]] && SSL_HOSTS="$SSL_HOSTS,$ADV_HOST"
+        [[ ! -z "$SSL_EXTRA_HOSTS" ]] && SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"
+
+        # Create Key-Certificate pairs for Kafka and user
+        for cert in kafka client; do
+            quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
+
+            openssl pkcs12 -export \
+                    -in $cert.crt.pem \
+                    -inkey $cert.key.pem \
+                    -out $cert.p12 \
+                    -name $cert \
+                    -passout pass:fastdata
+
+            keytool -importkeystore \
+                    -noprompt -v \
+                    -srckeystore $cert.p12 \
+                    -srcstoretype PKCS12 \
+                    -srcstorepass fastdata \
+                    -alias $cert \
+                    -deststorepass fastdata \
+                    -destkeypass fastdata \
+                    -destkeystore $cert.jks
+        done
+
+        keytool -importcert \
+                -noprompt \
+                -keystore truststore.jks \
+                -alias LandoopFastDataDevCA \
+                -file lfddca.crt.pem \
+                -storepass fastdata
+
+        cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+ssl.client.auth=required
+ssl.key.password=fastdata
+ssl.keystore.location=$PWD/kafka.jks
+ssl.keystore.password=fastdata
+ssl.truststore.location=$PWD/truststore.jks
+ssl.truststore.password=fastdata
+ssl.protocol=TLS
+ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
+ssl.keystore.type=JKS
+ssl.truststore.type=JKS
+EOF
+        sed -r -e 's|^(listeners=.*)|\1,SSL://:9093|' \
+            -i /opt/confluent/etc/kafka/server.properties
+        [[ ! -z "${ADV_HOST}" ]] \
+            && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
+                   -i /opt/confluent/etc/kafka/server.properties
+
+        mkdir /var/www/certs/
+        cp client.jks truststore.jks /var/www/certs/
+
+        popd
+    } >/var/log/ssl-setup.log 2>&1
 fi
 
 # Set web-only mode if needed
