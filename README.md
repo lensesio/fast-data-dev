@@ -58,19 +58,20 @@ That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev envi
 
 You can further customize the execution of the container with additional flags:
 
- optional_parameters         | usage                                                                                                       
----------------------------- | ------------------------------------------------------------------------------------------------------------
- `WEB_ONLY=1      `          | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
- `CONNECT_HEAP=3G`           | Configure the heap size allocated to Kafka Connect
- `PASSWORD=password`         | Protect you kafka resources when running publicly with username `kafka` with the password you set
- `USER=username`             | Run in combination with `PASSWORD` to specify the username to use on basic auth
- `RUNTESTS=0`                | Disable the (coyote) integration tests from running when container starts
- `FORWARDLOGS=0`             | Disable running 5 file source connectors that bring application logs into Kafka topics
- `RUN_AS_ROOT=1`             | Run kafka as `root` user - useful to i.e. test HDFS connector
- `DISABLE_JMX=1`             | Disable JMX - enabled by default on ports 9581 - 9584
- `<SERVICE>_PORT=<PORT>`     | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
- `ENABLE_SSL=1`              | Generate a CA, key-certificate pairs and enable a SSL port on the broker
- `SSL_EXTRA_HOSTS=IP1,host2` | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
+ optional_parameters            | usage                                                                                                       
+------------------------------- | ------------------------------------------------------------------------------------------------------------
+ `WEB_ONLY=1      `             | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
+ `CONNECT_HEAP=3G`              | Configure the heap size allocated to Kafka Connect
+ `PASSWORD=password`            | Protect you kafka resources when running publicly with username `kafka` with the password you set
+ `USER=username`                | Run in combination with `PASSWORD` to specify the username to use on basic auth
+ `RUNTESTS=0`                   | Disable the (coyote) integration tests from running when container starts
+ `FORWARDLOGS=0`                | Disable running 5 file source connectors that bring application logs into Kafka topics
+ `RUN_AS_ROOT=1`                | Run kafka as `root` user - useful to i.e. test HDFS connector
+ `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9584
+ `<SERVICE>_PORT=<PORT>`        | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
+ `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
+ `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
+ `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
 
 And execute the docker image if needed in `daemon` mode:
 
@@ -166,7 +167,7 @@ In short, you can run a docker Kafka-Connect instance to join the connect-cluste
 #### Enable SSL on Broker
 
 Do you want to test your application over an authenticated TLS connection to the
-broker? We got you covered. Enable TLS via `-e ENABLE_SSL`:
+broker? We got you covered. Enable TLS via `-e ENABLE_SSL=1`:
 
     docker run --rm --net=host \
                -e ENABLE_SSL=1 \
@@ -332,4 +333,5 @@ environment variable:
                landoop/fast-data-dev
 
 JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
-`9583` for REST proxy and `9584` for connect distributed.
+`9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
+at `9580`.
