@@ -27,7 +27,7 @@
     h1,h2,h3,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px;margin:10px;}
     .card-link{text-decoration:none;cursor:hand}
     .ok{color:#7CAF57; font-size:12px; font-family:Tahoma;}
-   .md-list-item-short { height: 25px; min-height: 25px;}
+   .md-list-item-short { height: 15px; min-height: 15px;}
    .important-message { color: #ff6f10; }
    .important-message code { background-color: #FCFCFC; }
    .fdd-head h3 code a, a:active, a:visited a:hover { text-decoration: none; color: #2a3b4d; font-size: 14px;}
@@ -176,9 +176,9 @@
       </md-card-header>
       <md-card-content>
         <md-list>
-          <md-list-item ng-repeat="service in runningServices" class="md-3-line md-long-text" style="margin: -0.4em;">
-            <img src="img/ok.png" class="md-avatar" style="margin-top:20px; width:20px; height:20px;"  />
-            <div class="md-list-item-text">
+          <md-list-item ng-repeat="service in runningServices" class="md-2-line md-long-text" style="margin:-0.4em;">
+            <img src="img/ok.png" class="md-avatar" style="margin-top:10px;margin-bottom:6px; width:20px; height:20px;"  />
+            <div class="md-list-item-text" style="margin-top:8px;margin-bottom:8px;">
               <h4>{{service.name}}</h4>
               <p style="font-size:12px;">{{service.description}}</p>
             </div>

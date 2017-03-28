@@ -83,13 +83,13 @@ The latest version of this docker image tracks our latest stable tag (cp3.1.2). 
 images include:
 
  Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors
--------------------------------| ------------- | ------------- | ------------- | ------------- 
+-------------------------------| ------------- | ------------- | ------------- | --------------
 landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
 landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
-landoop/fast-data-dev:cp3.2.0  |     3.2.0     |       ✓       |    0.10.2.0   | 6+ connectors
+landoop/fast-data-dev:cp3.2.0  |     3.2.0     |       ✓       |    0.10.2.0   | 24+ connectors
 
-Versions cp3.1.2 (latest) and cp3.0.1 contain a collection of popular open source connectors
-including *stream-reactor* v.0.2.4. Version cp3.2.0 is experimental.
+Fast-data-dev contains a collection of popular open source connectors including *stream-reactor*
+v.0.2.4. Version cp3.2.0 is experimental.
 
 Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
