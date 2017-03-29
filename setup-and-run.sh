@@ -210,6 +210,32 @@ for port in $PORTS; do
     fi
 done
 
+# Check for Container's Memory Limit
+MLMB="4096"
+if [[ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]]; then
+    MLB="$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)"
+    MLMB="$(expr $MLB / 1024 / 1024)"
+    MLREC=4096
+    if [[ "$MLMB" -lt $MLREC ]]; then
+        echo -e "\e[91mMemory limit for container is \e[93m${MLMB} MiB\e[91m, which is less than the lowest"
+        echo -e "recommended of \e[93m${MLREC} MiB\e[91m. You will probably experience instability issues.\e[39m"
+    fi
+fi
+
+# Check for Available RAM
+RAKB="$(cat /proc/meminfo | grep MemA | sed -r -e 's/.* ([0-9]+) kB/\1/')"
+if [[ -z "$RAKB" ]]; then
+        echo -e "\e[91mCould not detect available RAM, probably due to very old Linux Kernel."
+        echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m4096 MiB\e[91m RAM available for fast-data-dev.\e[39m"
+else
+    RAMB="$(expr $RAKB / 1024)"
+    RAREC=5120
+    if [[ "$RAMB" -lt $RAREC ]]; then
+        echo -e "\e[91mOperating system RAM available is \e[93m${RAMB} MiB\e[91m, which is less than the lowest"
+        echo -e "recommended of \e[93m${RAREC} MiB\e[91m. Your system performance may be seriously impacted.\e[39m"
+    fi
+fi
+
 PRINT_HOST="${ADV_HOST:-localhost}"
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about a minute.\e[39m"
