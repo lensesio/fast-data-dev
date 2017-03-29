@@ -1,13 +1,16 @@
 #!/usr/bin/env sh
 echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
+# Source commit not yet (?) supported by docker hub.
 echo "SOURCE_COMMIT: ${SOURCE_COMMIT}"
+export BUILD_COMMIT="$(git rev-parse HEAD)"
+echo "BUILD_COMMIT: ${BUILD_COMMIT}"
 export BUILD_TIME="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 echo "BUILD_TIME: ${BUILD_TIME}"
 echo "DOCKER_REPO: ${DOCKER_REPO}"
 
 docker build \
        --build-arg "BUILD_BRANCH=${SOURCE_BRANCH}" \
-       --build-arg "BUILD_COMMIT=${SOURCE_COMMIT}" \
+       --build-arg "BUILD_COMMIT=${BUILD_COMMIT}" \
        --build-arg "BUILD_TIME=${BUILD_TIME}" \
        --build-arg "DOCKER_REPO=${DOCKER_REPO}" \
        --tag $IMAGE_NAME .
