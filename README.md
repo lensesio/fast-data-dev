@@ -72,6 +72,7 @@ You can further customize the execution of the container with additional flags:
  `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
  `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
  `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
+ `DEBUG=1`                      | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
 
 And execute the docker image if needed in `daemon` mode:
 

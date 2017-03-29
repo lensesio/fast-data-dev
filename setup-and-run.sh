@@ -17,6 +17,7 @@ CONNECT_JMX_PORT="9584"
 DISABLE_JMX="${DISABLE_JMX:false}"
 ENABLE_SSL="${ENABLE_SSL:false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
+DEBUG="${DEBUG:-false}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
@@ -192,6 +193,11 @@ if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.conf
     cp /var/www/env-webonly.js /var/www/env.js
+fi
+
+# Set supervisord to output all logs to stdout
+if echo $DEBUG | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    sed -e 's/loglevel=info/loglevel=debug/' -i /etc/supervisord.conf
 fi
 
 # Check for port availability
