@@ -20,28 +20,6 @@ SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
-if ! echo $DISABLE_JMX | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
-fi
-
-if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$PORTS $BROKER_SSL_PORT"
-fi
-
-if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$WEB_PORT"
-fi
-
-# Check for port availability
-for port in $PORTS; do
-    if ! /usr/local/bin/checkport -port $port; then
-        echo "Could not successfully bind to port $port. Maybe some other service"
-        echo "in your system is using it? Please free the port and try again."
-        echo "Exiting."
-        exit 1
-    fi
-done
-
 # Set webserver basicauth username and password
 USER="${USER:-kafka}"
 if [[ ! -z "$PASSWORD" ]]; then
@@ -122,6 +100,7 @@ fi
 
 # Configure JMX if needed or disable it.
 if ! echo "$DISABLE_JMX" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
     sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
         -i /etc/supervisord.conf
@@ -142,6 +121,7 @@ fi
 
 # SSL setup
 if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$PORTS $BROKER_SSL_PORT"
     echo -e "\e[92mTLS enabled. Creating CA and key-cert pairs.\e[34m"
     {
         mkdir /tmp/certs
@@ -208,10 +188,21 @@ fi
 
 # Set web-only mode if needed
 if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$WEB_PORT"
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.conf
     cp /var/www/env-webonly.js /var/www/env.js
 fi
+
+# Check for port availability
+for port in $PORTS; do
+    if ! /usr/local/bin/checkport -port $port; then
+        echo "Could not successfully bind to port $port. Maybe some other service"
+        echo "in your system is using it? Please free the port and try again."
+        echo "Exiting."
+        exit 1
+    fi
+done
 
 PRINT_HOST="${ADV_HOST:-localhost}"
 echo -e "\e[92mStarting services.\e[39m"
