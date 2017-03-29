@@ -9,7 +9,7 @@ CONNECT_PORT="${CONNECT_PORT:-8083}"
 WEB_PORT="${WEB_PORT:-3030}"
 #KAFKA_MANAGER_PORT="3031"
 RUN_AS_ROOT="${RUN_AS_ROOT:false}"
-ZK_JMX_PORT="9580"
+ZK_JMX_PORT="9585"
 BROKER_JMX_PORT="9581"
 REGISTRY_JMX_PORT="9582"
 REST_JMX_PORT="9583"
@@ -100,7 +100,7 @@ fi
 
 # Configure JMX if needed or disable it.
 if ! echo "$DISABLE_JMX" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
     sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
         -i /etc/supervisord.conf

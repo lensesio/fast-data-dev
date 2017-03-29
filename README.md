@@ -48,7 +48,7 @@ And define ports and advertise hostname:
 
 ```
 docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
-           -p 9581-9584:9581-9584 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
+           -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
            landoop/fast-data-dev:latest
 ```
 
@@ -67,7 +67,7 @@ You can further customize the execution of the container with additional flags:
  `RUNTESTS=0`                   | Disable the (coyote) integration tests from running when container starts
  `FORWARDLOGS=0`                | Disable running 5 file source connectors that bring application logs into Kafka topics
  `RUN_AS_ROOT=1`                | Run kafka as `root` user - useful to i.e. test HDFS connector
- `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9584
+ `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9585
  `<SERVICE>_PORT=<PORT>`        | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
  `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
  `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
@@ -334,4 +334,4 @@ environment variable:
 
 JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
 `9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
-at `9580`.
+at `9585`.

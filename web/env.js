@@ -49,7 +49,7 @@ var servicesInfo = [
   {
     "name" : "ZooKeeper",
     "port" : "2181",
-    "jmx"  : "9580 : JMX",
+    "jmx"  : "9585 : JMX",
     "url"  : "localhost"
   },
   {
