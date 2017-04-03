@@ -29,6 +29,12 @@ var servicesInfo = [
     "url"  : "localhost"
   },
   {
+    "name" : "Kafka Broker SSL 🔒",
+    "port" : "9093",
+    "jmx"  : "9581 : JMX",
+    "url"  : "localhost"
+  },
+  {
     "name" : "Schema Registry",
     "port" : "8081",
     "jmx"  : "9582 : JMX",

@@ -196,7 +196,7 @@
         </md-card-title>
         <md-card-content>
           <md-list>
-            <md-list-item ng-repeat="i in servicesInfo" flex class="md-list-item-short" style="padding: 0">
+            <md-list-item ng-repeat="i in servicesInfo" flex class="md-list-item-short" style="padding: 0" ng-hide="{{i.port == ''}}">
               <div flex="" layout="row" layout-xs="column" class="layout-xs-column layout-row flex">
                 <div flex class="flex-70">
                   <h5>{{i.port}} : {{i.name}}</h5>

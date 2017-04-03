@@ -174,7 +174,7 @@ ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
 ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
-        sed -r -e 's|^(listeners=.*)|\1,SSL://:9093|' \
+        sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
             -i /opt/confluent/etc/kafka/server.properties
         [[ ! -z "${ADV_HOST}" ]] \
             && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
@@ -185,6 +185,10 @@ EOF
 
         popd
     } >/var/log/ssl-setup.log 2>&1
+    sed -r -e 's|9093|'"${BROKER_SSL_PORT}"'|' \
+        -i /var/www/env.js
+else
+    sed -r -e 's|9093||' -i /var/www/env.js
 fi
 
 # Set web-only mode if needed
