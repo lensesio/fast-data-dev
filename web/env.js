@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {
-    "name" : "Landoop Kafka Topics UI v0.8.2",
+    "name" : "Landoop Kafka Topics UI v0.8.3",
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
