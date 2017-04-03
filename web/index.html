@@ -263,6 +263,17 @@
             <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;">
                 <ul style="padding-left:10px;">
                     <li>
+                        <h4>Web server fixes for UIs</h4>
+                        <p>
+                            We got a couple reports about the UIs not working properly on some OSes (windows, fedora) and
+                            certain setups. We made a change to the webserver (Caddy) configuration and instead of accessing
+                            the REST endpoints at <code>localhost</code>, it will try to access them at <code>0.0.0.0</code>.
+                            Please if this setting causes you any trouble, don't hesitate to
+                            <a style="text-decoration:none;" href="https://github.com/Landoop/fast-data-dev/issues">open an issue</a>.
+                            Thanks @jischebeck for helping on this.
+                        </p>
+                    </li>
+                    <li>
                         <h4>SSL support hit master</h4>
                         <p>
                             We added support for a SSL port for the broker that requires authentication. Upon startup,
