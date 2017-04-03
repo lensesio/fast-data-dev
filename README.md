@@ -4,14 +4,14 @@
 
 [Kafka](http://kafka.apache.org/) docker image with Confluent (OSS), [Landoop](http://www.landoop.com/kafka/kafka-tools/) tools, 20+ Kafka Connectors
 
-> View latest [demo on-line](https://fast-data-dev.demo.landoop.com)
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)**
 
 ### Why ?
 
 When you need:
 
-1. Confluent Open Source distribution of Apache Kafka including: ZooKeeper, Schema Registry, Kafka REST, Kafka-Connect
-2. Landoop Fast Data Tools including: kafka-topics-ui, schema-registry-ui, kafka-connect-ui
+1. **Confluent** OSS with Apache Kafka including: ZooKeeper, Schema Registry, Kafka REST, Kafka-Connect
+2. **Landoop** Fast Data Tools including: kafka-topics-ui, schema-registry-ui, kafka-connect-ui
 3. 20+ Kafka Connectors to simplify ETL processes
 4. Integration testing and examples embedded into the docker
 
@@ -37,14 +37,29 @@ IP address or hostname that other machines can use to access it:
 
 <img src="https://storage.googleapis.com/wch/fast-data-dev-ui.png" alt="fast-data-dev web UI screenshot" type="image/png" width="900">
 
-### Running on Mac
+### Mac and Windows users only (docker-machine)
 
-On Mac OS X allocate at least 6GB RAM to the VM:
+Create a VM with 6GB RAM using Docker Machine:
 
-    docker-machine create --driver virtualbox --virtualbox-cpu-count "4"  --virtualbox-memory "6024" devel
-    eval $(docker-machine env devel)
+```
+docker-machine create --driver virtualbox --virtualbox-memory 6000 landoop
+```
 
-And define ports and advertise hostname:
+Run `docker-machine ls` to verify that the Docker Machine is running correctly. The command's output should be similar to:
+
+```
+$ docker-machine ls
+NAME        ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
+landoop     *        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.1-ce
+```
+
+Configure your terminal to be able to use the new Docker Machine named landoop:
+
+```
+eval $(docker-machine env landoop)
+```
+
+And run the Kafka Development Environment. Define ports, advertise the hostname and use extra parameters:
 
 ```
 docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
