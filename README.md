@@ -88,6 +88,7 @@ You can further customize the execution of the container with additional flags:
  `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
  `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
  `DEBUG=1`                      | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
+ `SAMPLEDATA=0`                | Do not create `position-reports` topic with sample Avro records.
 
 And execute the docker image if needed in `daemon` mode:
 

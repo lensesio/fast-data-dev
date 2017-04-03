@@ -1,0 +1,88 @@
+{
+  "type": "record",
+  "name": "aisClassAPositionReport",
+  "namespace": "com.landoop.ais",
+  "doc": "Schema for AIS Class A Position Reports.",
+  "fields": [
+    {
+      "name": "Type",
+      "type": "int",
+      "doc": "The type of the AIS Message. 1/2/3 are Class A position reports."
+    },
+    {
+      "name": "Repeat",
+      "type":"int",
+      "doc": "Repeat Indicator"
+    },
+    {
+      "name": "MMSI",
+      "type": "long",
+      "doc": "User ID (MMSI)"
+    },
+    {
+      "name": "Speed",
+      "type": "float",
+      "doc": "Speed over Ground (SOG)"
+    },
+    {
+      "name": "Accuracy",
+      "type": "boolean",
+      "doc": "Position Accuracy"
+    },
+    {
+      "name": "Longitude",
+      "type": "double",
+      "doc": "Longitude"
+    },
+    {
+      "name": "Latitude",
+      "type": "double",
+      "doc": "Latitude"
+    },
+    {
+      "name": "Course",
+      "type": "float",
+      "doc": "Course over Ground (COG)"
+    },
+    {
+      "name": "Heading",
+      "type": "int",
+      "doc": "True Heading (HDG)"
+    },
+    {
+      "name": "Second",
+      "type": "int",
+      "doc": "Time Stamp"
+    },
+    {
+      "name": "RAIM",
+      "type": "boolean",
+      "doc": "RAIM flag"
+    },
+    {
+      "name": "Radio",
+      "type": "long",
+      "doc": "Radio Status"
+    },
+    {
+      "name": "Status",
+      "type": "int",
+      "doc": "Navigation Status (enumerated type)"
+    },
+    {
+      "name": "Turn",
+      "type": "float",
+      "doc": "Rate of Turn (ROT)"
+    },
+    {
+      "name": "Maneuver",
+      "type": "int",
+      "doc": "Manuever Indicator (enumerated type)"
+    },
+    {
+      "name": "Timestamp",
+      "type": "long",
+      "doc": "Time the message was encoded to avro (nanoseconds since epoch). May be used for ordering."
+    }
+  ]
+}

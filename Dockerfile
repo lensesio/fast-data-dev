@@ -111,6 +111,9 @@ ADD web/Caddyfile /usr/share/landoop
 COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
 
+# Add sample data
+COPY sample-data /usr/share/landoop/sample-data
+
 # Add executables, settings and configuration
 ADD extras/supervisord-web-only.conf /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
