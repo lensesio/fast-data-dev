@@ -16,8 +16,8 @@ var runningServices = [
     "description" : "View, create, update and manage connectors"
   },
   {
-    "name" : "Datamountaineer Stream Reactor v0.2.4",
-    "description" : "Source & Sink connectors collection (16+ in total) supporting KCQL"
+    "name" : "Datamountaineer Stream Reactor v0.2.5",
+    "description" : "Source & Sink connectors collection (20+ in total) supporting KCQL"
   }
 ];
 
