@@ -40,6 +40,11 @@
       "doc": "Latitude"
     },
     {
+      "name": "location",
+      "type": "string",
+      "doc": "Location as 'lat,lon' string for use with Elastic Search."
+    },
+    {
       "name": "Course",
       "type": "float",
       "doc": "Course over Ground (COG)"
