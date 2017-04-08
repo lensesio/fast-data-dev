@@ -126,7 +126,7 @@ RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
 ARG BUILD_BRANCH
 ARG BUILD_COMMIT
 ARG BUILD_TIME
-ARG DOCKER_REPO
+ARG DOCKER_REPO=local
 RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
