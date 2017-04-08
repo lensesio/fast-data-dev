@@ -9,7 +9,7 @@ CONNECT_PORT="${CONNECT_PORT:-8083}"
 WEB_PORT="${WEB_PORT:-3030}"
 #KAFKA_MANAGER_PORT="3031"
 RUN_AS_ROOT="${RUN_AS_ROOT:false}"
-ZK_JMX_PORT="9580"
+ZK_JMX_PORT="9585"
 BROKER_JMX_PORT="9581"
 REGISTRY_JMX_PORT="9582"
 REST_JMX_PORT="9583"
@@ -17,30 +17,9 @@ CONNECT_JMX_PORT="9584"
 DISABLE_JMX="${DISABLE_JMX:false}"
 ENABLE_SSL="${ENABLE_SSL:false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
+DEBUG="${DEBUG:-false}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
-
-if ! echo $DISABLE_JMX | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT"
-fi
-
-if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$PORTS $BROKER_SSL_PORT"
-fi
-
-if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$WEB_PORT"
-fi
-
-# Check for port availability
-for port in $PORTS; do
-    if ! /usr/local/bin/checkport -port $port; then
-        echo "Could not successfully bind to port $port. Maybe some other service"
-        echo "in your system is using it? Please free the port and try again."
-        echo "Exiting."
-        exit 1
-    fi
-done
 
 # Set webserver basicauth username and password
 USER="${USER:-kafka}"
@@ -122,6 +101,7 @@ fi
 
 # Configure JMX if needed or disable it.
 if ! echo "$DISABLE_JMX" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
     sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
         -i /etc/supervisord.conf
@@ -142,6 +122,7 @@ fi
 
 # SSL setup
 if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$PORTS $BROKER_SSL_PORT"
     echo -e "\e[92mTLS enabled. Creating CA and key-cert pairs.\e[34m"
     {
         mkdir /tmp/certs
@@ -193,7 +174,7 @@ ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
 ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
-        sed -r -e 's|^(listeners=.*)|\1,SSL://:9093|' \
+        sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
             -i /opt/confluent/etc/kafka/server.properties
         [[ ! -z "${ADV_HOST}" ]] \
             && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
@@ -204,17 +185,65 @@ EOF
 
         popd
     } >/var/log/ssl-setup.log 2>&1
+    sed -r -e 's|9093|'"${BROKER_SSL_PORT}"'|' \
+        -i /var/www/env.js
+else
+    sed -r -e 's|9093||' -i /var/www/env.js
 fi
 
 # Set web-only mode if needed
 if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    PORTS="$WEB_PORT"
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.conf
     cp /var/www/env-webonly.js /var/www/env.js
 fi
 
+# Set supervisord to output all logs to stdout
+if echo $DEBUG | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    sed -e 's/loglevel=info/loglevel=debug/' -i /etc/supervisord.conf
+fi
+
+# Check for port availability
+for port in $PORTS; do
+    if ! /usr/local/bin/checkport -port $port; then
+        echo "Could not successfully bind to port $port. Maybe some other service"
+        echo "in your system is using it? Please free the port and try again."
+        echo "Exiting."
+        exit 1
+    fi
+done
+
+# Check for Container's Memory Limit
+MLMB="4096"
+if [[ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]]; then
+    MLB="$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)"
+    MLMB="$(expr $MLB / 1024 / 1024)"
+    MLREC=4096
+    if [[ "$MLMB" -lt $MLREC ]]; then
+        echo -e "\e[91mMemory limit for container is \e[93m${MLMB} MiB\e[91m, which is less than the lowest"
+        echo -e "recommended of \e[93m${MLREC} MiB\e[91m. You will probably experience instability issues.\e[39m"
+    fi
+fi
+
+# Check for Available RAM
+RAKB="$(cat /proc/meminfo | grep MemA | sed -r -e 's/.* ([0-9]+) kB/\1/')"
+if [[ -z "$RAKB" ]]; then
+        echo -e "\e[91mCould not detect available RAM, probably due to very old Linux Kernel."
+        echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m4096 MiB\e[91m RAM available for fast-data-dev.\e[39m"
+else
+    RAMB="$(expr $RAKB / 1024)"
+    RAREC=5120
+    if [[ "$RAMB" -lt $RAREC ]]; then
+        echo -e "\e[91mOperating system RAM available is \e[93m${RAMB} MiB\e[91m, which is less than the lowest"
+        echo -e "recommended of \e[93m${RAREC} MiB\e[91m. Your system performance may be seriously impacted.\e[39m"
+    fi
+fi
+
 PRINT_HOST="${ADV_HOST:-localhost}"
+[[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
+echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about a minute.\e[39m"
 
 # Set connect heap size if needed

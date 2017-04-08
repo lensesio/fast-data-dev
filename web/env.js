@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {
-    "name" : "Landoop Kafka Topics UI v0.8.2",
+    "name" : "Landoop Kafka Topics UI v0.8.3",
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
@@ -16,8 +16,8 @@ var runningServices = [
     "description" : "View, create, update and manage connectors"
   },
   {
-    "name" : "Datamountaineer Stream Reactor v0.2.4",
-    "description" : "Source & Sink connectors collection (16+ in total) supporting KCQL"
+    "name" : "Datamountaineer Stream Reactor v0.2.5",
+    "description" : "Source & Sink connectors collection (20+ in total) supporting KCQL"
   }
 ];
 
@@ -25,6 +25,12 @@ var servicesInfo = [
   {
     "name" : "Kafka Broker",
     "port" : "9092",
+    "jmx"  : "9581 : JMX",
+    "url"  : "localhost"
+  },
+  {
+    "name" : "Kafka Broker SSL 🔒",
+    "port" : "9093",
     "jmx"  : "9581 : JMX",
     "url"  : "localhost"
   },
@@ -49,7 +55,7 @@ var servicesInfo = [
   {
     "name" : "ZooKeeper",
     "port" : "2181",
-    "jmx"  : "",
+    "jmx"  : "9585 : JMX",
     "url"  : "localhost"
   },
   {

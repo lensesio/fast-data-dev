@@ -4,14 +4,14 @@
 
 [Kafka](http://kafka.apache.org/) docker image with Confluent (OSS), [Landoop](http://www.landoop.com/kafka/kafka-tools/) tools, 20+ Kafka Connectors
 
-> View latest [demo on-line](https://fast-data-dev.demo.landoop.com)
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)**
 
 ### Why ?
 
 When you need:
 
-1. Confluent Open Source distribution of Apache Kafka including: ZooKeeper, Schema Registry, Kafka REST, Kafka-Connect
-2. Landoop Fast Data Tools including: kafka-topics-ui, schema-registry-ui, kafka-connect-ui
+1. **Confluent** OSS with Apache Kafka including: ZooKeeper, Schema Registry, Kafka REST, Kafka-Connect
+2. **Landoop** Fast Data Tools including: kafka-topics-ui, schema-registry-ui, kafka-connect-ui
 3. 20+ Kafka Connectors to simplify ETL processes
 4. Integration testing and examples embedded into the docker
 
@@ -37,18 +37,33 @@ IP address or hostname that other machines can use to access it:
 
 <img src="https://storage.googleapis.com/wch/fast-data-dev-ui.png" alt="fast-data-dev web UI screenshot" type="image/png" width="900">
 
-### Running on Mac
+### Mac and Windows users only (docker-machine)
 
-On Mac OS X allocate at least 6GB RAM to the VM:
+Create a VM with 6GB RAM using Docker Machine:
 
-    docker-machine create --driver virtualbox --virtualbox-cpu-count "4"  --virtualbox-memory "6024" devel
-    eval $(docker-machine env devel)
+```
+docker-machine create --driver virtualbox --virtualbox-memory 6000 landoop
+```
 
-And define ports and advertise hostname:
+Run `docker-machine ls` to verify that the Docker Machine is running correctly. The command's output should be similar to:
+
+```
+$ docker-machine ls
+NAME        ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
+landoop     *        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.1-ce
+```
+
+Configure your terminal to be able to use the new Docker Machine named landoop:
+
+```
+eval $(docker-machine env landoop)
+```
+
+And run the Kafka Development Environment. Define ports, advertise the hostname and use extra parameters:
 
 ```
 docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
-           -p 9581-9584:9581-9584 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
+           -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
            landoop/fast-data-dev:latest
 ```
 
@@ -67,11 +82,13 @@ You can further customize the execution of the container with additional flags:
  `RUNTESTS=0`                   | Disable the (coyote) integration tests from running when container starts
  `FORWARDLOGS=0`                | Disable running 5 file source connectors that bring application logs into Kafka topics
  `RUN_AS_ROOT=1`                | Run kafka as `root` user - useful to i.e. test HDFS connector
- `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9584
+ `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9585
  `<SERVICE>_PORT=<PORT>`        | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
  `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
  `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
  `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
+ `DEBUG=1`                      | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
+ `SAMPLEDATA=0`                | Do not create `position-reports` topic with sample Avro records.
 
 And execute the docker image if needed in `daemon` mode:
 
@@ -83,13 +100,13 @@ The latest version of this docker image tracks our latest stable tag (cp3.1.2). 
 images include:
 
  Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors
--------------------------------| ------------- | ------------- | ------------- | ------------- 
+-------------------------------| ------------- | ------------- | ------------- | --------------
 landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
 landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
-landoop/fast-data-dev:cp3.2.0  |     3.2.0     |       ✓       |    0.10.2.0   | 6+ connectors
+landoop/fast-data-dev:cp3.2.0  |     3.2.0     |       ✓       |    0.10.2.0   | 24+ connectors
 
-Versions cp3.1.2 (latest) and cp3.0.1 contain a collection of popular open source connectors
-including *stream-reactor* v.0.2.4. Version cp3.2.0 is experimental.
+Fast-data-dev contains a collection of popular open source connectors including *stream-reactor*
+v.0.2.4. Version cp3.2.0 is experimental.
 
 Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
@@ -334,4 +351,4 @@ environment variable:
 
 JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
 `9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
-at `9580`.
+at `9585`.
