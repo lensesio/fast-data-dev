@@ -22,8 +22,8 @@ RUN apk add --no-cache \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
-ENV CP_VERSION="3.2.0"
-ARG CP_URL="https://packages.confluent.io/archive/3.2/confluent-oss-3.2.0-2.11.tar.gz"
+ENV CP_VERSION="3.2.0" KAFKA_VERSION="0.10.2.0"
+ARG CP_URL="https://packages.confluent.io/archive/3.2/confluent-oss-${CP_VERSION}-2.11.tar.gz"
 RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && mkdir -p /opt/confluent \
     && tar --no-same-owner --strip-components 1 -xzf /opt/confluent.tar.gz -C /opt/confluent \
@@ -32,7 +32,7 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
 
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.4_3.2.0.tar.gz
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.5_3.2.0.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent/share/java \
     && rm -rf /opt/confluent/share/java/kafka-connect-druid \
@@ -85,7 +85,7 @@ RUN wget "$SCHEMA_REGISTRY_UI_URL" -O /schema-registry-ui.tar.gz \
 COPY web/registry-ui-env.js /var/www/schema-registry-ui/env.js
 
 # Add and Setup Kafka-Topics-Ui
-ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.2/kafka-topics-ui-0.8.2.tar.gz"
+ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v0.8.3/kafka-topics-ui-0.8.3.tar.gz"
 RUN wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
     && mkdir /var/www/kafka-topics-ui \
     && tar xzf /kafka-topics-ui.tar.gz -C /var/www/kafka-topics-ui \
@@ -112,6 +112,9 @@ ADD web/Caddyfile /usr/share/landoop
 COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
 
+# Add sample data
+COPY sample-data /usr/share/landoop/sample-data
+
 # Add executables, settings and configuration
 ADD extras/supervisord-web-only.conf /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
@@ -120,6 +123,17 @@ RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
     && echo \
          'export PS1="\[\033[1;31m\]\u\[\033[1;33m\]@\[\033[1;34m\]fast-data-dev \[\033[1;36m\]\W\[\033[1;0m\] $ "' \
          > /root/.bashrc
+
+ARG BUILD_BRANCH
+ARG BUILD_COMMIT
+ARG BUILD_TIME
+ARG DOCKER_REPO
+RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
+    && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
+    && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
+    && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
+    && echo "KAFKA_VERSION=${KAFKA_VERSION}" | tee -a /build.info \
+    && echo "CP_VERSION=${CP_VERSION}"       | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]

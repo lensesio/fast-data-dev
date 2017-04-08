@@ -58,6 +58,9 @@
     - name: Delete Avro Consumer (rest proxy, schema registry)
       command: curl -vs --stderr - -X DELETE "http://localhost:8082/consumers/coyote_avro/instances/a_consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - name: Delete Consumer Group Info
+      command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote_avro
+      stdout_not_has: [ 'Error', 'failed' ]
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_avro --delete
       nolog: true
 
@@ -83,6 +86,9 @@
     - name: Delete JSON Consumer (rest proxy)
       command: curl -vs --stderr - -X DELETE "http://localhost:8082/consumers/coyote_json/instances/a_consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - name: Delete Consumer Group Info
+      command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote_json
+      stdout_not_has: [ 'Error', 'failed' ]
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_json --delete
       nolog: true
 
@@ -108,6 +114,9 @@
     - name: Delete Binary Consumer (rest proxy)
       command: curl -vs --stderr - -XDELETE "http://localhost:8082/consumers/coyote_binary/instances/a_consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - name: Delete Consumer Group Info
+      command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote_binary
+      stdout_not_has: [ 'Error', 'failed' ]
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote_test_binary --delete
       nolog: true
 
@@ -172,24 +181,28 @@
       stdout_has: [ '/etc/fstab' ]
     - name: "Run Console Consumer to fix Kafka's transient state (basic kafka)"
       command: |
-        timeout 5
+        timeout 10
         kafka-console-consumer --new-consumer
                                --bootstrap-server localhost:9092
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
+                               --timeout-ms 5000
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)
       command: |
-        timeout 5
+        timeout 10
         kafka-console-consumer --new-consumer
                                --bootstrap-server localhost:9092
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
+                               --timeout-ms 5000
       stdout_has: [ 'cdrom' ]
       ignore_exit_code: true
     - name: Delete connector
       command:  curl -vs --stderr - -XDELETE "http://localhost:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - command: sleep 5
+      nolog: true
     - name: Delete Connect Distributes Test Topic (basic kafka)
       command: kafka-topics --zookeeper localhost:2181 --topic coyote_cd-%UNIQUE_CD% --delete
 
@@ -240,8 +253,11 @@
                                --bootstrap-server localhost:9092
                                --topic coyote-ca-accounts
                                --from-beginning
+                               --timeout-ms 10000
       stdout_has: [ 'alice', 'bob' ]
       ignore_exit_code: true
+    - command: sleep 5
+      nolog: true
     - name: Delete Connect Standalone Test Topic (basic kafka)
       command: kafka-topics --zookeeper localhost:2181 --topic coyote-ca-accounts --delete
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset

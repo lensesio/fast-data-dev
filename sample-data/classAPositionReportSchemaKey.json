@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "Key",
+  "namespace": "com.landoop.ais",
+  "fields": [
+    {
+      "name": "MMSI",
+      "type": "long",
+      "doc": "User ID (MMSI)"
+    }
+  ]
+}
