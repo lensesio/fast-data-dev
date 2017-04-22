@@ -18,6 +18,7 @@ proxy /api/kafka-connect 0.0.0.0:8083 {
 }
 
 browse /certs
+browse /logs
 
 header /coyote-tests/results Cache-Control "no-store"
 header /coyote-tests/index.html Cache-Control "no-store"

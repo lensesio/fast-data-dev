@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "Browse Kafka topics and understand what's happening on your cluster. Find topics / view topic metadata / browse topic data (kafka messages) / view topic configuration / download data."
   },
   {
-    "name" : "Landoop Kafka Connect UI v0.9.0",
+    "name" : "Landoop Kafka Connect UI v0.9.1",
     "description" : "This is a web tool for Kafka Connect for setting up and managing connectors for multiple connect clusters."
   }
 ];
@@ -49,5 +49,18 @@ var servicesInfo = [
     "port" : "3030",
     "jmx"  : "",
     "url"  : "http://localhost"
+  }
+];
+
+var exposedDirectories = [
+  {
+    "name" : "running services log files",
+    "url" : "/logs",
+    "enabled" : "1"
+  },
+  {
+    "name" : "certificates (truststore and client keystore)",
+    "url" : "/certs",
+    "enabled" : "ssl_browse"
   }
 ];
