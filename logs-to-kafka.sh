@@ -9,7 +9,7 @@ if [[ "$FORWARDLOGS" == "0" ]]; then
     exit 0
 fi
 
-for (( i=0; i<=${#LOGS[@]}; i++)); do
+for (( i=0; i<${#LOGS[@]}; i++)); do
 cat <<EOF >/tmp/connector
 {
   "name": "logs-${LOGS[$i]}",

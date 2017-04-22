@@ -12,7 +12,7 @@ var runningServices = [
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
-    "name" : "Landoop Kafka Connect UI v0.9.0",
+    "name" : "Landoop Kafka Connect UI v0.9.1",
     "description" : "View, create, update and manage connectors"
   },
   {

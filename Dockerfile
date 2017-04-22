@@ -93,7 +93,7 @@ RUN wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
 COPY web/topics-ui-env.js /var/www/kafka-topics-ui/env.js
 
 # Add and Setup Kafka-Connect-UI
-ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.9.0/kafka-connect-ui-0.9.0.tar.gz"
+ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.9.1/kafka-connect-ui-0.9.1.tar.gz"
 RUN wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
     && mkdir /var/www/kafka-connect-ui \
     && tar xzf /kafka-connect-ui.tar.gz -C /var/www/kafka-connect-ui \
