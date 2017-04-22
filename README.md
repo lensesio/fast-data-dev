@@ -73,7 +73,7 @@ That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev envi
 
 You can further customize the execution of the container with additional flags:
 
- optional_parameters            | usage                                                                                                       
+ optional_parameters            | usage
 ------------------------------- | ------------------------------------------------------------------------------------------------------------
  `WEB_ONLY=1      `             | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
  `CONNECT_HEAP=3G`              | Configure the heap size allocated to Kafka Connect
@@ -83,6 +83,7 @@ You can further customize the execution of the container with additional flags:
  `FORWARDLOGS=0`                | Disable running 5 file source connectors that bring application logs into Kafka topics
  `RUN_AS_ROOT=1`                | Run kafka as `root` user - useful to i.e. test HDFS connector
  `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9585
+ `DISABLE_TOPIC_DELETE=1`       | Disable topic deletion - enabled by default (setting `delete.topic.enable=true`)
  `<SERVICE>_PORT=<PORT>`        | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
  `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
  `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
@@ -257,32 +258,32 @@ Twitter connector) to let HBase work:
 
 - Landoop's Fast Data Web UI tools and integration test requires a few seconds
   till they fully work.
-  
+
   That is because the services (Schema Registry and kafka REST Proxy) have
   to start and initialize before the UIs can read data.
 - When you start the container, Schema Registry and REST Proxy fail.
-  
+
   This happens because the Broker isn't up yet. It is normal. Supervisord will
   make sure they will work automatically once the Broker starts.
 - What resources does this container need?
-  
+
   An idle, fresh container will need about 1.5GiB of RAM. As at least 4 JVM
   applications will be working in it, your mileage will vary. In our
   experience Kafka Connect usually requires a lot of memory. It's heap size is
   set by default to 1GiB but you'll might need more than that.
-  
+
 - Fast-data-dev does not start properly, broker fails with:
   > [2016-08-23 15:54:36,772] FATAL [Kafka Server 0], Fatal error during
   > KafkaServer startup. Prepare to shutdown (kafka.server.KafkaServer)
   > java.net.UnknownHostException: [HOSTNAME]: [HOSTNAME]: unknown error
-  
+
   JVM based apps tend to be a bit sensitive to hostname issues.
   Either run the image without `--net=host` and expose all ports
   (2181, 3030, 8081, 8082, 8083, 9092) to the same port at the host, or
   better yet make sure your hostname resolve to the localhost address
   (127.0.0.1). Usually to achieve this, you need to add your hostname (case
   sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
-  
+
       127.0.0.1 MyHost localhost
 
 ### Detailed configuration options

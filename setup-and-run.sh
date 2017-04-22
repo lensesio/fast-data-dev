@@ -44,6 +44,13 @@ listeners=PLAINTEXT://:$BROKER_PORT
 confluent.support.metrics.enable=false
 EOF
 
+# Allow for topic deletion by default, unless DISABLE_TOPIC_DELETE is set
+if [[ -z "$DISABLE_TOPIC_DELETE" ]]; then
+cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+delete.topic.enable=true
+EOF
+fi
+
 ## Disabled because the basic replacements catch it
 # cat <<EOF >>/opt/confluent/etc/schema-registry/schema-registry.properties
 
