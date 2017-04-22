@@ -1,15 +1,15 @@
 #!/bin/bash
 
 FORWARDLOGS="${FORWARDLOGS:-1}"
-LOGS=(broker schema-registry rest-proxy connect-distributed zookeeper)
+# LOGS=(broker schema-registry rest-proxy connect-distributed zookeeper)
+LOGS=(broker)
 
 if [[ "$FORWARDLOGS" == "0" ]]; then
     echo "Skipping sinking logs to kafka  due to \$FORWARDLOGS = 0."
     exit 0
 fi
 
-
-for (( i=0; i<=4; i++)); do
+for (( i=0; i<=${#LOGS[@]}; i++)); do
 cat <<EOF >/tmp/connector
 {
   "name": "logs-${LOGS[$i]}",

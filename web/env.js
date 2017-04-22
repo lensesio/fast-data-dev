@@ -65,3 +65,16 @@ var servicesInfo = [
     "url"  : "http://localhost"
   }
 ];
+
+var exposedDirectories = [
+  {
+    "name" : "running services log files",
+    "url" : "/logs",
+    "enabled" : "1"
+  },
+  {
+    "name" : "certificates (truststore and client keystore)",
+    "url" : "/certs",
+    "enabled" : "ssl_browse"
+  }
+];

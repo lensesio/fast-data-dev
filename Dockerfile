@@ -27,6 +27,7 @@ ARG CP_URL="https://packages.confluent.io/archive/3.1/confluent-oss-${CP_VERSION
 RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && mkdir -p /opt/confluent \
     && tar --no-same-owner --strip-components 1 -xzf /opt/confluent.tar.gz -C /opt/confluent \
+    && mkdir /opt/confluent/logs && chmod 1777 /opt/confluent/logs \
     && rm -rf /opt/confluent.tar.gz \
     && ln -s /opt/confluent "/opt/confluent-${CP_VERSION}"
 
@@ -100,16 +101,18 @@ RUN wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
 COPY web/connect-ui-env.js /var/www/kafka-connect-ui/env.js
 
 # Add and setup Caddy Server
-ARG CADDY_URL=https://caddyserver.com/download/build?os=linux&arch=amd64&features=cors%2Cratelimit
+ARG CADDY_URL=https://github.com/mholt/caddy/releases/download/v0.9.5/caddy_linux_amd64.tar.gz
 RUN wget "$CADDY_URL" -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
+    && mv /opt/caddy/caddy_linux_amd64 /opt/caddy/caddy \
     && rm -f /caddy.tgz
 ADD web/Caddyfile /usr/share/landoop
 
 # Add fast-data-dev UI
 COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
+RUN ln -s /var/log /var/www/logs
 
 # Add sample data
 COPY sample-data /usr/share/landoop/sample-data

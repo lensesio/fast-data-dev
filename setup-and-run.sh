@@ -195,6 +195,7 @@ EOF
     } >/var/log/ssl-setup.log 2>&1
     sed -r -e 's|9093|'"${BROKER_SSL_PORT}"'|' \
         -i /var/www/env.js
+    sed -e 's/ssl_browse/1/' -i /var/www/env.js
 else
     sed -r -e 's|9093||' -i /var/www/env.js
 fi
