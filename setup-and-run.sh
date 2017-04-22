@@ -18,6 +18,7 @@ DISABLE_JMX="${DISABLE_JMX:false}"
 ENABLE_SSL="${ENABLE_SSL:false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 DEBUG="${DEBUG:-false}"
+TOPIC_DELETE="${TOPIC_DELETE:-true}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
@@ -71,6 +72,13 @@ sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PO
        /var/www/env.js \
        /usr/share/landoop/kafka-tests.yml \
        /usr/local/bin/logs-to-kafka.sh
+
+# Allow for topic deletion by default, unless TOPIC_DELETE is set
+if echo $TOPIC_DELETE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+delete.topic.enable=true
+EOF
+fi
 
 # Remove ElasticSearch if needed
 PREFER_HBASE="${PREFER_HBASE:-false}"
