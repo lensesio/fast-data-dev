@@ -4,15 +4,15 @@ var runningServices = [
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
   {
-    "name" : "Landoop Schema Registry UI v0.9.0",
+    "name" : "Landoop Schema Registry UI v0.9.1",
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {
-    "name" : "Landoop Kafka Topics UI v0.8.3",
+    "name" : "Landoop Kafka Topics UI v0.9.1",
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
-    "name" : "Landoop Kafka Connect UI v0.9.1",
+    "name" : "Landoop Kafka Connect UI v0.9.2",
     "description" : "View, create, update and manage connectors"
   }
 ];
