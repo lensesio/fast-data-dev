@@ -1,6 +1,6 @@
 var runningServices = [
   {
-    "name" : "Landoop Schema Registry UI v0.9.0",
+    "name" : "Landoop Schema Registry UI v0.9.1",
     "description" : "Create / view / search / validate / evolve / view history & configure Avro schemas of your Kafka cluster"
   },
   {
@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "Browse Kafka topics and understand what's happening on your cluster. Find topics / view topic metadata / browse topic data (kafka messages) / view topic configuration / download data."
   },
   {
-    "name" : "Landoop Kafka Connect UI v0.9.1",
+    "name" : "Landoop Kafka Connect UI v0.9.2",
     "description" : "This is a web tool for Kafka Connect for setting up and managing connectors for multiple connect clusters."
   }
 ];

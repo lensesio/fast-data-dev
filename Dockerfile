@@ -31,6 +31,7 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && rm -rf /opt/confluent.tar.gz \
     && ln -s /opt/confluent "/opt/confluent-${CP_VERSION}"
 
+
 # Add Stream Reactor and Elastic Search (for elastic connector)
 ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.4_3.0.1.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
@@ -77,7 +78,7 @@ RUN wget https://github.com/Landoop/coyote/releases/download/v1.1/coyote-1.1-lin
 ADD integration-tests/index.html integration-tests/results /var/www/coyote-tests/
 
 # Add and Setup Schema-Registry-Ui
-ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.0.9.0/schema-registry-ui-0.9.0.tar.gz"
+ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.0.9.1/schema-registry-ui-0.9.1.tar.gz"
 RUN wget "$SCHEMA_REGISTRY_UI_URL" -O /schema-registry-ui.tar.gz \
     && mkdir -p /var/www/schema-registry-ui \
     && tar xzf /schema-registry-ui.tar.gz -C /var/www/schema-registry-ui \
@@ -93,7 +94,7 @@ RUN wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
 COPY web/topics-ui-env.js /var/www/kafka-topics-ui/env.js
 
 # Add and Setup Kafka-Connect-UI
-ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.9.1/kafka-connect-ui-0.9.1.tar.gz"
+ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.9.2/kafka-connect-ui-0.9.2.tar.gz"
 RUN wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
     && mkdir /var/www/kafka-connect-ui \
     && tar xzf /kafka-connect-ui.tar.gz -C /var/www/kafka-connect-ui \
