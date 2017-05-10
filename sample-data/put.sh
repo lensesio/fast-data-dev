@@ -4,6 +4,15 @@ SAMPLEDATA="${SAMPLEDATA:-1}"
 if echo "$SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     pushd /usr/share/landoop/sample-data
 
+    # Create topic with 5 partitions and a retention time of 10 years.
+    kafka-topics \
+        --zookeeper localhost:2181 \
+        --topic position-reports \
+        --partition 5 \
+        --replication 1 \
+        --config retention.ms=315576000000 \
+        --create
+
     zcat ais.txt.gz | \
         kafka-avro-console-producer \
             --broker-list localhost:9092 \

@@ -12,7 +12,7 @@ var runningServices = [
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
-    "name" : "Landoop Kafka Connect UI v0.9.0",
+    "name" : "Landoop Kafka Connect UI v0.9.1",
     "description" : "View, create, update and manage connectors"
   },
   {
@@ -63,5 +63,18 @@ var servicesInfo = [
     "port" : "3030",
     "jmx"  : "",
     "url"  : "http://localhost"
+  }
+];
+
+var exposedDirectories = [
+  {
+    "name" : "running services log files",
+    "url" : "/logs",
+    "enabled" : "1"
+  },
+  {
+    "name" : "certificates (truststore and client keystore)",
+    "url" : "/certs",
+    "enabled" : "ssl_browse"
   }
 ];
