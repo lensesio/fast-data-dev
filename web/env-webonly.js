@@ -4,7 +4,7 @@ var runningServices = [
     "description" : "Create / view / search / validate / evolve / view history & configure Avro schemas of your Kafka cluster"
   },
   {
-    "name" : "Landoop Kafka Topics UI v0.9.1",
+    "name" : "Landoop Kafka Topics UI v0.9.2",
     "description" : "Browse Kafka topics and understand what's happening on your cluster. Find topics / view topic metadata / browse topic data (kafka messages) / view topic configuration / download data."
   },
   {
