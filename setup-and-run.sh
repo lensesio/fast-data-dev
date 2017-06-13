@@ -103,7 +103,7 @@ if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
          >> /opt/confluent/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
-         >> /opt/confluent/etc/kafka/connect-distributed.properties
+         >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js /etc/supervisord.conf
 fi
 
