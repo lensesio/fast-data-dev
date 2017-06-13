@@ -1,0 +1,20 @@
+fast-data-dev
+Copyright 2016-2017 Landoop LTD
+
+This product includes software developed at
+Landoop LTD (http://www.landoop.com).
+
+Software included in the Docker image produced by this repository includes
+software by third parties and other Landoop repositories.
+
+We do not claim ownership of third party software and each component retains
+its original license.
+
+The most important software components and their license are:
+
+Caddy                         : Apache 2.0
+Confluent Platform            : Apache 2.0
+Datamountaineer Stream Reactor: Apache 2.0
+Kafka Connect UI              : BSL (http://www.landoop.com/bsl/)
+Kafka Topics UI               : BSL (http://www.landoop.com/bsl/)
+Schema Registry UI            : BSL (http://www.landoop.com/bsl/)

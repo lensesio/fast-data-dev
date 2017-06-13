@@ -4,6 +4,7 @@ MAINTAINER Marios Andreopoulos <marios@landoop.com>
 # Update, install tooling and some basic setup
 RUN apk add --no-cache \
         bash coreutils \
+        bash-completion \
         wget curl \
         openjdk8-jre-base \
         tar gzip bzip2 \
@@ -119,13 +120,12 @@ RUN ln -s /var/log /var/www/logs
 COPY sample-data /usr/share/landoop/sample-data
 
 # Add executables, settings and configuration
-ADD extras/supervisord-web-only.conf /usr/share/landoop/
+ADD extras/ /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh logs-to-kafka.sh /usr/local/bin/
+ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.1/kafka /usr/share/landoop/kafka-completion
 RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
-    && echo \
-         'export PS1="\[\033[1;31m\]\u\[\033[1;33m\]@\[\033[1;34m\]fast-data-dev \[\033[1;36m\]\W\[\033[1;0m\] $ "' \
-         > /root/.bashrc
+    && ln -s /usr/share/landoop/bashrc /root/.bashrc
 
 ARG BUILD_BRANCH
 ARG BUILD_COMMIT
