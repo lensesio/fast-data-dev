@@ -57,6 +57,8 @@ cat <<EOF >>/opt/confluent/etc/kafka-rest/kafka-rest.properties
 listeners=http://0.0.0.0:$REST_PORT
 schema.registry.url=http://localhost:$REGISTRY_PORT
 zookeeper.connect=localhost:$ZK_PORT
+# fix for Kafka REST consumer issues
+consumer.request.timeout.ms=30000
 EOF
 
 ## Schema Registry specific

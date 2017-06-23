@@ -97,7 +97,7 @@ And execute the docker image if needed in `daemon` mode:
 
 ### Versions
 
-The latest version of this docker image tracks our latest stable tag (cp3.1.2). Our
+The latest version of this docker image tracks our latest stable tag (cp3.2.2). Our
 images include:
 
  Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors

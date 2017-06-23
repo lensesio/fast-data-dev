@@ -23,7 +23,7 @@ RUN apk add --no-cache \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
-ENV CP_VERSION="3.2.1" KAFKA_VERSION="0.10.2.1"
+ENV CP_VERSION="3.2.2" KAFKA_VERSION="0.10.2.1-cp2"
 ARG CP_URL="https://packages.confluent.io/archive/3.2/confluent-oss-${CP_VERSION}-2.11.tar.gz"
 RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && mkdir -p /opt/confluent \
@@ -34,7 +34,7 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
 
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.5_3.2.1.tar.gz
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.5_3.2.2.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent/share/java \
     && rm -rf /opt/confluent/share/java/kafka-connect-druid \
@@ -61,7 +61,7 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 #     && rm -rf /kafka-manager-1.3.2.1.zip
 
 # Add Twitter Connector
-ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-af63e4c-cp3.2.1-jar-with-dependencies.jar"
+ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-af63e4c-cp3.2.2-jar-with-dependencies.jar"
 RUN mkdir -p /opt/confluent/share/java/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent/share/java/kafka-connect-twitter
 
@@ -123,7 +123,7 @@ COPY sample-data /usr/share/landoop/sample-data
 ADD extras/ /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
 ADD setup-and-run.sh logs-to-kafka.sh /usr/local/bin/
-ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.1/kafka /usr/share/landoop/kafka-completion
+ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.2/kafka /usr/share/landoop/kafka-completion
 RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
     && ln -s /usr/share/landoop/bashrc /root/.bashrc
 

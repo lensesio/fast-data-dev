@@ -20,7 +20,7 @@ if echo "$SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
             --property parse.key=true \
             --property key.schema="$(cat classAPositionReportSchemaKey.json)" \
             --property value.schema="$(cat classAPositionReportSchema.json)" \
-            --property schema.registry.url=http://localhost:2181
+            --property schema.registry.url=http://localhost:8081
 
     # # Without key
     # zcat ais-nokey.txt.gz | \
