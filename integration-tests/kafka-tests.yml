@@ -7,8 +7,8 @@
 # BASIC / PERFORMANCE
     - name: Create Topic (basic kafka)
       command: |
-        kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --partition 1 --replication 1 --create
-                     --config retention.ms=60000 --config retention.bytes=52428800
+        kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --partitions 1 --replication-factor 1
+                     --create --config retention.ms=60000 --config retention.bytes=52428800
     - name: List Topics (basic kafka)
       command: kafka-topics --zookeeper localhost:2181 --list
     - name: Performance Test (basic kafka)
@@ -243,7 +243,7 @@
         port=38783
         kafka.logs.dir=logs/
     - name: Read SQLite into Topic (connect standalone)
-      command: timeout -k 5 15 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
+      command: timeout -k 5 20 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
       stdout_not_has: [ 'ERROR' ]
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)
