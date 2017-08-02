@@ -46,7 +46,9 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
 
 # Create system symlinks to Confluent's binaries
 ADD binaries /opt/confluent/bin-install
-RUN bash -c 'for i in $(find /opt/confluent/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+RUN bash -c 'for i in $(find /opt/confluent/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done' \
+    && cd /opt/confluent/bin \
+    && ln -s kafka-run-class kafka-run-class.sh
 
 # Configure Confluent
 RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/schema-registry/schema-registry.properties \
