@@ -36,13 +36,15 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
 # Add Stream Reactor and Elastic Search (for elastic connector)
 ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-v0.2.5_3.3.0.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
-    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/confluent/share/java \
+    && mkdir -p /opt/connectors \
+    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/connectors \
     && rm -rf /opt/confluent/share/java/kafka-connect-druid \
     && rm /stream-reactor.tar.gz \
     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
-    && mv /elasticsearch-2.4.1/lib/*.jar /extra-connect-jars/ \
-    && rm -rf /elasticsearch-2.4.1*
+    && mv /elasticsearch-2.4.1/lib/*.jar /opt/connectors/kafka-connect-elastic/ \
+    && rm -rf /elasticsearch-2.4.1* \
+    && echo "plugin.path=/opt/connectors,/extra-connect-jars,/connectors" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
 
 # Create system symlinks to Confluent's binaries
 ADD binaries /opt/confluent/bin-install
