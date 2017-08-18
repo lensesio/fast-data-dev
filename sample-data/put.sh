@@ -8,8 +8,8 @@ if echo "$SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     kafka-topics \
         --zookeeper localhost:2181 \
         --topic position-reports \
-        --partition 5 \
-        --replication 1 \
+        --partitions 5 \
+        --replication-factor 1 \
         --config retention.ms=315576000000 \
         --create
 
