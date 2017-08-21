@@ -19,6 +19,8 @@ ENABLE_SSL="${ENABLE_SSL:false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 DEBUG="${DEBUG:-false}"
 TOPIC_DELETE="${TOPIC_DELETE:-true}"
+SAMPLEDATA="${SAMPLEDATA:-1}"
+RUNNING_SAMPLEDATA="${RUNNING_SAMPLEDATA:-0}"
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
@@ -260,5 +262,14 @@ echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in abo
 # Set connect heap size if needed
 CONNECT_HEAP="${CONNECT_HEAP:-1G}"
 sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.conf
+
+# Set sample data if needed
+if echo "$RUNNING_SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    cp /usr/share/landoop/supervisord-running-sample-data.conf /etc/supervisord.d/
+elif echo "$SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+    # This should be added only if we don't have running data, because it sets
+    # retention period to 10 years (as the data is so few in this case).
+    cp /usr/share/landoop/supervisord-sample-data.conf /etc/supervisord.d/
+fi
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf
