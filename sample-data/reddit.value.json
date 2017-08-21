@@ -1,0 +1,96 @@
+{
+  "type": "record",
+  "name": "reddit_post",
+  "namespace": "com.landoop.social.reddit.post",
+  "doc": "Schema for Reddit Posts dataset. [https://www.kaggle.com/reddit/reddit-comments-may-2015/discussion/16213]",
+  "fields": [
+    {
+      "name": "created_utc",
+      "type": "int"
+    },
+    {
+      "name": "ups",
+      "type":"int"
+    },
+    {
+      "name": "subreddit_id",
+      "type": "string"
+    },
+    {
+      "name": "link_id",
+      "type": "string"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "score_hidden",
+      "type": "int"
+    },
+    {
+      "name": "author_flair_css_class",
+      "type": ["null", "string"]
+    },
+    {
+      "name": "author_flair_text",
+      "type": ["null", "string"]
+    },
+    {
+      "name": "subreddit",
+      "type": "string"
+    },
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "removal_reason",
+      "type": ["null", "string"]
+    },
+    {
+      "name": "gilded",
+      "type": "int"
+    },
+    {
+      "name": "downs",
+      "type": "int"
+    },
+    {
+      "name": "archived",
+      "type": "boolean"
+    },
+    {
+      "name": "author",
+      "type": "string"
+    },
+    {
+      "name": "score",
+      "type": "int"
+    },
+    {
+      "name": "retrieved_on",
+      "type": "int"
+    },
+    {
+      "name": "body",
+      "type": "string"
+    },
+    {
+      "name": "distinguished",
+      "type": ["null", "string"]
+    },
+    {
+      "name": "edited",
+      "type": "int"
+    },
+    {
+      "name": "controversiality",
+      "type": "boolean"
+    },
+    {
+      "name": "parent_id",
+      "type": "string"
+    }
+  ]
+}

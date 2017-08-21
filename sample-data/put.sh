@@ -4,30 +4,45 @@ SAMPLEDATA="${SAMPLEDATA:-1}"
 if echo "$SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
     pushd /usr/share/landoop/sample-data
 
-    # Create topic with 5 partitions and a retention time of 10 years.
-    kafka-topics \
-        --zookeeper localhost:2181 \
-        --topic position-reports \
-        --partition 5 \
-        --replication 1 \
-        --config retention.ms=315576000000 \
-        --create
+    TOPICS=(sea_vessel_position_reports reddit_posts nyc_yellow_taxi_trip_data)
+    PARTITIONS=(3 5 1)
+    DATA=(ais.txt.gz reddit.may2015.30k.wkey.json.xz yellow_tripdata_2016-Jan_May.100k.json.xz)
+    VALUES=(classAPositionReportSchema.json reddit.value.json nyc_trip_records_yellow.value.json)
+    KEYS=(classAPositionReportSchemaKey.json reddit.key.json)
 
-    zcat ais.txt.gz | \
-        kafka-avro-console-producer \
-            --broker-list localhost:9092 \
-            --topic position-reports \
-            --property parse.key=true \
-            --property key.schema="$(cat classAPositionReportSchemaKey.json)" \
-            --property value.schema="$(cat classAPositionReportSchema.json)" \
-            --property schema.registry.url=http://localhost:8081
+    # Create Topics
+    for key in 0 1 2; do
+        # Create topic with x partitions and a retention time of 10 years.
+        kafka-topics \
+            --zookeeper localhost:2181 \
+            --topic ${TOPICS[key]} \
+            --partitions ${PARTITIONS[key]} \
+            --replication-factor 1 \
+            --config retention.ms=315576000000 \
+            --create
+    done
 
-    # # Without key
-    # zcat ais-nokey.txt.gz | \
-    #     kafka-avro-console-producer \
-    #         --broker-list localhost:9092 \
-    #         --topic position-reports-nokey \
-    #         --property value.schema="$(cat classAPositionReportSchema.json)"
+    # Insert data with keys
+    for key in 0 1; do
+        /usr/local/bin/normcat ${DATA[key]} | \
+            kafka-avro-console-producer \
+                --broker-list localhost:9092 \
+                --topic ${TOPICS[key]} \
+                --property parse.key=true \
+                --property key.schema="$(cat ${KEYS[key]})" \
+                --property value.schema="$(cat ${VALUES[key]})" \
+                --property schema.registry.url=http://localhost:8081
+    done
+
+    # Insert data without keys
+    for key in 2; do
+        /usr/local/bin/normcat ${DATA[key]} | \
+            kafka-avro-console-producer \
+                --broker-list localhost:9092 \
+                --topic ${TOPICS[key]} \
+                --property value.schema="$(cat ${VALUES[key]})" \
+                --property schema.registry.url=http://localhost:8081
+    done
 
     popd
 fi

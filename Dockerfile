@@ -116,7 +116,11 @@ COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
 RUN ln -s /var/log /var/www/logs
 
-# Add sample data
+# Add sample data and install normcat
+ARG NORMCAT_URL=https://github.com/andmarios/normcat/releases/download/1.0/normcat-1.0-linux-amd64.tar.gz
+RUN wget "$NORMCAT_URL" -O /normcat.tgz \
+    && tar xf /normcat.tgz -C /usr/local/bin \
+    && rm /normcat.tgz
 COPY sample-data /usr/share/landoop/sample-data
 
 # Add executables, settings and configuration
