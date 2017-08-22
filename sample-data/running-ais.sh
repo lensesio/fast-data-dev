@@ -21,9 +21,9 @@ for key in 0; do
         --topic ${TOPICS[key]} \
         --partitions ${PARTITIONS[key]} \
         --replication-factor 1 \
-        --config retention.bytes=52428800 \
+        --config retention.bytes=26214400 \
         --config compression.type=${COMPRESSION[key]} \
-        --config segment.bytes=20971520 \
+        --config segment.bytes=8388608 \
         --create
 done
 
