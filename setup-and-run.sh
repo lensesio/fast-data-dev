@@ -84,6 +84,7 @@ delete.topic.enable=true
 EOF
 fi
 
+## TODO: deprecate
 # Remove ElasticSearch if needed
 PREFER_HBASE="${PREFER_HBASE:-false}"
 if echo $PREFER_HBASE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then

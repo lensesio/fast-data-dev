@@ -89,7 +89,8 @@ You can further customize the execution of the container with additional flags:
  `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
  `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
  `DEBUG=1`                      | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
- `SAMPLEDATA=0`                 | Do not create `position-reports` topic with sample Avro records.
+ `SAMPLEDATA=0`                 | Do not create `sea_vessel_position_reports`, `nyc_yellow_taxi_trip_data`, `reddit_posts` topics with sample Avro records.
+ `RUNNING_SAMPLEDATA=1`         | In the sample topics send a continuous (yet low) flow of messages, so you can develop against live data.
 
 And execute the docker image if needed in `daemon` mode:
 
@@ -104,10 +105,11 @@ images include:
 -------------------------------| ------------- | ------------- | ------------- | --------------
 landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
 landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
-landoop/fast-data-dev:cp3.2.1  |     3.2.1     |       ✓       |    0.10.2.1   | 24+ connectors
+landoop/fast-data-dev:cp3.2.2  |     3.2.2     |       ✓       |    0.10.2.1   | 24+ connectors
+landoop/fast-data-dev:cp3.3.0  |     3.3.0     |       ✓       |    0.11.0.0   | 30+ connectors
 
 Fast-data-dev contains a collection of popular open source connectors
-including *stream-reactor* v.0.2.5.
+including *stream-reactor* v0.3.0
 
 Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
