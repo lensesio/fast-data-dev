@@ -104,10 +104,10 @@ images include:
 -------------------------------| ------------- | ------------- | ------------- | --------------
 landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
 landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
-landoop/fast-data-dev:cp3.2.1  |     3.2.1     |       ✓       |    0.10.2.1   | 24+ connectors
+landoop/fast-data-dev:cp3.2.2  |     3.2.2     |       ✓       |    0.10.2.2   | 30+ connectors
 
 Fast-data-dev contains a collection of popular open source connectors
-including *stream-reactor* v.0.2.5.
+including *stream-reactor* v.0.2.6.
 
 Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
