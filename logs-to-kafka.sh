@@ -16,7 +16,7 @@ cat <<EOF >/tmp/connector
   "config": {
     "connector.class": "org.apache.kafka.connect.file.FileStreamSourceConnector",
     "tasks.max": "1",
-    "topic": "logs-${LOGS[$i]}",
+    "topic": "logs_${LOGS[$i]}",
     "file":"/var/log/${LOGS[$i]}.log"
   }
 }
