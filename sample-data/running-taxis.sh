@@ -2,16 +2,8 @@
 
 pushd /usr/share/landoop/sample-data
 
-TOPICS=(sea_vessel_position_reports reddit_posts nyc_yellow_taxi_trip_data)
-PARTITIONS=(3 5 1)
-DATA=(ais.txt.gz reddit.may2015.30k.wkey.json.xz yellow_tripdata_2016-Jan_May.100k.json.xz)
-VALUES=(classAPositionReportSchema.json reddit.value.json nyc_trip_records_yellow.value.json)
-# shellcheck disable=SC2034
-KEYS=(classAPositionReportSchemaKey.json reddit.key.json)
-COMPRESSION=(uncompressed lz4 gzip)
-RATES=(50 75 100)
-JITTER=(5 50 25)
-PERIOD=(10s 20s 25s)
+# shellcheck source=variables.env
+source variables.env
 
 # Create Topics
 # shellcheck disable=SC2043
