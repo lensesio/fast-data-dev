@@ -281,6 +281,15 @@
             <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;overflow-y:auto;max-height:300px;">
                 <ul style="padding-left:10px;">
                     <li>
+                        <h4>New JSON Dataset</h4>
+                        <p>
+                            We added a small subset of <a style="text-decoration:none;" href="https://www.backblaze.com/b2/hard-drive-test-data.html" target="_blank">
+                            BackBlaze's SMART dataset for Q1 2017</a>. For this dataset we went with JSON as all our datasets up till now were in avro.
+                            As usual, you can set the environment variable <code>RUNNING_SAMPLEDATA=1</code> and these data
+                            will keep coming (cycling over the same dataset).
+                        </p>
+                    </li>
+                    <li>
                         <h4>Stream Reactor 0.3.0 for Kafka 0.11.0</h4>
                         <p>
                             We are proud for this release as well as for the 0.2.6 sister release which targets Kafka 0.10.2.
@@ -293,7 +302,10 @@
                     <li>
                         <h4>Confluent Platform OSS 3.3.0</h4>
                         <p>
-                            We updated to CP 3.3.0 and Kafka 0.11.0.0.
+                            We updated to CP 3.3.0 and Kafka 0.11.0.0. It is an exciting release with new features such as
+                            exactly-once delivery and transactional messaging. A very nice (and needed) feature is plugin.path for Connect,
+                            which permits libraries isolation between connectors. It comes though with a price: Connect needs a few minutes
+                            in order to load all the libraries and start up.
                         </p>
                     </li>
                     <li>
