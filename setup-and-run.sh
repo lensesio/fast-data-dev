@@ -78,7 +78,7 @@ sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PO
        /usr/local/bin/logs-to-kafka.sh
 
 # Allow for topic deletion by default, unless TOPIC_DELETE is set
-if echo $TOPIC_DELETE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if echo "$TOPIC_DELETE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     cat <<EOF >>/opt/confluent/etc/kafka/server.properties
 delete.topic.enable=true
 EOF
@@ -87,7 +87,7 @@ fi
 ## TODO: deprecate
 # Remove ElasticSearch if needed
 PREFER_HBASE="${PREFER_HBASE:-false}"
-if echo $PREFER_HBASE | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if echo "$PREFER_HBASE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     rm -rf /extra-connect-jars/* /opt/confluent-*/share/java/kafka-connect-elastic*
     echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
 fi
@@ -98,7 +98,7 @@ IFS=","
 for connector in $DISABLE; do
     echo "Disabling connector: kafka-connect-${connector}"
     rm -rf "/opt/confluent/share/java/kafka-connect-${connector}"
-    [[ "elastic" == $connector ]] && rm -rf /extra-connect-jars/*
+    [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
 done
 IFS="$OLD_IFS"
 
@@ -113,7 +113,7 @@ if [[ ! -z "${ADV_HOST}" ]]; then
 fi
 
 # Configure JMX if needed or disable it.
-if ! echo "$DISABLE_JMX" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if ! echo "$DISABLE_JMX" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
     sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
         -e 's/^environment=KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
@@ -128,13 +128,13 @@ else
 fi
 
 # Enable root-mode if needed
-if egrep -sq "true|TRUE|y|Y|yes|YES|1" <<<"$RUN_AS_ROOT" ; then
+if grep -sqE "true|TRUE|y|Y|yes|YES|1" <<<"$RUN_AS_ROOT" ; then
     sed -e 's/user=nobody/;user=nobody/' -i /etc/supervisord.conf
     echo -e "\e[92mRunning Kafka as root.\e[34m"
 fi
 
 # SSL setup
-if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_SSL_PORT"
     echo -e "\e[92mTLS enabled. Creating CA and key-cert pairs.\e[34m"
     {
@@ -151,21 +151,21 @@ if echo $ENABLE_SSL | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
             quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
 
             openssl pkcs12 -export \
-                    -in $cert.crt.pem \
-                    -inkey $cert.key.pem \
-                    -out $cert.p12 \
-                    -name $cert \
+                    -in "$cert.crt.pem" \
+                    -inkey "$cert.key.pem" \
+                    -out "$cert.p12" \
+                    -name "$cert" \
                     -passout pass:fastdata
 
             keytool -importkeystore \
                     -noprompt -v \
-                    -srckeystore $cert.p12 \
+                    -srckeystore "$cert.p12" \
                     -srcstoretype PKCS12 \
                     -srcstorepass fastdata \
-                    -alias $cert \
+                    -alias "$cert" \
                     -deststorepass fastdata \
                     -destkeypass fastdata \
-                    -destkeystore $cert.jks
+                    -destkeystore "$cert.jks"
         done
 
         keytool -importcert \
@@ -206,7 +206,7 @@ else
 fi
 
 # Set web-only mode if needed
-if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if echo "$WEB_ONLY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$WEB_PORT"
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.conf
@@ -214,13 +214,13 @@ if echo $WEB_ONLY | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
 fi
 
 # Set supervisord to output all logs to stdout
-if echo $DEBUG | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if echo "$DEBUG" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     sed -e 's/loglevel=info/loglevel=debug/' -i /etc/supervisord.conf
 fi
 
 # Check for port availability
 for port in $PORTS; do
-    if ! /usr/local/bin/checkport -port $port; then
+    if ! /usr/local/bin/checkport -port "$port"; then
         echo "Could not successfully bind to port $port. Maybe some other service"
         echo "in your system is using it? Please free the port and try again."
         echo "Exiting."
@@ -232,29 +232,30 @@ done
 MLMB="4096"
 if [[ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]]; then
     MLB="$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)"
-    MLMB="$(expr $MLB / 1024 / 1024)"
+    MLMB="$(( MLB / 1024 / 1024 ))"
     MLREC=4096
-    if [[ "$MLMB" -lt $MLREC ]]; then
+    if [[ "$MLMB" -lt "$MLREC" ]]; then
         echo -e "\e[91mMemory limit for container is \e[93m${MLMB} MiB\e[91m, which is less than the lowest"
         echo -e "recommended of \e[93m${MLREC} MiB\e[91m. You will probably experience instability issues.\e[39m"
     fi
 fi
 
 # Check for Available RAM
-RAKB="$(cat /proc/meminfo | grep MemA | sed -r -e 's/.* ([0-9]+) kB/\1/')"
+RAKB="$(grep MemA /proc/meminfo | sed -r -e 's/.* ([0-9]+) kB/\1/')"
 if [[ -z "$RAKB" ]]; then
         echo -e "\e[91mCould not detect available RAM, probably due to very old Linux Kernel."
         echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m4096 MiB\e[91m RAM available for fast-data-dev.\e[39m"
 else
-    RAMB="$(expr $RAKB / 1024)"
+    RAMB="$(( RAKB / 1024 ))"
     RAREC=5120
-    if [[ "$RAMB" -lt $RAREC ]]; then
+    if [[ "$RAMB" -lt "$RAREC" ]]; then
         echo -e "\e[91mOperating system RAM available is \e[93m${RAMB} MiB\e[91m, which is less than the lowest"
         echo -e "recommended of \e[93m${RAREC} MiB\e[91m. Your system performance may be seriously impacted.\e[39m"
     fi
 fi
 
 PRINT_HOST="${ADV_HOST:-localhost}"
+# shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
@@ -265,9 +266,9 @@ CONNECT_HEAP="${CONNECT_HEAP:-1G}"
 sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.conf
 
 # Set sample data if needed
-if echo "$RUNNING_SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+if echo "$RUNNING_SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     cp /usr/share/landoop/supervisord-running-sample-data.conf /etc/supervisord.d/
-elif echo "$SAMPLEDATA" | egrep -sq "true|TRUE|y|Y|yes|YES|1"; then
+elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     # This should be added only if we don't have running data, because it sets
     # retention period to 10 years (as the data is so few in this case).
     cp /usr/share/landoop/supervisord-sample-data.conf /etc/supervisord.d/

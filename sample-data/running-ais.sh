@@ -13,29 +13,31 @@ JITTER=(5 50 25)
 PERIOD=(10s 20s 25s)
 
 # Create Topics
+# shellcheck disable=SC2043
 for key in 0; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
         --zookeeper localhost:2181 \
-        --topic ${TOPICS[key]} \
-        --partitions ${PARTITIONS[key]} \
+        --topic "${TOPICS[key]}" \
+        --partitions "${PARTITIONS[key]}" \
         --replication-factor 1 \
         --config retention.bytes=26214400 \
-        --config compression.type=${COMPRESSION[key]} \
+        --config compression.type="${COMPRESSION[key]}" \
         --config segment.bytes=8388608 \
         --create
 done
 
 # Insert data with key
+# shellcheck disable=SC2043
 for key in 0; do
-    /usr/local/bin/normcat -r ${RATES[key]} -j ${JITTER[key]} -p ${PERIOD[key]} -c -v ${DATA[key]} | \
+    /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         kafka-avro-console-producer \
             --broker-list localhost:9092 \
-            --topic ${TOPICS[key]} \
+            --topic "${TOPICS[key]}" \
             --property parse.key=true \
-            --property key.schema="$(cat ${KEYS[key]})" \
-            --property value.schema="$(cat ${VALUES[key]})" \
+            --property key.schema="$(cat "${KEYS[key]}")" \
+            --property value.schema="$(cat "${VALUES[key]}")" \
             --property schema.registry.url=http://localhost:8081
 done
 
