@@ -45,7 +45,7 @@ done
 # shellcheck disable=SC2043
 for key in 3; do
     /usr/local/bin/normcat "${DATA[key]}" | \
-        sed -r -e 's/([A-Z0-9-]*):/{"model":"\1"}#/' | \
+        sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         kafka-console-producer \
             --broker-list localhost:9092 \
             --topic "${TOPICS[key]}" \
