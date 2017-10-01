@@ -6,20 +6,21 @@ pushd /usr/share/landoop/sample-data
 source variables.env
 
 # Create Topics
-for key in 0 1 2 3; do
+for key in 0 1 2 3 4 5; do
     # Create topic with x partitions and a retention time of 10 years.
     kafka-topics \
         --zookeeper localhost:2181 \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
-        --replication-factor 1 \
+        --replication-factor "${REPLICATION[key]}" \
         --config retention.ms=315576000000 \
         --config "compression.type=${COMPRESSION[key]}" \
+        --config "cleanup.policy=${CLEANUP_POLICY[key]}" \
         --create
 done
 
 # Insert data with keys
-for key in 0 1; do
+for key in 0 1 4 5; do
     /usr/local/bin/normcat "${DATA[key]}" | \
         kafka-avro-console-producer \
             --broker-list localhost:9092 \
