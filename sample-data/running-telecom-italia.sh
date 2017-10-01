@@ -7,7 +7,7 @@ source variables.env
 
 # Create Topics
 # shellcheck disable=SC2043
-for key in 3; do
+for key in 4 5; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
@@ -17,20 +17,35 @@ for key in 3; do
         --replication-factor "${REPLICATION[key]}" \
         --config retention.bytes=26214400 \
         --config compression.type="${COMPRESSION[key]}" \
+        --config "cleanup.policy=${CLEANUP_POLICY[key]}" \
         --config segment.bytes=8388608 \
         --create
 done
 
-# Insert data with text key converted to json key
+# Insert Grid Data
 # shellcheck disable=SC2043
-for key in 3; do
-    /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
-        sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
-        kafka-console-producer \
+for key in 5; do
+    /usr/local/bin/normcat -v "${DATA[key]}" | \
+        kafka-avro-console-producer \
             --broker-list localhost:9092 \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
-            --property "key.separator=#"
+            --property key.schema="$(cat "${KEYS[key]}")" \
+            --property value.schema="$(cat "${VALUES[key]}")" \
+            --property schema.registry.url=http://localhost:8081
+done
+
+# Insert data with key
+# shellcheck disable=SC2043
+for key in 4; do
+    /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
+        kafka-avro-console-producer \
+            --broker-list localhost:9092 \
+            --topic "${TOPICS[key]}" \
+            --property parse.key=true \
+            --property key.schema="$(cat "${KEYS[key]}")" \
+            --property value.schema="$(cat "${VALUES[key]}")" \
+            --property schema.registry.url=http://localhost:8081
 done
 
 popd

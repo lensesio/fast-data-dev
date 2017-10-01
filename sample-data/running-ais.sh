@@ -14,7 +14,7 @@ for key in 0; do
         --zookeeper localhost:2181 \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
-        --replication-factor 1 \
+        --replication-factor "${REPLICATION[key]}" \
         --config retention.bytes=26214400 \
         --config compression.type="${COMPRESSION[key]}" \
         --config segment.bytes=8388608 \
