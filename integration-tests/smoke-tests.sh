@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-RUNTESTS="${RUNTESTS:-1}"
+RUNTESTS="${RUNTESTS:-0}"
 
 if [[ "$RUNTESTS" == "0" ]]; then
     echo "Skipping tests due to \$RUNTESTS = 0."

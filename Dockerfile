@@ -132,7 +132,7 @@ COPY sample-data /usr/share/landoop/sample-data
 ADD extras/ /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
 ADD supervisord.d/* /etc/supervisord.d/
-ADD setup-and-run.sh logs-to-kafka.sh /usr/local/bin/
+ADD setup-and-run.sh logs-to-kafka.sh nullsink.sh /usr/local/bin/
 ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.2/kafka /usr/share/landoop/kafka-completion
 RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
     && ln -s /usr/share/landoop/bashrc /root/.bashrc
