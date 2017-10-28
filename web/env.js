@@ -1,6 +1,6 @@
 var runningServices = [
   {
-    "name" : "Confluent OSS v3.2.0 - Kafka v0.10.2.0",
+    "name" : "Confluent OSS v3.2.2 - Kafka v0.10.2.0",
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
   {
@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {
-    "name" : "Landoop Kafka Topics UI v0.9.1",
+    "name" : "Landoop Kafka Topics UI v0.9.3",
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
