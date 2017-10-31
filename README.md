@@ -69,6 +69,31 @@ docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
 
 That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev environment
 
+
+### Run on the Cloud
+
+You may want to quickly run a Kafka instance in GCE or AWS and access it from your local
+computer. Fast-data-dev has you covered.
+
+Start a VM in the respective cloud. You can use the OS of your choice, provided it has
+a docker package. CoreOS is a nice choice as you get docker out of the box.
+
+Next you have to open the firewall, both for your machines but also *for the VM itself*.
+This is important!
+
+Once the firewall is open try:
+
+    docker run -d --net=host -e ADV_HOST=[VM_EXTERNAL_IP] \
+               -e RUNNING_SAMPLEDATA=1 landoop/fast-data-dev
+
+Alternatively just export the ports you need. E.g:
+
+    docker run -d -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
+               -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=[VM_EXTERNAL_IP] \
+               -e RUNNING_SAMPLEDATA=1 landoop/fast-data-dev
+
+Enjoy Kafka, Schema Registry, Connect, Landoop UIs and Stream Reactor.
+
 ### Customize execution
 
 You can further customize the execution of the container with additional flags:
