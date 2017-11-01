@@ -117,14 +117,14 @@ RUN wget "$CADDY_URL" -O /caddy.tgz \
 ADD web/Caddyfile /usr/share/landoop
 
 # Add and setup Lenses and dependencies
-ARG AD_UN
-ARG AD_PW
-ARG AD_URL
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-2.26-r0.apk \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-bin-2.26-r0.apk \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-i18n-2.26-r0.apk \
     && apk add --no-cache --allow-untrusted glibc-2.26-r0.apk glibc-bin-2.26-r0.apk glibc-i18n-2.26-r0.apk \
     && rm -f glibc-2.26-r0.apk glibc-bin-2.26-r0.apk glibc-i18n-2.26-r0.apk
+ARG AD_UN
+ARG AD_PW
+ARG AD_URL
 RUN wget --user $AD_UN --password $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
