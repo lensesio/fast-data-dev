@@ -258,8 +258,8 @@ PRINT_HOST="${ADV_HOST:-localhost}"
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
-echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about a minute.\e[39m"
+echo -e "\e[92mThis is landoop’s fast-data-dev. Lenses $LENSES_VERSION, Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
+echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[34m in about a minute.\e[39m"
 
 # Set connect heap size if needed
 CONNECT_HEAP="${CONNECT_HEAP:-1G}"
@@ -289,6 +289,8 @@ else
 fi
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
+# Disabled due to k8s and rancher bugs. :(
+#sed -e 's/LENSES_PORT/'"$LENSES_PORT"'/' -i /var/www/index.html
 cat <<EOF> /opt/lenses/lenses.conf
 lenses.port=${LENSES_PORT}
 lenses.zookeeper.hosts="0.0.0.0:2181"
