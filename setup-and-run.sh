@@ -6,8 +6,8 @@ BROKER_SSL_PORT="${BROKER_SSL_PORT:-9093}"
 REGISTRY_PORT="${REGISTRY_PORT:-8081}"
 REST_PORT="${REST_PORT:-8082}"
 CONNECT_PORT="${CONNECT_PORT:-8083}"
-WEB_PORT="${WEB_PORT:-3030}"
-#KAFKA_MANAGER_PORT="3031"
+WEB_PORT="${WEB_PORT:-3031}"
+LENSES_PORT="${LENSES_PORT:-3030}"
 RUN_AS_ROOT="${RUN_AS_ROOT:false}"
 ZK_JMX_PORT="9585"
 BROKER_JMX_PORT="9581"
@@ -290,7 +290,7 @@ fi
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
 cat <<EOF> /opt/lenses/lenses.conf
-lenses.port=9991
+lenses.port=${LENSES_PORT}
 lenses.zookeeper.hosts="0.0.0.0:2181"
 
 lenses.kafka.brokers="PLAINTEXT://0.0.0.0:9092"
