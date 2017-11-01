@@ -147,7 +147,7 @@
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Kafka brokers</div>
             <div class="summary">management and monitoring</div>
-            <md-button class="md-primary summary" style="margin:5px;" ng-href="./lenses/">LAUNCH LENSES</md-button>
+            <md-button class="md-primary summary" style="margin:5px;" href="//{{address}}:3030">LAUNCH LENSES</md-button>
           </md-card-actions>
         </md-card>
       </div>
@@ -490,7 +490,9 @@
 
     angular
     .module('DockerPage', ['ngMaterial'])
-    .controller('MainCtrl', function ($scope, $http, $log, $timeout, $interval) {
+    .controller('MainCtrl', function ($scope, $http, $log, $timeout, $interval, $location) {
+
+    $scope.address = $location.host();
 
     //LOAD ENV vars
     $scope.runningServices = runningServices;
