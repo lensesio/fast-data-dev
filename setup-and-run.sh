@@ -275,6 +275,18 @@ elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
 fi
 
 # Configure lenses
+if [[ -f /license.json ]]; then
+    cp /license.json /opt/lenses/license.conf
+    chown nobody:nobody /opt/lenses/license.conf
+elif [[ ! -z "$LICENSE" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
+    echo "$LICENSE" >> /opt/lenses/license.conf
+    chown nobody:nobody /opt/lenses/license.conf
+else
+    echo -e "\e[91mNo license was provided. Lenses will not work."
+    echo -e "\e[93mPlease visit <https://www.landoop.com> to get your free license.\e[91m"
+    echo -e "If you already obtained a license, please either provide it at '/license.json'"
+    echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
+fi
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
 cat <<EOF> /opt/lenses/lenses.conf
@@ -291,6 +303,7 @@ lenses.jmx.connect=[{default:"0.0.0.0:9584"}]
 lenses.jmx.zookeepers="0.0.0.0:9585"
 
 lenses.security.users=[{"username": "admin", "password": "admin", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
+lenses.license.file = "/opt/lenses/license.conf"
 EOF
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf
