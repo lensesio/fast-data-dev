@@ -17,6 +17,8 @@ proxy /api/kafka-connect 0.0.0.0:8083 {
     without /api/kafka-connect
 }
 
+proxy /lenses 0.0.0.0:9991
+
 browse /certs
 browse /logs
 

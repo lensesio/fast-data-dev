@@ -274,4 +274,23 @@ elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     cp /usr/share/landoop/99-supervisord-sample-data.conf /etc/supervisord.d/
 fi
 
+# Configure lenses
+mkdir -p /opt/lenses/logs
+chmod 777 /opt/lenses/logs
+cat <<EOF> /opt/lenses/lenses.conf
+lenses.port=9991
+lenses.zookeeper.hosts="0.0.0.0:2181"
+
+lenses.kafka.brokers="PLAINTEXT://0.0.0.0:9092"
+lenses.schema.registry.urls="http://0.0.0.0:8081"
+lenses.connect=[{default:"http://0.0.0.0:8083"}]
+
+lenses.jmx.brokers="0.0.0.0:9581"
+lenses.jmx.schema.registry="0.0.0.0:9582"
+lenses.jmx.connect=[{default:"0.0.0.0:9584"}]
+lenses.jmx.zookeepers="0.0.0.0:9585"
+
+lenses.security.users=[{"username": "admin", "password": "admin", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
+EOF
+
 exec /usr/bin/supervisord -c /etc/supervisord.conf

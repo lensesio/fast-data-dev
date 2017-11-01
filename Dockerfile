@@ -116,6 +116,20 @@ RUN wget "$CADDY_URL" -O /caddy.tgz \
     && rm -f /caddy.tgz
 ADD web/Caddyfile /usr/share/landoop
 
+# Add and setup Lenses and dependencies
+ARG AD_UN
+ARG AD_PW
+ARG AD_URL
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-2.26-r0.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-bin-2.26-r0.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-i18n-2.26-r0.apk \
+    && apk add --no-cache --allow-untrusted glibc-2.26-r0.apk glibc-bin-2.26-r0.apk glibc-i18n-2.26-r0.apk \
+    && rm -f glibc-2.26-r0.apk glibc-bin-2.26-r0.apk glibc-i18n-2.26-r0.apk
+RUN wget --user $AD_UN --password $AD_PW "$AD_URL" -O /lenses.tgz \
+    && tar xf /lenses.tgz -C /opt \
+    && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
+    && rm /lenses.tgz
+
 # Add fast-data-dev UI
 COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
@@ -145,6 +159,9 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
+    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
+    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
+    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && echo "KAFKA_VERSION=${KAFKA_VERSION}" | tee -a /build.info \
     && echo "CP_VERSION=${CP_VERSION}"       | tee -a /build.info
 
