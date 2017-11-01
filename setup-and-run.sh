@@ -281,6 +281,8 @@ if [[ -f /license.json ]]; then
 elif [[ ! -z "$LICENSE" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
     echo "$LICENSE" >> /opt/lenses/license.conf
     chown nobody:nobody /opt/lenses/license.conf
+elif [[ -f /opt/lenses/license.conf ]]; then
+    echo
 else
     echo -e "\e[91mNo license was provided. Lenses will not work."
     echo -e "\e[93mPlease visit <https://www.landoop.com> to get your free license.\e[91m"
