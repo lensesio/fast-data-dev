@@ -277,10 +277,10 @@ fi
 # Configure lenses
 if [[ -f /license.json ]]; then
     cp /license.json /opt/lenses/license.conf
-    chown nobody:nobody /opt/lenses/license.conf
 elif [[ ! -z "$LICENSE" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
     echo "$LICENSE" >> /opt/lenses/license.conf
-    chown nobody:nobody /opt/lenses/license.conf
+elif [[ ! -z "$LICENSE_URL" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
+    wget "$LICENSE_URL" -O /opt/lenses/license.conf
 elif [[ -f /opt/lenses/license.conf ]]; then
     echo
 else
@@ -289,8 +289,10 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
+chown nobody:nobody /opt/lenses/license.conf
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
+
 # Disabled due to k8s and rancher bugs. :(
 #sed -e 's/LENSES_PORT/'"$LENSES_PORT"'/' -i /var/www/index.html
 cat <<EOF> /opt/lenses/lenses.conf
