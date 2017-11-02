@@ -6,6 +6,8 @@
 
 > View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)**
 
+*Lenses is out!*
+
 ### Why ?
 
 When you need:
