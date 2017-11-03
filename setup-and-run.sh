@@ -281,6 +281,11 @@ elif [[ ! -z "$LICENSE" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
     echo "$LICENSE" >> /opt/lenses/license.conf
 elif [[ ! -z "$LICENSE_URL" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
     wget "$LICENSE_URL" -O /opt/lenses/license.conf
+    if [[ $? -ne 0 ]]; then
+        echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
+        echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
+        exit 1
+    fi
 elif [[ -f /opt/lenses/license.conf ]]; then
     echo
 else
