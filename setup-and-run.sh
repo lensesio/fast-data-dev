@@ -297,7 +297,7 @@ fi
 chown nobody:nobody /opt/lenses/license.conf
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
-
+TELEMETRY="${TELEMETRY:-1}"
 # Disabled due to k8s and rancher bugs. :(
 #sed -e 's/LENSES_PORT/'"$LENSES_PORT"'/' -i /var/www/index.html
 cat <<EOF> /opt/lenses/lenses.conf
@@ -316,5 +316,10 @@ lenses.jmx.zookeepers="0.0.0.0:9585"
 lenses.security.users=[{"username": "admin", "password": "admin", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
 lenses.license.file = "/opt/lenses/license.conf"
 EOF
+if ! echo "$TELEMETRY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
+    echo "lenses.telemetry.enable=false" >> /opt/lenses/lenses.conf
+fi
+chown nobody:nobody /opt/lenses/lenses.conf
+
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf
