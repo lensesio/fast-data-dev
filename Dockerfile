@@ -144,6 +144,7 @@ COPY sample-data /usr/share/landoop/sample-data
 
 # Add executables, settings and configuration
 ADD extras/ /usr/share/landoop/
+ADD supervisord.conf /etc/supervisord.conf
 ADD supervisord.templates.d/* /etc/supervisord.templates.d/
 ADD setup-and-run.sh logs-to-kafka.sh nullsink.sh /usr/local/bin/
 ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.2/kafka /usr/share/landoop/kafka-completion
