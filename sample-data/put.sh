@@ -21,7 +21,7 @@ done
 
 # Insert data with keys
 for key in 0 1 4 5; do
-    /usr/local/bin/normcat "${DATA[key]}" | \
+    /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
             --broker-list localhost:9092 \
             --topic "${TOPICS[key]}" \
@@ -34,7 +34,7 @@ done
 # Insert data without keys
 # shellcheck disable=SC2043
 for key in 2; do
-    /usr/local/bin/normcat "${DATA[key]}" | \
+    /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
             --broker-list localhost:9092 \
             --topic "${TOPICS[key]}" \
@@ -45,7 +45,7 @@ done
 # Insert json data with text keys converted to json keys
 # shellcheck disable=SC2043
 for key in 3; do
-    /usr/local/bin/normcat "${DATA[key]}" | \
+    /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         kafka-console-producer \
             --broker-list localhost:9092 \

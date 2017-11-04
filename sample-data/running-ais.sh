@@ -25,7 +25,7 @@ done
 # shellcheck disable=SC2043
 for key in 0; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
-        kafka-avro-console-producer \
+        SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
             --broker-list localhost:9092 \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \

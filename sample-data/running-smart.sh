@@ -26,7 +26,7 @@ done
 for key in 3; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
-        kafka-console-producer \
+        KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
             --broker-list localhost:9092 \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \

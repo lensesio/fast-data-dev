@@ -2,7 +2,7 @@
 
 NULLSINK="${NULLSINK:-1}"
 # Only topics of the same type (AVRO) below.
-TOPICS="nyc_yellow_taxi_trip_data,reddit_posts,sea_vessel_position_reports"
+TOPICS="nyc_yellow_taxi_trip_data,reddit_posts,sea_vessel_position_reports,telecom_italia_data"
 
 if [[ "$NULLSINK" == "0" ]]; then
     echo "Skipping nullsink connector."
