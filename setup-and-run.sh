@@ -332,6 +332,6 @@ if ! echo "$TELEMETRY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     echo "lenses.telemetry.enable=false" >> /opt/lenses/lenses.conf
 fi
 chown nobody:nobody /opt/lenses/lenses.conf
-
+# echo "auto.create.topics.enable=false" >> /opt/confluent/etc/kafka/server.properties
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf

@@ -1,12 +1,19 @@
-# fast-data-dev #
-[![docker](https://img.shields.io/docker/pulls/landoop/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/landoop/fast-data-dev/)
-[![](https://images.microbadger.com/badges/image/landoop/fast-data-dev.svg)](http://microbadger.com/images/landoop/fast-data-dev) [![Join the chat at https://gitter.im/Landoop/fast-data-dev](https://badges.gitter.im/Landoop/fast-data-dev.svg)](https://gitter.im/Landoop/fast-data-dev?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Lenses for Kafka with fast-data-dev #
+[![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
+[![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev) [![Join the chat at https://gitter.im/Landoop/support](https://badges.gitter.im/Landoop/support.svg)](https://gitter.im/Landoop/support?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[Kafka](http://kafka.apache.org/) docker image with Confluent (OSS), [Landoop](http://www.landoop.com/kafka/kafka-tools/) tools, 20+ Kafka Connectors
+Landoop’s [Lenses](https://www.landoop.com/kafka-lenses/) docker image with our
+[fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation!
 
-> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)**
+Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation
+([Confluent OSS](https://www.confluent.io/), with Schema Registry and Kafka Connect),
+[Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/),
+Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and
+data generators to experiment with.
 
-*Lenses is out!*
+[Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy
+streaming can get.
+
 
 ### Why ?
 
