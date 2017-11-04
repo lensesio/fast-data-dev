@@ -254,7 +254,7 @@ else
     fi
 fi
 # Check for Available Disk
-DAM="$(df /tmp --output=avail -BM | tail -n1 | sed -e 's/M//')"
+DAM="$(df /tmp --output=avail -BM | tail -n1 | sed -r -e 's/M//' -e 's/[ ]*([0-9]+)[ ]*/\1/')"
 if [[ -z "$DAM" ]] || ! [[ "$DAM" =~ ^[0-9]+$ ]]; then
     echo -e "\e[91mCould not detect available Disk space."
     echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m256 MiB\e[91m disk space available for '/tmp' directory.\e[39m"
