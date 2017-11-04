@@ -2,17 +2,11 @@
 [![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
 [![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev) [![Join the chat at https://gitter.im/Landoop/support](https://badges.gitter.im/Landoop/support.svg)](https://gitter.im/Landoop/support?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Landoop’s [Lenses](https://www.landoop.com/kafka-lenses/) docker image with our
-[fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation!
+Landoop’s [Lenses](https://www.landoop.com/kafka-lenses/) docker image with our [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation.
 
-Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation
-([Confluent OSS](https://www.confluent.io/), with Schema Registry and Kafka Connect),
-[Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/),
-Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and
-data generators to experiment with.
+Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation ([Confluent OSS](https://www.confluent.io/), with Schema Registry and Kafka Connect), [Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/), Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and data generators to experiment with.
 
-[Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy
-streaming can get.
+[Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy streaming can get!
 
 
 ### Why ?
