@@ -2,45 +2,56 @@
 [![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
 [![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev) [![Join the chat at https://gitter.im/Landoop/support](https://badges.gitter.im/Landoop/support.svg)](https://gitter.im/Landoop/support?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Landoop’s [Lenses](https://www.landoop.com/kafka-lenses/) docker image with our [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation.
+Landoop’s [Lenses](https://www.landoop.com/kafka-lenses/) docker image with [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation!
 
 Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation ([Confluent OSS](https://www.confluent.io/), with Schema Registry and Kafka Connect), [Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/), Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and data generators to experiment with.
 
 [Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy streaming can get!
 
+### Quick Run
 
-### Why ?
+Once you get your license, run our image with:
 
-When you need:
+    docker run -p 3030:3030 -e LICENSE_URL="[YOUR_LICENSE_URL]" --name=lenses landoop/kafka-lenses-dev
 
-1. **Confluent** OSS with Apache Kafka including: ZooKeeper, Schema Registry, Kafka REST, Kafka-Connect
-2. **Landoop** Fast Data Tools including: kafka-topics-ui, schema-registry-ui, kafka-connect-ui
-3. 20+ Kafka Connectors to simplify ETL processes
-4. Integration testing and examples embedded into the docker
+Once the services are loaded (it usually takes 30-45 seconds), visit http://localhost:3030 and login with `admin` / `admin`.
+If you are on macOS, depending on how you installed docker, you may have to visit http://192.168.99.100:3030 instead.
 
-just run:
+Once logged in, you should be greeted by a screen like below.
 
-    docker run --rm --net=host landoop/fast-data-dev
+![lenses screenshot](https://storage.googleapis.com/wch/lenses-1.0.0.png)
 
-That's it. Visit <http://localhost:3030> to get into the fast-data-dev environment
+When finished, press CTRL+C to turn it off. You can either remove the test environment:
 
-<img src="https://storage.googleapis.com/wch/fast-data-dev-ports.png" alt="fast-data-dev web UI screenshot" type="image/png" width="320">
+    docker rm lenses
 
-All the service ports are exposed, and can be used from localhost / or within your IntelliJ.
-To access the JMX data of the broker run:
+Or use it at a later time, continuing from where you left of:
 
-    jconsole localhost:9581
+    docker start -a lenses
 
-If you want to have the services remotely accessible, then you need to pass in your machine's
-IP address or hostname that other machines can use to access it:
+Please read the advanced run section, for information on more advanced use cases, like accessing from external kafka clients.
+
+
+### What is Lenses
+
+Lenses for Apache Kafka is _the_ management platform for streaming data.
+
+It upgrades your Kafka cluster with:
+
+- A powerful interface: live views of your data, topics, schema, connectors, ACLs management and more.
+- A scalable SQL engine to implement, test and deploy business logic fast.
+- Vital enterprise capabilities such as audits, monitoring and alerts.
+
+It is hard to cover the whole surface of Lenses capabilities in a few lines, if you want to learn more please visit our [website](https://www.landoop.com).
+
+
+### Advanced run
+
+_Kafka-lense-dev_ is build on our well accepted [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/)
+
 
     docker run --rm --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
 
-> Hit **control+c** to stop and remove everything
-
-<img src="https://storage.googleapis.com/wch/fast-data-dev-ui.png" alt="fast-data-dev web UI screenshot" type="image/png" width="900">
-
-### Mac and Windows users only (docker-machine)
 
 Create a VM with 6GB RAM using Docker Machine:
 
@@ -124,48 +135,6 @@ And execute the docker image if needed in `daemon` mode:
 
     docker run -e CONNECT_HEAP=3G -d landoop/fast-data-dev
 
-### Versions
-
-The latest version of this docker image tracks our latest stable tag (cp3.2.2). Our
-images include:
-
- Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors
--------------------------------| ------------- | ------------- | ------------- | --------------
-landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
-landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
-landoop/fast-data-dev:cp3.2.2  |     3.2.2     |       ✓       |    0.10.2.1   | 24+ connectors
-landoop/fast-data-dev:cp3.3.0  |     3.3.0     |       ✓       |    0.11.0.0   | 30+ connectors
-
-Fast-data-dev contains a collection of popular open source connectors
-including *stream-reactor* v0.3.0
-
-Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
-cluster with > 3 Kafka nodes, you should contact us.
-
-### Building it
-
-To build it just run:
-
-    docker build -t landoop/fast-data-dev .
-
-Also periodically pull from docker hub to refresh your cache.
-
-### Advanced settings
-
-#### Custom Ports
-
-To use custom ports for the various services, you can take advantage of the
-`ZK_PORT`, `BROKER_PORT`, `REGISTRY_PORT`, `REST_PORT`, `CONNECT_PORT` and
-`WEB_PORT` environment variables. One catch is that you can't swap ports; e.g
-to assign 8082 (default REST Proxy port) to the brokers.
-
-    docker run --rm -it \
-               -p 3181:3181 -p 3040:3040 -p 7081:7081 \
-               -p 7082:7082 -p 7083:7083 -p 7092:7092 \
-               -e ZK_PORT=3181 -e WEB_PORT=3040 -e REGISTRY_PORT=8081 \
-               -e REST_PORT=7082 -e CONNECT_PORT=7083 -e BROKER_PORT=7092 \
-               -e ADV_HOST=127.0.0.1 \
-               landoop/fast-data-dev
 
 #### Execute kafka command line tools
 
@@ -184,33 +153,6 @@ Every application stores its logs under `/var/log` inside the container.
 If you have your container's ID, or name, you could do something like:
 
     docker exec -it <ID> cat /var/log/broker.log
-
-#### Enable additional connectors
-
-If you have a custom connector you would like to use, you can mount it at folder
-`/connectors`. `CLASSPATH` variable for Kafka Connect is set up as
-`/connectors/*`, so it will use any jar files it will find inside this
-directory:
-
-    docker run --rm -it --net=host \
-               -v /path/to/my/connector/jar/files:/connectors \
-               landoop/fast-data-dev
-
-#### Build Kafka-Connect clusters
-
-If you already have your Kafka brokers and ZKs infrastructure in place and you need
-to spin up a few Kafka-Connect clusters, check the [fast-data-connect-cluster](https://github.com/landoop/fast-data-connect-cluster),
-a spinoff of fast-data-dev aimed at running many connect clusters concurrently.
-
-In short, you can run a docker Kafka-Connect instance to join the connect-cluster with ID = `01` with:
-
-    docker run -d --net=host \
-               -e ID=01 \
-               -e BS=broker1:9092,broker2:9092 \
-               -e ZK=zk1:2181,zk2:2181 \
-               -e SC=http://schema-registry:8081 \
-               -e HOST=<IP OR FQDN>
-               landoop/fast-data-dev-connect-cluster
 
 #### Enable SSL on Broker
 
@@ -251,85 +193,6 @@ container:
 Since the plaintext port is also available, you can test both and find out
 which is faster and by how much. ;)
 
-### Advanced Connector settings
-
-#### HDFS Connector
-
-HDFS connector currently is incompatible with the HBase connector due to classpath
-shadowing. To make HDFS connector work, disable the HBase connector using the
-`DISABLE` environment variable:
-
-    docker run --rm -it --net=host \
-               -e DISABLE=hbase \
-               landoop/fast-data-dev
-
-#### Disable Connectors
-
-If one or more connectors create issues for you, you can disable them on
-startup using the `DISABLE` environment variable. It takes a comma separated
-list of connector names you want to disable:
-
-    docker run --rm -it --net=host \
-               -e DISABLE=elastic,hbase \
-               landoop/fast-data-dev
-
-#### HBase Connector
-
-Due to some issues with dependencies, the ElasticSearch connector and the HBase
-connector cannot coexist. Whilst both are available, HBase won't work. We do provide
-the `PREFER_HBASE` environment variable which will remove ElasticSearch (and the
-Twitter connector) to let HBase work:
-
-    docker run --rm -it --net=host \
-               -e PREFER_HBASE=true \
-               landoop/fast-data-dev
-
-### FAQ
-
-- Landoop's Fast Data Web UI tools and integration test requires a few seconds
-  till they fully work.
-  
-  That is because the services (Schema Registry and kafka REST Proxy) have
-  to start and initialize before the UIs can read data.
-- When you start the container, Schema Registry and REST Proxy fail.
-  
-  This happens because the Broker isn't up yet. It is normal. Supervisord will
-  make sure they will work automatically once the Broker starts.
-- What resources does this container need?
-  
-  An idle, fresh container will need about 1.5GiB of RAM. As at least 4 JVM
-  applications will be working in it, your mileage will vary. In our
-  experience Kafka Connect usually requires a lot of memory. It's heap size is
-  set by default to 1GiB but you'll might need more than that.
-- Fast-data-dev does not start properly, broker fails with:
-  > [2016-08-23 15:54:36,772] FATAL [Kafka Server 0], Fatal error during
-  > KafkaServer startup. Prepare to shutdown (kafka.server.KafkaServer)
-  > java.net.UnknownHostException: [HOSTNAME]: [HOSTNAME]: unknown error
-  
-  JVM based apps tend to be a bit sensitive to hostname issues.
-  Either run the image without `--net=host` and expose all ports
-  (2181, 3030, 8081, 8082, 8083, 9092) to the same port at the host, or
-  better yet make sure your hostname resolve to the localhost address
-  (127.0.0.1). Usually to achieve this, you need to add your hostname (case
-  sensitive) at `/etc/hosts` as the first name after 127.0.0.1. E.g:
-  
-      127.0.0.1 MyHost localhost
-
-### Detailed configuration options
-
-#### Web Only Mode
-
-This is a special mode only for Linux hosts, where *only* Landoop's Web UIs
-are started and kafka services are expected to be running on the local
-machine. It must be run with `--net=host` flag, thus the Linux only
-requisite:
-
-    docker run --rm -it --net=host \
-               -e WEB_ONLY=true \
-               landoop/fast-data-dev
-
-This is useful if you already have a cluster with Confluent's distribution
-installed and want just the additional Landoop Fast Data web UI.
 
 #### Connect Heap Size
 
@@ -338,47 +201,3 @@ You can configure Connect's heap size via the environment variable
 
     docker run -e CONNECT_HEAP=5G -d landoop/fast-data-dev
 
-#### Basic Auth (password)
-
-We have included a web server to serve Landoop UIs and proxy the schema registry
-and kafa REST proxy services, in order to share your docker over the web.
-If you want some basic protection, pass the `PASSWORD` variable and the web
-server will be protected by user `kafka` with your password. If you want to
-setup the username too, set the `USER` variable.
-
-     docker run --rm -it -p 3030:3030 \
-                -e PASSWORD=password \
-                landoop/fast-data-dev
-
-#### Disable tests
-
-By default this docker runs a set of coyote tests, to ensure that your container
-and development environment is all set up. You can disable running the `coyote` tests
-using the flag:
-
-    -e RUNTESTS=0
-
-#### Run Kafka as root
-
-In the recent versions of fast-data-dev, we switched to running Kafka as user
-`nobody` instead of `root` since it was a bad practice. The old behaviour may
-still be desirable, for example on our
-[HDFS connector tests](http://coyote.landoop.com/connect/kafka-connect-hdfs/),
-Connect worker needs to run as the root user in order to be able to write to the
-HDFS. To switch to the old behaviour, use:
-
-    -e RUN_AS_ROOT=1
-
-#### JMX Metrics
-
-JMX metrics are enabled by default. If you want to disable them for some
-reason (e.g you need the ports for other purposes), use the `DISABLE_JMX`
-environment variable:
-
-    docker run --rm -it --net=host \
-               -e DISABLE_JMX=1 \
-               landoop/fast-data-dev
-
-JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
-`9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
-at `9585`.
