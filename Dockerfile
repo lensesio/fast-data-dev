@@ -130,6 +130,13 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
     && rm /lenses.tgz
 
+# Add cc_payments generator
+RUN wget https://archive.landoop.com/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
+    && mkdir -p /opt/generator \
+    && tar xf /generator.tgz --no-same-owner --strip-components=1 -C /opt/generator \
+    && sed -e 's/localhost/0.0.0.0/' -i /opt/generator/lenses.conf \
+    && rm -f /generator.tgz
+
 # Add fast-data-dev UI
 COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
