@@ -143,7 +143,7 @@ COPY web/img /var/www/img
 RUN ln -s /var/log /var/www/logs
 
 # Add sample data and install normcat
-ARG NORMCAT_URL=https://github.com/andmarios/normcat/releases/download/1.0/normcat-1.0-linux-amd64.tar.gz
+ARG NORMCAT_URL=https://archive.landoop.com/tools/normcat/normcat_lowmem-1.1.1.tgz
 RUN wget "$NORMCAT_URL" -O /normcat.tgz \
     && tar xf /normcat.tgz -C /usr/local/bin \
     && rm /normcat.tgz
