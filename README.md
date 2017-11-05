@@ -12,10 +12,10 @@ Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledge
 
 Once you get your license, run our image with:
 
-    docker run -p 3030:3030 -e LICENSE_URL="[YOUR_LICENSE_URL]" --name=lenses landoop/kafka-lenses-dev
+    docker run -p 3030:3030 -e LICENSE_URL="[YOUR_LICENSE_URL]" \
+               --name=lenses landoop/kafka-lenses-dev
 
-Once the services are loaded (it usually takes 30-45 seconds), visit http://localhost:3030 and login with `admin` / `admin`.
-If you are on macOS, depending on how you installed docker, you may have to visit http://192.168.99.100:3030 instead.
+Once the services are loaded (it usually takes 30-45 seconds), visit http://localhost:3030 and login with `admin` / `admin`. If you are on macOS, depending on how you installed docker, you may have to visit http://192.168.99.100:3030 instead.
 
 Once logged in, you should be greeted by a screen like below.
 
@@ -45,159 +45,56 @@ It upgrades your Kafka cluster with:
 It is hard to cover the whole surface of Lenses capabilities in a few lines, if you want to learn more please visit our [website](https://www.landoop.com).
 
 
+### Requirements
+
+Apart for docker, the only requirement is you have at least 4GB of memory for docker. For Linux machines this is the available free memory in your system. For macOS and Windows this is the amount of memory you assign to docker’s configuration plus some little extra for the docker VMs operating system. Our recommendation is to have at least 5GB of free memory, so that your system's performance won’t suffer. Operating systems tend to get slower when the free RAM approaches zero.
+
 ### Advanced run
 
-_Kafka-lense-dev_ is build on our well accepted [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/)
+_Kafka-lenses-dev_ is build on our well accepted [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) image, which provides a Kafka development environment in one docker image. As such it supports most options of [fast-data-dev](https://github.com/Landoop/fast-data-dev/blob/master/README.md) with the main differences being that we:
 
+1. Include Lenses instead of our Web UIs for Kafka.
+2. By default we have the data generators running. You may turn them off by setting the environment variable `SAMPLEDATA=0`.
+3. We don't run the [coyote](https://github.com/landoop/coyote) test suite on start.
 
-    docker run --rm --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
+Let's go quickly over some advanced use cases.
 
+#### Access Kafka from other Clients
 
-Create a VM with 6GB RAM using Docker Machine:
+Due to the way docker and the kafka broker works, accessing kafka from your own consumer or producer may be tricky. The Kafka Broker advertises a —usually autodetected— address that must be accessible from your client. To complicate things, docker when run on macOS or Windows runs inside a virtual machine, adding an extra networking layer.
 
-```
-docker-machine create --driver virtualbox --virtualbox-memory 6000 landoop
-```
+If you run docker on macOS or Windows, you may need to find the address of the VM running docker. On macOS it usually is `192.168.99.100` and export it as the advertised address for the broker. At the same time you should give the kafka-lenses-dev image access to the VM's network:
 
-Run `docker-machine ls` to verify that the Docker Machine is running correctly. The command's output should be similar to:
+    docker run -p 3030:3030 -e LICENSE_URL="[YOUR_LICENSE_URL]" \
+               -e ADV_HOST="192.168.99.100" --net=host --name=lenses \
+               landoop/kafka-lenses-dev
 
-```
-$ docker-machine ls
-NAME        ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
-landoop     *        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.1-ce
-```
+If you run on Linux you don't need the `ADV_HOST` but you can do something cool with it. If you set as the `ADV_HOST` your machine’s IP address you will be able to access Kafka from all clients in the network. If you decide to run kafka-lenses-dev in the cloud, you could access Kafka from your local machine. Just remember to provide the public IP of your server!
 
-Configure your terminal to be able to use the new Docker Machine named landoop:
+#### The license file
 
-```
-eval $(docker-machine env landoop)
-```
+Developer licenses are free. You can get one —or more— from our [website](https://www.landoop.com). The license will expire in six months unless you renew it —for free. You may start your Lenses instance with a different license file. Your setup will not be affected.
 
-And run the Kafka Development Environment. Define ports, advertise the hostname and use extra parameters:
+There are three ways to provide the license file. The first we already saw, provide the license url via `LICENSE_URL`:
 
-```
-docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
-           -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
-           landoop/fast-data-dev:latest
-```
+    -e LICENSE_URL="[LICENSE_URL]"
 
-That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev environment
+If you instead choose to save the license file locally, you can either provide it as a file:
 
+    -v /path/to/license.json:/license.conf
 
-### Run on the Cloud
+Or as an environment variable:
 
-You may want to quickly run a Kafka instance in GCE or AWS and access it from your local
-computer. Fast-data-dev has you covered.
+    -e LICENSE="$(cat /path/to/license.json)"
 
-Start a VM in the respective cloud. You can use the OS of your choice, provided it has
-a docker package. CoreOS is a nice choice as you get docker out of the box.
+#### Kafka and the command line
 
-Next you have to open the firewall, both for your machines but also *for the VM itself*.
-This is important!
+You can access the various Kafka command-line tools, such as the console producer and consumer from a terminal in the container:
 
-Once the firewall is open try:
+    docker exec -it lenses bash
 
-    docker run -d --net=host -e ADV_HOST=[VM_EXTERNAL_IP] \
-               -e RUNNING_SAMPLEDATA=1 landoop/fast-data-dev
+Or directly:
 
-Alternatively just export the ports you need. E.g:
+    docker exec -it kafka-topics --zookeeper localhost:2181 --list
 
-    docker run -d -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
-               -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=[VM_EXTERNAL_IP] \
-               -e RUNNING_SAMPLEDATA=1 landoop/fast-data-dev
-
-Enjoy Kafka, Schema Registry, Connect, Landoop UIs and Stream Reactor.
-
-### Customize execution
-
-You can further customize the execution of the container with additional flags:
-
- optional_parameters            | usage
-------------------------------- | ------------------------------------------------------------------------------------------------------------
- `WEB_ONLY=1      `             | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
- `CONNECT_HEAP=3G`              | Configure the heap size allocated to Kafka Connect
- `PASSWORD=password`            | Protect you kafka resources when running publicly with username `kafka` with the password you set
- `USER=username`                | Run in combination with `PASSWORD` to specify the username to use on basic auth
- `RUNTESTS=0`                   | Disable the (coyote) integration tests from running when container starts
- `FORWARDLOGS=0`                | Disable running 5 file source connectors that bring application logs into Kafka topics
- `RUN_AS_ROOT=1`                | Run kafka as `root` user - useful to i.e. test HDFS connector
- `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9585
- `TOPIC_DELETE=0`               | Configure whether you can delete topics. By default topics can be deleted.
- `<SERVICE>_PORT=<PORT>`        | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
- `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
- `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
- `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
- `DEBUG=1`                      | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
- `SAMPLEDATA=0`                 | Do not create `sea_vessel_position_reports`, `nyc_yellow_taxi_trip_data`, `reddit_posts` topics with sample Avro records.
- `RUNNING_SAMPLEDATA=1`         | In the sample topics send a continuous (yet low) flow of messages, so you can develop against live data.
-
-And execute the docker image if needed in `daemon` mode:
-
-    docker run -e CONNECT_HEAP=3G -d landoop/fast-data-dev
-
-
-#### Execute kafka command line tools
-
-Do you need to execute kafka related console tools? Whilst your Kafka containers is running,
-try something like:
-
-    docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 --list
-
-Or enter the container to use any tool as you like:
-
-    docker run --rm -it --net=host landoop/fast-data-dev bash
-
-#### View logs
-
-Every application stores its logs under `/var/log` inside the container.
-If you have your container's ID, or name, you could do something like:
-
-    docker exec -it <ID> cat /var/log/broker.log
-
-#### Enable SSL on Broker
-
-Do you want to test your application over an authenticated TLS connection to the
-broker? We got you covered. Enable TLS via `-e ENABLE_SSL=1`:
-
-    docker run --rm --net=host \
-               -e ENABLE_SSL=1 \
-               landoop/fast-data-dev
-
-When fast-data-dev spawns, it will create a self-signed CA. From that it will
-create a truststore and two signed key-certificate pairs, one for the broker,
-one for your client. You can access the truststore and the client's keystore
-from our Web UI, under `/certs` (e.g http://localhost:3030/certs). The password
-for both the keystores and the TLS key is `fastdata`.
-The SSL port of the broker is `9093`, configurable via the `BROKER_SSL_PORT`
-variable.
-
-Here is a simple example of how the SSL functionality can be used. Let's spawn
-a fast-data-dev to act as the server:
-
-    docker run --rm --net=host -e ENABLE_SSL=1 -e RUNTESTS=0 landoop/fast-data-dev
-
-On a new console, run another instance of fast-data-dev only to get access to
-Kafka command line utilities and use TLS to connect to the broker of the former
-container:
-
-    docker run --rm -it --net=host --entrypoint bash landoop/fast-data-dev
-    root@fast-data-dev / $ wget localhost:3030/certs/truststore.jks
-    root@fast-data-dev / $ wget localhost:3030/certs/client.jks
-    root@fast-data-dev / $ kafka-producer-perf-test --topic tls_test \
-      --throughput 100000 --record-size 1000 --num-records 2000 \
-      --producer-props bootstrap.servers="localhost:9093" security.protocol=SSL \
-      ssl.keystore.location=client.jks ssl.keystore.password=fastdata \
-      ssl.key.password=fastdata ssl.truststore.location=truststore.jks \
-      ssl.truststore.password=fastdata
-
-Since the plaintext port is also available, you can test both and find out
-which is faster and by how much. ;)
-
-
-#### Connect Heap Size
-
-You can configure Connect's heap size via the environment variable
-`CONNECT_HEAP`. The default is `1G`:
-
-    docker run -e CONNECT_HEAP=5G -d landoop/fast-data-dev
-
+If you enter the container, you will discover that we even provide bash auto-completion for some of the tools.
