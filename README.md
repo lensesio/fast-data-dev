@@ -29,7 +29,7 @@ Or use it at a later time, continuing from where you left of:
 
     docker start -a lenses
 
-Please read the advanced run section, for information on more advanced use cases, like accessing from external kafka clients.
+Please read the advanced run section for information on more advanced use cases, like accessing from external kafka clients.
 
 
 ### What is Lenses
@@ -42,18 +42,18 @@ It upgrades your Kafka cluster with:
 - A scalable SQL engine to implement, test and deploy business logic fast.
 - Vital enterprise capabilities such as audits, monitoring and alerts.
 
-It is hard to cover the whole surface of Lenses capabilities in a few lines, if you want to learn more please visit our [website](https://www.landoop.com).
+It is hard to cover the whole surface of Lenses capabilities in a few lines, to learn more please visit our [website](https://www.landoop.com).
 
 
 ### Requirements
 
-Apart for docker, the only requirement is you have at least 4GB of memory for docker. For Linux machines this is the available free memory in your system. For macOS and Windows this is the amount of memory you assign to docker’s configuration plus some little extra for the docker VMs operating system. Our recommendation is to have at least 5GB of free memory, so that your system's performance won’t suffer. Operating systems tend to get slower when the free RAM approaches zero.
+Apart from docker, the only requirement is you have at least 4GB of memory available to docker. For Linux machines this is the available free memory in your system. For macOS and Windows this is the amount of memory you assign to docker’s configuration plus some little extra for the docker Virtual Machines’s operating system. Our recommendation is to have at least 5GB of free memory, so that your system's performance won’t suffer. Operating systems tend to get slower when the free RAM approaches zero.
 
 ### Advanced run
 
-_Kafka-lenses-dev_ is build on our well accepted [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) image, which provides a Kafka development environment in one docker image. As such it supports most options of [fast-data-dev](https://github.com/Landoop/fast-data-dev/blob/master/README.md) with the main differences being that we:
+_Kafka-lenses-dev_ is build on our well accepted [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) image, which provides a Kafka development environment in one docker image. As such it supports most options of [fast-data-dev](https://github.com/Landoop/fast-data-dev/blob/master/README.md) with the main differences being that:
 
-1. Include Lenses instead of our Web UIs for Kafka.
+1. We include Lenses instead of our Web UIs for Kafka.
 2. By default we have the data generators running. You may turn them off by setting the environment variable `SAMPLEDATA=0`.
 3. We don't run the [coyote](https://github.com/landoop/coyote) test suite on start.
 
@@ -61,12 +61,13 @@ Let's go quickly over some advanced use cases.
 
 #### Access Kafka from other Clients
 
-Due to the way docker and the kafka broker works, accessing kafka from your own consumer or producer may be tricky. The Kafka Broker advertises a —usually autodetected— address that must be accessible from your client. To complicate things, docker when run on macOS or Windows runs inside a virtual machine, adding an extra networking layer.
+Due to the way docker and the kafka broker works, accessing kafka from your own consumer or producer may be tricky. The Kafka Broker advertises a —usually autodetected— address that must be accessible from your client. To complicate things docker, when run on macOS or Windows, runs inside a virtual machine, adding an extra networking layer.
 
-If you run docker on macOS or Windows, you may need to find the address of the VM running docker. On macOS it usually is `192.168.99.100` and export it as the advertised address for the broker. At the same time you should give the kafka-lenses-dev image access to the VM's network:
+If you run docker on macOS or Windows, you may need to find the address of the VM running docker. On macOS it usually is `192.168.99.100` and export it as the advertised address for the broker. At the same time you should give the kafka-lenses-dev image access to the VM’s network:
 
-    docker run -p 3030:3030 -e LICENSE_URL="[YOUR_LICENSE_URL]" \
-               -e ADV_HOST="192.168.99.100" --net=host --name=lenses \
+    docker run -e LICENSE_URL="[YOUR_LICENSE_URL]" \
+               -e ADV_HOST="192.168.99.100" \
+               --net=host --name=lenses \
                landoop/kafka-lenses-dev
 
 If you run on Linux you don't need the `ADV_HOST` but you can do something cool with it. If you set as the `ADV_HOST` your machine’s IP address you will be able to access Kafka from all clients in the network. If you decide to run kafka-lenses-dev in the cloud, you could access Kafka from your local machine. Just remember to provide the public IP of your server!
@@ -98,3 +99,7 @@ Or directly:
     docker exec -it kafka-topics --zookeeper localhost:2181 --list
 
 If you enter the container, you will discover that we even provide bash auto-completion for some of the tools.
+
+
+Hope you will enjoy our product,
+The Lenses team.
