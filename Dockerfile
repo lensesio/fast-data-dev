@@ -157,7 +157,7 @@ ADD setup-and-run.sh logs-to-kafka.sh nullsink.sh /usr/local/bin/
 ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.2/kafka /usr/share/landoop/kafka-completion
 RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
     && ln -s /usr/share/landoop/bashrc /root/.bashrc \
-    && cat /etc/supervisord.templates.d/* > /etc/supervisord.d/01-fast-data.conf
+    && cat /etc/supervisord.templates.d/*.conf > /etc/supervisord.d/01-fast-data.conf
 
 ARG BUILD_BRANCH
 ARG BUILD_COMMIT
