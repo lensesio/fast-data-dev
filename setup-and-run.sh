@@ -272,7 +272,7 @@ PRINT_HOST="${ADV_HOST:-localhost}"
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s fast-data-dev. Lenses $LENSES_VERSION, Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[34m in about \e[96ma minute\e[34m. Login with \e[96madmin/admin\e[34m. The services need some to start up.\e[39m"
-echo -e "\e[34mFor documentation please refer to -> \e[96https://www.landoop.com/docs/lenses/lenses/development-environment/latest/"
+echo -e "\e[92mFor documentation please refer to -> \e[96https://www.landoop.com/docs/lenses/lenses/development-environment/latest/ \e[39m"
 export FDD_DHOST="http://${PRINT_HOST}:${LENSES_PORT}"
 
 # Set connect heap size if needed
