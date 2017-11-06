@@ -287,6 +287,9 @@ elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     # This should be added only if we don't have running data, because it sets
     # retention period to 10 years (as the data is so few in this case).
     cp /usr/share/landoop/99-supervisord-sample-data.conf /etc/supervisord.d/
+else
+    # If SAMPLEDATA=0 and FORWARDLOGS connector not explicitly requested
+    [[ -z "$FORWARDLOGS" ]] && export FORWARDLOGS=0
 fi
 
 # Configure lenses
