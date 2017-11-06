@@ -299,6 +299,12 @@ if [[ -f /license.json ]]; then
 elif [[ ! -z "$LICENSE" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
     echo "$LICENSE" >> /opt/lenses/license.conf
 elif [[ ! -z "$LICENSE_URL" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
+    if [[ "$LICENSE_URL" == "https://milou.landoop.com/download/lensesdl/?id=CHECK_YOUR_EMAIL_FOR_PERSONAL_ID" ]]; then
+        echo
+        echo "Oops! It seems you just ran the sample command provided in the website."
+        echo "Please check your email to find the actual URL of your license. :)"
+        exit 1
+    fi
     wget "$LICENSE_URL" -O /opt/lenses/license.conf
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
