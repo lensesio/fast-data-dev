@@ -288,6 +288,8 @@ elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
 else
     # If SAMPLEDATA=0 and FORWARDLOGS connector not explicitly requested
     [[ -z "$FORWARDLOGS" ]] && export FORWARDLOGS=0
+    # If SAMPLEDATA=0 and NULLSINK connector not explicitly requested
+    [[ -z "$NULLSINK" ]] && export NULLSINK=0
 fi
 
 # Configure lenses
