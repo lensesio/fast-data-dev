@@ -322,6 +322,7 @@ fi
 chown nobody:nobody /opt/lenses/license.conf
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
+rm -rf /tmp/vlxjre
 TELEMETRY="${TELEMETRY:-1}"
 # Disabled due to k8s and rancher bugs. :(
 #sed -e 's/LENSES_PORT/'"$LENSES_PORT"'/' -i /var/www/index.html
