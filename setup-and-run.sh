@@ -136,45 +136,51 @@ fi
 # SSL setup
 if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_SSL_PORT"
-    echo -e "\e[92mTLS enabled. Creating CA and key-cert pairs.\e[34m"
+    echo -e "\e[92mTLS enabled.\e[34m"
     {
-        mkdir /tmp/certs
-        pushd /tmp/certs
-        # Create Landoop Fast Data Dev CA
-        quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
-        SSL_HOSTS="localhost,127.0.0.1,192.168.99.100"
-        [[ ! -z "$ADV_HOST" ]] && SSL_HOSTS="$SSL_HOSTS,$ADV_HOST"
-        [[ ! -z "$SSL_EXTRA_HOSTS" ]] && SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"
+        if [ -d /tmp/certs ]; then
+            echo -e "\e[92m/tmp/certs already exists, using existing certs \e[34m"
+            pushd /tmp/certs
+        else
+            echo -e "\e[92mCreating CA and key-cert pairs.\e[34m"
+            mkdir /tmp/certs
+            pushd /tmp/certs
+            # Create Landoop Fast Data Dev CA
+            quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
+            SSL_HOSTS="localhost,127.0.0.1,192.168.99.100"
+            [[ ! -z "$ADV_HOST" ]] && SSL_HOSTS="$SSL_HOSTS,$ADV_HOST"
+            [[ ! -z "$SSL_EXTRA_HOSTS" ]] && SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"
 
-        # Create Key-Certificate pairs for Kafka and user
-        for cert in kafka client; do
-            quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
+            # Create Key-Certificate pairs for Kafka and user
+            for cert in kafka client; do
+                quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
 
-            openssl pkcs12 -export \
-                    -in "$cert.crt.pem" \
-                    -inkey "$cert.key.pem" \
-                    -out "$cert.p12" \
-                    -name "$cert" \
-                    -passout pass:fastdata
+                openssl pkcs12 -export \
+                        -in "$cert.crt.pem" \
+                        -inkey "$cert.key.pem" \
+                        -out "$cert.p12" \
+                        -name "$cert" \
+                        -passout pass:fastdata
 
-            keytool -importkeystore \
-                    -noprompt -v \
-                    -srckeystore "$cert.p12" \
-                    -srcstoretype PKCS12 \
-                    -srcstorepass fastdata \
-                    -alias "$cert" \
-                    -deststorepass fastdata \
-                    -destkeypass fastdata \
-                    -destkeystore "$cert.jks"
-        done
+                keytool -importkeystore \
+                        -noprompt -v \
+                        -srckeystore "$cert.p12" \
+                        -srcstoretype PKCS12 \
+                        -srcstorepass fastdata \
+                        -alias "$cert" \
+                        -deststorepass fastdata \
+                        -destkeypass fastdata \
+                        -destkeystore "$cert.jks"
+            done
 
-        keytool -importcert \
-                -noprompt \
-                -keystore truststore.jks \
-                -alias LandoopFastDataDevCA \
-                -file lfddca.crt.pem \
-                -storepass fastdata
+            keytool -importcert \
+                    -noprompt \
+                    -keystore truststore.jks \
+                    -alias LandoopFastDataDevCA \
+                    -file lfddca.crt.pem \
+                    -storepass fastdata
 
+        fi
         cat <<EOF >>/opt/confluent/etc/kafka/server.properties
 ssl.client.auth=required
 ssl.key.password=fastdata
@@ -193,7 +199,7 @@ EOF
             && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
                    -i /opt/confluent/etc/kafka/server.properties
 
-        mkdir /var/www/certs/
+        mkdir -p /var/www/certs/
         cp client.jks truststore.jks /var/www/certs/
 
         popd
