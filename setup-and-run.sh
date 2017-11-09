@@ -272,6 +272,7 @@ else
 fi
 
 PRINT_HOST="${ADV_HOST:-localhost}"
+export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
