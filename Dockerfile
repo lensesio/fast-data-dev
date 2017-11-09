@@ -3,15 +3,20 @@ MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
 # Update, install tooling and some basic setup
 RUN apk add --no-cache \
-        bash coreutils \
+        bash \
         bash-completion \
-        wget curl \
-        openjdk8-jre-base \
-        tar gzip bzip2 \
-        supervisor \
-        sqlite \
+        bzip2 \
+        coreutils \
+        curl \
+        gettext \
+        gzip \
         libstdc++ \
+        openjdk8-jre-base \
         openssl \
+        sqlite \
+        supervisor \
+        tar \
+        wget \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir /opt \
     && wget https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport -O /usr/local/bin/checkport \
