@@ -21,11 +21,16 @@ DEBUG="${DEBUG:-false}"
 TOPIC_DELETE="${TOPIC_DELETE:-true}"
 SAMPLEDATA="${SAMPLEDATA:-1}"
 RUNNING_SAMPLEDATA="${RUNNING_SAMPLEDATA:-0}"
+export ZK_PORT BROKER_PORT BROKER_SSL_PORT REGISTRY_PORT REST_PORT CONNECT_PORT WEB_PORT RUN_AS_ROOT
+export ZK_JMX_PORT BROKER_JMX_PORT REGISTRY_JMX_PORT REST_JMX_PORT CONNECT_JMX_PORT DISABLE_JMX
+export ENABLE_SSL SSL_EXTRA_HOSTS DEBUG TOPIC_DELETE SAMPLEDATA RUNNING_SAMPLEDATA
+
 
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
 # Set webserver basicauth username and password
 USER="${USER:-kafka}"
+export USER
 if [[ ! -z "$PASSWORD" ]]; then
     echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96m${PASSWORD}'\e[34m\e[92m.\e[34m"
     echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /usr/share/landoop/Caddyfile
@@ -275,6 +280,7 @@ echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in abo
 
 # Set connect heap size if needed
 CONNECT_HEAP="${CONNECT_HEAP:-1G}"
+export CONNECT_HEAP
 sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.d/*.conf
 
 # Set sample data if needed
