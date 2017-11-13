@@ -275,7 +275,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
+echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka $KAFKA_VERSION, CP OSS $CP_VERSION.\e[39m"
 echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://www.landoop.com/docs/lenses/developers/ \e[39m"
@@ -313,7 +313,7 @@ elif [[ ! -z "$LICENSE_URL" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
         echo "Please check your email to find the actual URL of your license. :)"
         exit 1
     fi
-    wget "$LICENSE_URL" -O /opt/lenses/license.conf
+    wget -q "$LICENSE_URL" -O /opt/lenses/license.conf
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
