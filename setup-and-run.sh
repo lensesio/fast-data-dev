@@ -102,7 +102,7 @@ OLD_IFS="$IFS"
 IFS=","
 for connector in $DISABLE; do
     echo "Disabling connector: kafka-connect-${connector}"
-    rm -rf "/opt/confluent/share/java/kafka-connect-${connector}"
+    rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
     [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
 done
 IFS="$OLD_IFS"
