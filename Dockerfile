@@ -28,7 +28,7 @@ RUN apk add --no-cache \
 RUN mkdir /usr/share/landoop
 
 # Add Confluent Distribution
-ENV CP_VERSION="3.3.0" KAFKA_VERSION="0.11.0.0"
+ENV CP_VERSION="3.3.1" KAFKA_VERSION="0.11.0.1"
 ARG CP_URL="https://packages.confluent.io/archive/3.3/confluent-oss-${CP_VERSION}-2.11.tar.gz"
 RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && mkdir -p /opt/confluent \
@@ -105,7 +105,7 @@ RUN wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
 COPY web/topics-ui-env.js /var/www/kafka-topics-ui/env.js
 
 # Add and Setup Kafka-Connect-UI
-ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.9.2/kafka-connect-ui-0.9.2.tar.gz"
+ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.0.9.3/kafka-connect-ui-0.9.3.tar.gz"
 RUN wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
     && mkdir /var/www/kafka-connect-ui \
     && tar xzf /kafka-connect-ui.tar.gz -C /var/www/kafka-connect-ui \
