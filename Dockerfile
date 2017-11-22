@@ -10,6 +10,7 @@ RUN apk add --no-cache \
         curl \
         gettext \
         gzip \
+        jq \
         libstdc++ \
         openjdk8-jre-base \
         openssl \
