@@ -6,8 +6,8 @@
   <meta charset=utf-8/>
   <meta name="viewport" content="width=device-width">
   <meta name="description" content="Landoop Kafka Development Environment">
-  <!-- <meta name="keywords"
-       content="kafka,schema registry,topics,kafka-topic,kafka-rest,kafka-rest-proxy,kafka management,avro"> -->
+   <meta name="keywords"
+       content="kafka, kafka docker, kafka quick start, schema registry,topics,kafka-topic,kafka-rest,kafka-rest-proxy,kafka management,avro">
   <meta name="author" content="Landoop Team">
   <link rel="shortcut icon" href="schema-registry-ui/src/assets/icons/favicon.png">
 
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="schema-registry-ui/bower_components/angular-material/angular-material.min.css">
   <link rel="stylesheet" href="schema-registry-ui/bower_components/font-awesome/css/font-awesome.min.css">
   <style>
-     body {background-color: #F5F5F5;}
+    body {background-color: #fff;}
     .bigTotal,.details,.tile-heading{text-align:center}
     .bigTotal{font-size:3em;margin:0;padding:0}
     .details{font-size:13px;color:#333}
@@ -23,14 +23,17 @@
     .summary, .summary-title{text-align:center;font-weight: 500; letter-spacing: .010em; margin: 0;line-height: 1.6em; font-size:12px}
     .summary-title{text-transform:uppercase;padding:10px;text-decoration:none}
     .summary{opacity:.7;padding:0 10px;min-height:30px}
-    h1,h2,h3,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px;margin:10px;}
+    h1,h2,h3,h4,h5{font-family:Tahoma;font-weight:200;color:#666;padding-left:10px;margin:10px;}
     .card-link{text-decoration:none;cursor:hand}
     .ok{color:#7CAF57; font-size:12px; font-family:Tahoma;}
-   .md-list-item-short { height: 15px; min-height: 15px;}
+   .md-list-item-short { height: 25px; min-height: 25px;}
    .important-message { color: #ff6f10; }
    .important-message code { background-color: #FCFCFC; }
+   .fdd-head { padding-left:15px; min-height: 48px}
    .fdd-head h3 code a, a:active, a:visited a:hover { text-decoration: none; color: #2a3b4d; font-size: 14px;}
    .fdd-head h3 code { font-size: 14px;}
+   header {background: #444d58;}
+   md-card, md-card md-card-header {box-shadow: none;}
   </style>
 </head>
 
@@ -38,15 +41,33 @@
 
 <div ng-controller="MainCtrl" style="background-color: #F5F5F5;">
 <!--Header-->
-<div flex layout="row" layout-xs="column">
+<header>
+<div layout="row" layout-xs="column">
   <div flex="20"></div>
-  <div flex="60" class="fdd-head">
-    <h3> <img ng-src="img/landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
-        Kafka Development Environment<br/>
-        <code>docker container powered by <a href="https://www.landoop.com">Landoop</a></code>
-    </h3>
+  <div flex>
+    <h4 style="color: #fff;letter-spacing: 1px; font-size:14px;"  > 
+      <img ng-src="http://www.landoop.com/images/landoop-light.svg" style="width:25px; float:left; padding-right:15px; padding-top: 5px;">
+        <b>FAST-DATA-DEV</b> <br> 
+        <span style="color:font-weight:400;opacity:.7;font-size:12px;text-transform:uppercase;letter-spacing: 1.2px;"> KAFKA DEVELOPMENT ENVIRONMENT</span>
+    </h4> 
   </div>
+  <div flex>
+    <md-menu-bar style="padding-top:18px;">
+      <md-menu>
+        <a href="http://www.landoop.com/kafka/fast-data-dev/" target="_blank" style="color:#fff;text-decoration:none; margin: 0 20px;" class="tile-heading">
+          <i class="fa fa-info-circle" aria-hidden="true"></i> About
+        </a>
+      </md-menu>
+      <md-menu>
+        <a href="https://github.com/Landoop/fast-data-dev#fast-data-dev" target="_blank" style="color:#fff; text-decoration:none; margin: 0 20px;" class="tile-heading">
+         <i class="fa fa-question-circle" aria-hidden="true"></i> Help
+        </a>
+      </md-menu>
+    </md-menu-bar>
+  </div>
+
 </div>
+</header>
 
 <!--summaries-->
 <div flex layout="row" layout-xs="column">
