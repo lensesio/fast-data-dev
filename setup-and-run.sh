@@ -142,12 +142,19 @@ fi
 if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_SSL_PORT"
     echo -e "\e[92mTLS enabled.\e[34m"
-    {
-        if [ -d /tmp/certs ]; then
-            echo -e "\e[92m/tmp/certs already exists, using existing certs \e[34m"
+    if [[ -f /tmp/certs/kafka.jks ]] \
+           && [[ -f /tmp/certs/client.jks ]] \
+           && [[ -f /tmp/certs/truststore.jks ]]; then
+        echo -e "\e[92mOld keystores and truststore found, skipping creation of new ones.\e[34m"
+        {
             pushd /tmp/certs
-        else
-            echo -e "\e[92mCreating CA and key-cert pairs.\e[34m"
+            mkdir -p /var/www/certs/
+            cp client.jks truststore.jks /var/www/certs/
+            popd
+        } >>/var/log/ssl-setup.log 2>&1
+    else
+        echo -e "\e[92mCreating CA and key-cert pairs.\e[34m"
+        {
             mkdir /tmp/certs
             pushd /tmp/certs
             # Create Landoop Fast Data Dev CA
@@ -185,8 +192,7 @@ if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
                     -file lfddca.crt.pem \
                     -storepass fastdata
 
-        fi
-        cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+            cat <<EOF >>/opt/confluent/etc/kafka/server.properties
 ssl.client.auth=required
 ssl.key.password=fastdata
 ssl.keystore.location=$PWD/kafka.jks
@@ -198,17 +204,18 @@ ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
 ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
-        sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
-            -i /opt/confluent/etc/kafka/server.properties
-        [[ ! -z "${ADV_HOST}" ]] \
-            && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
-                   -i /opt/confluent/etc/kafka/server.properties
+            sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
+                -i /opt/confluent/etc/kafka/server.properties
+            [[ ! -z "${ADV_HOST}" ]] \
+                && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
+                       -i /opt/confluent/etc/kafka/server.properties
 
-        mkdir -p /var/www/certs/
-        cp client.jks truststore.jks /var/www/certs/
+            mkdir -p /var/www/certs/
+            cp client.jks truststore.jks /var/www/certs/
 
-        popd
-    } >/var/log/ssl-setup.log 2>&1
+            popd
+        } >/var/log/ssl-setup.log 2>&1
+    fi
     sed -r -e 's|9093|'"${BROKER_SSL_PORT}"'|' \
         -i /var/www/env.js
     sed -e 's/ssl_browse/1/' -i /var/www/env.js
