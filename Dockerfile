@@ -10,6 +10,7 @@ RUN apk add --no-cache \
         curl \
         gettext \
         gzip \
+        jq \
         libstdc++ \
         openjdk8-jre-base \
         openssl \
@@ -159,7 +160,7 @@ ADD extras/ /usr/share/landoop/
 ADD supervisord.conf /etc/supervisord.conf
 ADD supervisord.templates.d/* /etc/supervisord.templates.d/
 ADD setup-and-run.sh logs-to-kafka.sh nullsink.sh /usr/local/bin/
-ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.2/kafka /usr/share/landoop/kafka-completion
+ADD https://github.com/Landoop/kafka-autocomplete/releases/download/0.3/kafka /usr/share/landoop/kafka-completion
 RUN chmod +x /usr/local/bin/setup-and-run.sh /usr/local/bin/logs-to-kafka.sh \
     && ln -s /usr/share/landoop/bashrc /root/.bashrc \
     && cat /etc/supervisord.templates.d/*.conf > /etc/supervisord.d/01-fast-data.conf
