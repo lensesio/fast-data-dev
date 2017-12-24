@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "Source & Sink connectors collection (20+) supporting KCQL"
   },
   {
-    "name" : "Landoop Schema Registry UI v0.9.1",
+    "name" : "Landoop Schema Registry UI v0.9.3",
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {

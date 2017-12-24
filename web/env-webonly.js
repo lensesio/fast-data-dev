@@ -1,6 +1,6 @@
 var runningServices = [
   {
-    "name" : "Landoop Schema Registry UI v0.9.1",
+    "name" : "Landoop Schema Registry UI v0.9.3",
     "description" : "Create / view / search / validate / evolve / view history & configure Avro schemas of your Kafka cluster"
   },
   {
