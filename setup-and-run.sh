@@ -365,7 +365,7 @@ lenses.connect.clusters=[
 
 lenses.jmx.brokers="0.0.0.0:9581"
 lenses.jmx.schema.registry="0.0.0.0:9582"
-lenses.jmx.connect=[{default:"0.0.0.0:9584"}]
+lenses.jmx.connect=[{dev:"0.0.0.0:9584"}]
 lenses.jmx.zookeepers="0.0.0.0:9585"
 
 lenses.license.file="/opt/lenses/license.conf"
