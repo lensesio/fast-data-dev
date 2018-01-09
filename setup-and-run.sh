@@ -314,19 +314,20 @@ else
     [[ -z "$NULLSINK" ]] && export NULLSINK=0
 fi
 
+EULA="${EULA:-$LICENSE_URL}"
 # Configure lenses
 if [[ -f /license.json ]]; then
     cp /license.json /opt/lenses/license.conf
 elif [[ ! -z "$LICENSE" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
     echo "$LICENSE" >> /opt/lenses/license.conf
-elif [[ ! -z "$LICENSE_URL" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
-    if [[ "$LICENSE_URL" == "https://milou.landoop.com/download/lensesdl/?id=CHECK_YOUR_EMAIL_FOR_PERSONAL_ID" ]]; then
+elif [[ ! -z "$EULA" ]] && [[ ! -f /opt/lenses/license.conf ]]; then
+    if [[ "$EULA" =~ CHECK_YOUR_EMAIL_FOR_KEY ]]; then
         echo
         echo "Oops! It seems you just ran the sample command provided in the website."
         echo "Please check your email to find the actual URL of your license. :)"
         exit 1
     fi
-    wget -q "$LICENSE_URL" -O /opt/lenses/license.conf
+    wget -q "$EULA" -O /opt/lenses/license.conf
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
