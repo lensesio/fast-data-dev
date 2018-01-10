@@ -1,12 +1,12 @@
 var runningServices = [
   {
-    "name" : "Confluent OSS v3.3.1 - Kafka v0.11.0.1",
+    "name" : "Confluent OSS v4.0.0 - Kafka v1.0.0",
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
-  {
-    "name" : "Landoop Stream Reactor v0.3.0",
-    "description" : "Source & Sink connectors collection (20+) supporting KCQL"
-  },
+  // {
+  //   "name" : "Landoop Stream Reactor v0.3.0",
+  //   "description" : "Source & Sink connectors collection (20+) supporting KCQL"
+  // },
   {
     "name" : "Landoop Schema Registry UI v0.9.3",
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
