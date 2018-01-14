@@ -39,18 +39,18 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
     && ln -s /opt/confluent "/opt/confluent-${CP_VERSION}"
 
 
-# # Add Stream Reactor and Elastic Search (for elastic connector)
-# ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-0.3.0_3.3.0.tar.gz
-# RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
-RUN sed "/^plugin\.path=.*$/d" -i /opt/confluent/etc/schema-registry/connect-avro-distributed.properties && echo "plugin.path=/opt/confluent/share/java" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
-#     && mkdir -p /opt/connectors \
-#     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/connectors \
-#     && rm /stream-reactor.tar.gz \
-#     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
-#     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
-#     && mv /elasticsearch-2.4.1/lib/*.jar /opt/connectors/kafka-connect-elastic/ \
-#     && rm -rf /elasticsearch-2.4.1* \
-#     && echo "plugin.path=/opt/connectors,/extra-connect-jars,/connectors" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+# Add Stream Reactor and Elastic Search (for elastic connector)
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-1.0.0_4.0.0.tar.gz
+# RUN sed "/^plugin\.path=.*$/d" -i /opt/confluent/etc/schema-registry/connect-avro-distributed.properties && echo "plugin.path=/opt/confluent/share/java" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
+    && mkdir -p /opt/connectors \
+    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/connectors \
+    && rm /stream-reactor.tar.gz \
+    && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
+    && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
+    && mv /elasticsearch-2.4.1/lib/*.jar /opt/connectors/kafka-connect-elastic/ \
+    && rm -rf /elasticsearch-2.4.1* \
+    && echo "plugin.path=/opt/confluent/share/java,/opt/connectors,/extra-connect-jars,/connectors" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
 
 # Add glibc (for Lenses branch, for HDFS connector etc as some java libs need some functions provided by glibc)
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-2.26-r0.apk \
