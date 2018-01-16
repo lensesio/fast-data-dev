@@ -132,7 +132,7 @@ ADD web/Caddyfile /usr/share/landoop
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/1.1/lenses-1.1.0-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/1.1/lenses-1.1.1-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
