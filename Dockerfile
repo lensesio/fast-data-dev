@@ -40,7 +40,7 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
 
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ENV STREAM_REACTOR_VERSION="1.0.0-testing"
+ENV STREAM_REACTOR_VERSION="1.0.0"
 ARG STREAM_REACTOR_URL=https://archive.landoop.com/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && mkdir -p /opt/connectors \
