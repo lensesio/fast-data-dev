@@ -241,9 +241,9 @@
         zookeeper=localhost:2181
         rest.port=38783
         port=38783
-        kafka.logs.dir=logs/
+        plugin.path=/opt/confluent/share/java
     - name: Read SQLite into Topic (connect standalone)
-      command: timeout -k 5 20 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
+      command: timeout -k 5 45 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
       stdout_not_has: [ 'ERROR' ]
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)
