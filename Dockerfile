@@ -40,7 +40,8 @@ RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
 
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ARG STREAM_REACTOR_URL=https://archive.landoop.com/third-party/stream-reactor/stream-reactor-0.3.0_3.3.0.tar.gz
+ENV STREAM_REACTOR_VERSION="0.4.0"
+ARG STREAM_REACTOR_URL=https://archive.landoop.com/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && mkdir -p /opt/connectors \
     && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/connectors \
@@ -49,6 +50,7 @@ RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
     && mv /elasticsearch-2.4.1/lib/*.jar /opt/connectors/kafka-connect-elastic/ \
     && rm -rf /elasticsearch-2.4.1* \
+    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/5.15.2/activemq-all-5.15.2.jar -P /opt/connectors/kafka-connect-jms \
     && echo "plugin.path=/opt/connectors,/extra-connect-jars,/connectors" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
 
 # Add glibc (for Lenses branch, for HDFS connector etc as some java libs need some functions provided by glibc)
@@ -179,7 +181,8 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
     && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && echo "KAFKA_VERSION=${KAFKA_VERSION}" | tee -a /build.info \
-    && echo "CP_VERSION=${CP_VERSION}"       | tee -a /build.info
+    && echo "CP_VERSION=${CP_VERSION}"       | tee -a /build.info \
+    && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}" | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
