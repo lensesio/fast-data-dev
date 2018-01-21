@@ -229,6 +229,7 @@ if echo "$WEB_ONLY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.d/*
     cp /var/www/env-webonly.js /var/www/env.js
+    export RUNTESTS="${RUNTESTS:-0}"
 fi
 
 # Set supervisord to output all logs to stdout
