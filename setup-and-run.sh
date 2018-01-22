@@ -28,7 +28,7 @@ export DISABLE_JMX ENABLE_SSL SSL_EXTRA_HOSTS DEBUG TOPIC_DELETE SAMPLEDATA RUNN
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
 
 # Set webserver basicauth username and password
-USER="${USER:-kafka}"
+USER="${USER:-admin}"
 export USER
 if [[ ! -z "$PASSWORD" ]]; then
     echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96m${PASSWORD}'\e[34m\e[92m.\e[34m"
@@ -341,6 +341,7 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
+PASSWORD="${PASSWORD:-admin}"
 chown nobody:nobody /opt/lenses/license.conf
 mkdir -p /opt/lenses/logs
 chmod 777 /opt/lenses/logs
@@ -374,7 +375,7 @@ lenses.secret.file="/opt/lenses/security.conf"
 EOF
 cat <<EOF> /opt/lenses/security.conf
 lenses.security.mode=BASIC
-lenses.security.users=[{"username": "admin", "password": "admin", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
+lenses.security.users=[{"username": "${USER}", "password": "${PASSWORD}", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
 EOF
 if ! echo "$TELEMETRY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     echo "lenses.telemetry.enable=false" >> /opt/lenses/lenses.conf
