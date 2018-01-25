@@ -1,7 +1,11 @@
 var runningServices = [
   {
     "name" : "Kafka 0.11.0.1 — Confluent OSS 3.3.1",
-    "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
+    "description" : "1× Broker, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
+  },
+  {
+    "name": "HortonWorks Schema Registry 0.5.0",
+    "description" : "1× Schema Registry"
   },
   {
     "name" : "Landoop Stream Reactor 0.4.0",

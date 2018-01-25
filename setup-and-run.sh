@@ -78,6 +78,7 @@ EOF
 sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' \
     -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/8082/'"$REST_PORT"'/' -e 's/8083/'"$CONNECT_PORT"'/' \
     -i /usr/share/landoop/Caddyfile \
+       /usr/share/landoop/Caddyfile.hwregistry \
        /var/www/env.js \
        /usr/share/landoop/kafka-tests.yml \
        /usr/local/bin/logs-to-kafka.sh

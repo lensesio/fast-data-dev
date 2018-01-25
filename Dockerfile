@@ -74,6 +74,13 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
     && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties \
     && echo 'access.control.allow.origin=*' >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
 
+# Add HortonWorks Schema Registry
+ENV HW_SR_VERSION=0.5.0
+ENV HW_SR_URL="https://github.com/hortonworks/registry/releases/download/v${HW_SR_VERSION}/hortonworks-registry-${HW_SR_VERSION}.tar.gz"
+RUN wget "$HW_SR_URL" -O hw-registry.tar.gz \
+    && mkdir -p /opt/hortonworks-registry \
+    && tar xf /hw-registry.tar.gz --no-same-owner --strip-components=1 -C /opt/hortonworks-registry \
+    && rm -f /hw-registry.tar.gz
 # # Add and setup Kafka Manager
 # RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.2.1.zip \
 #          -O /kafka-manager-1.3.2.1.zip \
@@ -129,7 +136,7 @@ RUN wget "$CADDY_URL" -O /caddy.tgz \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && mv /opt/caddy/caddy_linux_amd64 /opt/caddy/caddy \
     && rm -f /caddy.tgz
-ADD web/Caddyfile /usr/share/landoop
+ADD web/Caddyfile web/Caddyfile.hwregistry /usr/share/landoop/
 
 # Add fast-data-dev UI
 COPY web/index.html web/env.js web/env-webonly.js /var/www/
@@ -163,6 +170,7 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
     && echo "KAFKA_VERSION=${KAFKA_VERSION}" | tee -a /build.info \
     && echo "CP_VERSION=${CP_VERSION}"       | tee -a /build.info \
+    && echo "HW_SR_VERSION=${HW_SR_VERSION}" | tee -a /build.info \
     && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}" | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
