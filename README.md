@@ -98,24 +98,25 @@ Enjoy Kafka, Schema Registry, Connect, Landoop UIs and Stream Reactor.
 
 You can further customize the execution of the container with additional flags:
 
- optional_parameters            | usage
-------------------------------- | ------------------------------------------------------------------------------------------------------------
- `WEB_ONLY=1      `             | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
- `CONNECT_HEAP=3G`              | Configure the heap size allocated to Kafka Connect
- `PASSWORD=password`            | Protect you kafka resources when running publicly with username `kafka` with the password you set
- `USER=username`                | Run in combination with `PASSWORD` to specify the username to use on basic auth
- `RUNTESTS=0`                   | Disable the (coyote) integration tests from running when container starts
- `FORWARDLOGS=0`                | Disable running 5 file source connectors that bring application logs into Kafka topics
- `RUN_AS_ROOT=1`                | Run kafka as `root` user - useful to i.e. test HDFS connector
- `DISABLE_JMX=1`                | Disable JMX - enabled by default on ports 9581 - 9585
- `TOPIC_DELETE=0`               | Configure whether you can delete topics. By default topics can be deleted.
- `<SERVICE>_PORT=<PORT>`        | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
- `ENABLE_SSL=1`                 | Generate a CA, key-certificate pairs and enable a SSL port on the broker
- `SSL_EXTRA_HOSTS=IP1,host2`    | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
- `DISABLE=<CONNECTOR>[,<CON2>]` | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
- `DEBUG=1`                      | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
- `SAMPLEDATA=0`                 | Do not create `sea_vessel_position_reports`, `nyc_yellow_taxi_trip_data`, `reddit_posts` topics with sample Avro records.
- `RUNNING_SAMPLEDATA=1`         | In the sample topics send a continuous (yet low) flow of messages, so you can develop against live data.
+ optional_parameters              | usage
+--------------------------------- | ------------------------------------------------------------------------------------------------------------
+ `WEB_ONLY=1      `               | Run in combination with `--net=host` and docker will connect to the kafka services running on the local host
+ `CONNECT_HEAP=3G`                | Configure the heap size allocated to Kafka Connect
+ `PASSWORD=password`              | Protect you kafka resources when running publicly with username `kafka` with the password you set
+ `USER=username`                  | Run in combination with `PASSWORD` to specify the username to use on basic auth
+ `RUNTESTS=0`                     | Disable the (coyote) integration tests from running when container starts
+ `FORWARDLOGS=0`                  | Disable running 5 file source connectors that bring application logs into Kafka topics
+ `RUN_AS_ROOT=1`                  | Run kafka as `root` user - useful to i.e. test HDFS connector
+ `DISABLE_JMX=1`                  | Disable JMX - enabled by default on ports 9581 - 9585
+ `TOPIC_DELETE=0`                 | Configure whether you can delete topics. By default topics can be deleted.
+ `<SERVICE>_PORT=<PORT>`          | Custom port `<PORT>` for service, where `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`
+ `ENABLE_SSL=1`                   | Generate a CA, key-certificate pairs and enable a SSL port on the broker
+ `SSL_EXTRA_HOSTS=IP1,host2`      | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate
+ `CONNECTORS=<CONNECTOR>[,<CON2>]`| Explicitly set which connectors will be enabled. E.g `hbase`, `elastic` (Stream Reactor version)
+ `DISABLE=<CONNECTOR>[,<CON2>]`   | Disable one or more connectors. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
+ `DEBUG=1`                        | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
+ `SAMPLEDATA=0`                   | Do not create `sea_vessel_position_reports`, `nyc_yellow_taxi_trip_data`, `reddit_posts` topics with sample Avro records.
+ `RUNNING_SAMPLEDATA=1`           | In the sample topics send a continuous (yet low) flow of messages, so you can develop against live data.
 
 And execute the docker image if needed in `daemon` mode:
 
