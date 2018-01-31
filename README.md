@@ -251,51 +251,47 @@ which is faster and by how much. ;)
 
 ### Advanced Connector settings
 
-#### HDFS Connector
+#### Explicitly Enable Connectors
 
-HDFS connector currently is incompatible with the HBase connector due to classpath
-shadowing. To make HDFS connector work, disable the HBase connector using the
-`DISABLE` environment variable:
+The number of connectors present significantly affects Kafka Connect's
+startup time, as well as its memory usage. You can enable connectors
+explicitly using the `CONNECTORS` environment variable:
 
     docker run --rm -it --net=host \
-               -e DISABLE=hbase \
+               -e CONNECTORS=jdbc,elastic,hbase \
                landoop/fast-data-dev
 
-#### Disable Connectors
+Please note that if you don't enable jdbc, some tests will fail.
+This doesn't affect fast-data-dev's operation.
 
-If one or more connectors create issues for you, you can disable them on
-startup using the `DISABLE` environment variable. It takes a comma separated
-list of connector names you want to disable:
+#### Explicitly Disable Connectors
+
+Following the same logic as in the paragraph above, you can instead choose to
+explicitly disable certain connectors using the `DISABLE` environment
+variable. It takes a comma separated list of connector names you want to
+disable:
 
     docker run --rm -it --net=host \
                -e DISABLE=elastic,hbase \
                landoop/fast-data-dev
 
-#### HBase Connector
-
-Due to some issues with dependencies, the ElasticSearch connector and the HBase
-connector cannot coexist. Whilst both are available, HBase won't work. We do provide
-the `PREFER_HBASE` environment variable which will remove ElasticSearch (and the
-Twitter connector) to let HBase work:
-
-    docker run --rm -it --net=host \
-               -e PREFER_HBASE=true \
-               landoop/fast-data-dev
+If you disable the jdbc connector, some tests will fail to run.
 
 ### FAQ
 
-- Landoop's Fast Data Web UI tools and integration test requires a few seconds
-  till they fully work.
+- Landoop's Fast Data Web UI tools and integration test requires some time
+  till they fully work. Especially the tests and Kafka Connect UI will need
+  a few minutes.
   
-  That is because the services (Schema Registry and kafka REST Proxy) have
-  to start and initialize before the UIs can read data.
+  That is because the services (Kafka, Schema Registry, Kafka Connect, REST Proxy)
+  have to start and initialize before the UIs can read data.
 - When you start the container, Schema Registry and REST Proxy fail.
   
   This happens because the Broker isn't up yet. It is normal. Supervisord will
   make sure they will work automatically once the Broker starts.
 - What resources does this container need?
   
-  An idle, fresh container will need about 1.5GiB of RAM. As at least 4 JVM
+  An idle, fresh container will need about 3.5GiB of RAM. As at least 4 JVM
   applications will be working in it, your mileage will vary. In our
   experience Kafka Connect usually requires a lot of memory. It's heap size is
   set by default to 1GiB but you'll might need more than that.
