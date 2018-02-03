@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# If WEB_ONLY mode, this is set to 0 in the setup-and-run.sh if not set explicitly.
 RUNTESTS="${RUNTESTS:-1}"
 
 if [[ "$RUNTESTS" == "0" ]]; then
