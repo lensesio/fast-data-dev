@@ -162,6 +162,10 @@
   skip: _connect_
   entries:
 # CONNECT
+    - name: Wait for connect to get up
+      command: bash -c 'for ((i=0;i<30;i++)); do sleep 10; curl "http://localhost:8083/connectors" && break; done'
+      nolog: true
+
     - name: Get list of Connectors (connect distributed)
       command: curl -vs --stderr - -XGET -i "http://localhost:8083/connectors"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
@@ -243,7 +247,7 @@
         port=38783
         kafka.logs.dir=logs/
     - name: Read SQLite into Topic (connect standalone)
-      command: timeout -k 5 20 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
+      command: timeout -k 5 30 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
       stdout_not_has: [ 'ERROR' ]
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)

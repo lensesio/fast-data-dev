@@ -104,6 +104,18 @@ for connector in $DISABLE; do
     rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
     [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
 done
+# Enable Connectors
+if [[ ! -z "$CONNECTORS" ]]; then
+    CONNECTOR_LIST="$(find /opt/confluent/share/java/ /opt/connectors/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTORS=" ${CONNECTORS//,/ } "
+    for connector in $CONNECTOR_LIST; do
+        if [[ ! "$CONNECTORS" =~ " $connector " ]]; then
+            echo "Disabling connector: kafka-connect-${connector}"
+            rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
+            [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
+        fi
+    done
+fi
 IFS="$OLD_IFS"
 
 # Set ADV_HOST if needed
@@ -228,6 +240,7 @@ if echo "$WEB_ONLY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.d/*
     cp /var/www/env-webonly.js /var/www/env.js
+    export RUNTESTS="${RUNTESTS:-0}"
 fi
 
 # Set supervisord to output all logs to stdout

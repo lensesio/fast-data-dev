@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-RUNTESTS="${RUNTESTS:-0}"
+# If WEB_ONLY mode, this is set to 0 in the setup-and-run.sh if not set explicitly.
+RUNTESTS="${RUNTESTS:-1}"
 
 if [[ "$RUNTESTS" == "0" ]]; then
     echo "Skipping tests due to \$RUNTESTS = 0."
