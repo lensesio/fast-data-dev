@@ -2,7 +2,7 @@
 [![docker](https://img.shields.io/docker/pulls/landoop/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/landoop/fast-data-dev/)
 [![](https://images.microbadger.com/badges/image/landoop/fast-data-dev.svg)](http://microbadger.com/images/landoop/fast-data-dev) [![Join the chat at https://gitter.im/Landoop/fast-data-dev](https://badges.gitter.im/Landoop/fast-data-dev.svg)](https://gitter.im/Landoop/fast-data-dev?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[Kafka](http://kafka.apache.org/) docker image with Confluent (OSS), [Landoop](http://www.landoop.com/kafka/kafka-tools/) tools, 20+ Kafka Connectors
+[Kafka](http://kafka.apache.org/) docker image with Kafka Connect, Schema Registry, [Landoop](http://www.landoop.com/kafka/kafka-tools/) UI tools, Landoop Stream Reactor Connectors and more.
 
 > View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)**
 
@@ -10,9 +10,9 @@
 
 When you need:
 
-1. **Confluent** OSS with Apache Kafka including: ZooKeeper, Schema Registry, Kafka REST, Kafka-Connect
+1. **A Kafka Distribution** with Apache Kafka, Kafka Connect, Zookeeper, Confluent Schema Registry and REST Proxy
 2. **Landoop** Fast Data Tools including: kafka-topics-ui, schema-registry-ui, kafka-connect-ui
-3. 20+ Kafka Connectors to simplify ETL processes
+3. **Landoop** Stream Reactor, 25+ Kafka Connectors to simplify ETL processes
 4. Integration testing and examples embedded into the docker
 
 just run:
@@ -127,15 +127,17 @@ And execute the docker image if needed in `daemon` mode:
 The latest version of this docker image tracks our latest stable tag (cp3.2.2). Our
 images include:
 
- Version                       | Confluent OSS | Landoop tools | Apache Kafka  | Connectors
+ Version                       | Kafka Distro  | Landoop tools | Apache Kafka  | Connectors
 -------------------------------| ------------- | ------------- | ------------- | --------------
-landoop/fast-data-dev:cp3.1.2  |     3.1.2     |       ✓       |    0.10.1.1   | 20+ connectors
-landoop/fast-data-dev:cp3.0.1  |     3.0.1     |       ✓       |    0.10.0.1   | 20+ connectors
-landoop/fast-data-dev:cp3.2.2  |     3.2.2     |       ✓       |    0.10.2.1   | 24+ connectors
-landoop/fast-data-dev:cp3.3.0  |     3.3.0     |       ✓       |    0.11.0.0   | 30+ connectors
+landoop/fast-data-dev:cp3.1.2  | CP 3.1.2 OSS  |       ✓       |    0.10.1.1   | 20+ connectors
+landoop/fast-data-dev:cp3.0.1  | CP 3.0.1 OSS  |       ✓       |    0.10.0.1   | 20+ connectors
+landoop/fast-data-dev:cp3.2.2  | CP 3.2.2 OSS  |       ✓       |    0.10.2.1   | 24+ connectors
+landoop/fast-data-dev:cp3.3.0  | CP 3.3.0 OSS  |       ✓       |    0.11.0.0   | 30+ connectors
+landoop/fast-data-dev:lkd-1.0  | LKD 1.0*      |       ✓       |    1.0.0      | 30+ connectors
 
-Fast-data-dev contains a collection of popular open source connectors
-including *stream-reactor* v0.3.0
+*LKD stands for Landoop's Kafka Distribution. We build and package Apache Kafka with Kafka Connect
+and Apache Zookeeper, Confluent Schema Registry and REST Proxy and a collection of third party
+Kafka Connectors as well as our own Stream Reactor collection.
 
 Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
@@ -322,8 +324,9 @@ requisite:
                -e WEB_ONLY=true \
                landoop/fast-data-dev
 
-This is useful if you already have a cluster with Confluent's distribution
-installed and want just the additional Landoop Fast Data web UI.
+This is useful if you already have a Kafka cluster and want just the additional Landoop Fast Data web UI.
+_Please note that we provide separate, lightweight docker images for each UI component
+and we strongly encourage to use these over fast-data-dev._
 
 #### Connect Heap Size
 

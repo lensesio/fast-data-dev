@@ -1,5 +1,5 @@
 - name: coyote
-  title: Confluent Tests
+  title: Fast Data Dev Tests
 
 - name: Brokers
   skip: _brokers_
@@ -245,7 +245,7 @@
         zookeeper=localhost:2181
         rest.port=38783
         port=38783
-        plugin.path=/opt/confluent/share/java
+        plugin.path=/opt/landoop/kafka/share/java
     - name: Read SQLite into Topic (connect standalone)
       command: timeout -k 5 45 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
       stdout_not_has: [ 'ERROR' ]

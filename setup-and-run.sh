@@ -40,26 +40,26 @@ fi
 
 ## Some basic replacements
 sed -e 's/2181/'"$ZK_PORT"'/' -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' -i \
-    /opt/confluent/etc/kafka/zookeeper.properties \
-    /opt/confluent/etc/kafka/server.properties \
-    /opt/confluent/etc/schema-registry/schema-registry.properties \
-    /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+    /opt/landoop/kafka/etc/kafka/zookeeper.properties \
+    /opt/landoop/kafka/etc/kafka/server.properties \
+    /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
+    /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 ## Broker specific
-cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
 
 listeners=PLAINTEXT://:$BROKER_PORT
 confluent.support.metrics.enable=false
 EOF
 
 ## Disabled because the basic replacements catch it
-# cat <<EOF >>/opt/confluent/etc/schema-registry/schema-registry.properties
+# cat <<EOF >>/opt/landoop/kafka/etc/schema-registry/schema-registry.properties
 
 # listeners=http://0.0.0.0:$REGISTRY_PORT
 # EOF
 
 ## REST Proxy specific
-cat <<EOF >>/opt/confluent/etc/kafka-rest/kafka-rest.properties
+cat <<EOF >>/opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties
 
 listeners=http://0.0.0.0:$REST_PORT
 schema.registry.url=http://localhost:$REGISTRY_PORT
@@ -69,7 +69,7 @@ consumer.request.timeout.ms=30000
 EOF
 
 ## Schema Registry specific
-cat <<EOF >>/opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+cat <<EOF >>/opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 rest.port=$CONNECT_PORT
 EOF
@@ -84,7 +84,7 @@ sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PO
 
 # Allow for topic deletion by default, unless TOPIC_DELETE is set
 if echo "$TOPIC_DELETE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+    cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
 delete.topic.enable=true
 EOF
 fi
@@ -93,7 +93,7 @@ fi
 # Remove ElasticSearch if needed
 PREFER_HBASE="${PREFER_HBASE:-false}"
 if echo "$PREFER_HBASE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    rm -rf /extra-connect-jars/* /opt/confluent-*/share/java/kafka-connect-elastic*
+    rm -rf /extra-connect-jars/* /opt/landoop/kafka-*/share/java/kafka-connect-elastic*
     echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
 fi
 
@@ -102,17 +102,17 @@ OLD_IFS="$IFS"
 IFS=","
 for connector in $DISABLE; do
     echo "Disabling connector: kafka-connect-${connector}"
-    rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
+    rm -rf "/opt/landoop/kafka/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
     [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
 done
 # Enable Connectors
 if [[ ! -z "$CONNECTORS" ]]; then
-    CONNECTOR_LIST="$(find /opt/confluent/share/java/ /opt/connectors/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/landoop/kafka/share/java/ /opt/connectors/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     CONNECTORS=" ${CONNECTORS//,/ } "
     for connector in $CONNECTOR_LIST; do
         if [[ ! "$CONNECTORS" =~ " $connector " ]]; then
             echo "Disabling connector: kafka-connect-${connector}"
-            rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
+            rm -rf "/opt/landoop/kafka/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
             [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
         fi
     done
@@ -123,9 +123,9 @@ IFS="$OLD_IFS"
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
-         >> /opt/confluent/etc/kafka/server.properties
+         >> /opt/landoop/kafka/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
-         >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+         >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js /etc/supervisord.d/*
 fi
 
@@ -204,7 +204,7 @@ if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
                     -file lfddca.crt.pem \
                     -storepass fastdata
 
-            cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+            cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
 ssl.client.auth=required
 ssl.key.password=fastdata
 ssl.keystore.location=$PWD/kafka.jks
@@ -217,10 +217,10 @@ ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
             sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
-                -i /opt/confluent/etc/kafka/server.properties
+                -i /opt/landoop/kafka/etc/kafka/server.properties
             [[ ! -z "${ADV_HOST}" ]] \
                 && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
-                       -i /opt/confluent/etc/kafka/server.properties
+                       -i /opt/landoop/kafka/etc/kafka/server.properties
 
             mkdir -p /var/www/certs/
             cp client.jks truststore.jks /var/www/certs/
@@ -302,7 +302,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka $KAFKA_VERSION, Confluent OSS $CP_VERSION.\e[39m"
+echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka ${KAFKA_VERSION}-LKD (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about \e[96ma minute\e[34m.\e[39m"
 
 # Set connect heap size if needed
