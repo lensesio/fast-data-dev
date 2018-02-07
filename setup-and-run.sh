@@ -102,18 +102,16 @@ OLD_IFS="$IFS"
 IFS=","
 for connector in $DISABLE; do
     echo "Disabling connector: kafka-connect-${connector}"
-    rm -rf "/opt/landoop/kafka/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
-    [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
+    rm -rf "/opt/landoop/connectors/kafka-connect-${connector}" "/opt/landoop/connectors-3rd-party/kafka-connect-${connector}"
 done
 # Enable Connectors
 if [[ ! -z "$CONNECTORS" ]]; then
-    CONNECTOR_LIST="$(find /opt/landoop/kafka/share/java/ /opt/connectors/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/landoop/connectors/ /opt/landoop/connectors-3rd-party/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     CONNECTORS=" ${CONNECTORS//,/ } "
     for connector in $CONNECTOR_LIST; do
         if [[ ! "$CONNECTORS" =~ " $connector " ]]; then
             echo "Disabling connector: kafka-connect-${connector}"
-            rm -rf "/opt/landoop/kafka/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
-            [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
+            rm -rf "/opt/landoop/connectors/kafka-connect-${connector}" "/opt/landoop/connectors-3rd-party/kafka-connect-${connector}"
         fi
     done
 fi

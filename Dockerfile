@@ -59,33 +59,34 @@ ENV STREAM_REACTOR_VERSION="1.0.0"
 ARG STREAM_REACTOR_URL=https://archive.landoop.com/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz
 ARG CALCITE_LINQ4J_URL="https://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/1.12.0/calcite-linq4j-1.12.0.jar"
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
-    && mkdir -p /opt/connectors \
-    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/connectors \
+    && mkdir -p /opt/landoop/connectors \
+    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/landoop/connectors \
     && rm /stream-reactor.tar.gz \
     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
-    && mv /elasticsearch-2.4.1/lib/*.jar /opt/connectors/kafka-connect-elastic/ \
+    && mv /elasticsearch-2.4.1/lib/*.jar /opt/landoop/connectors/kafka-connect-elastic/ \
     && rm -rf /elasticsearch-2.4.1* \
-    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/5.15.2/activemq-all-5.15.2.jar -P /opt/connectors/kafka-connect-jms \
+    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/5.15.2/activemq-all-5.15.2.jar -P /opt/landoop/connectors/kafka-connect-jms \
     && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/1.12.0/calcite-linq4j-1.12.0.jar -O /calcite-linq4j-1.12.0.jar \
-    && bash -c 'for path in /opt/connectors/kafka-connect-*; do cp /calcite-linq4j-1.12.0.jar $path/; done' \
+    && bash -c 'for path in /opt/landoop/connectors/kafka-connect-*; do cp /calcite-linq4j-1.12.0.jar $path/; done' \
     && rm /calcite-linq4j-1.12.0.jar \
-    && echo "plugin.path=/opt/connectors,/extra-connect-jars,/connectors" >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
+    && echo "plugin.path=/opt/landoop/connectors,/opt/landoop/connectors-3rd-party,/extra-connect-jars,/connectors" >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 # Add glibc (for Lenses branch, for HDFS connector etc as some java libs need some functions provided by glibc)
-RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-2.26-r0.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-bin-2.26-r0.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-i18n-2.26-r0.apk \
-    && apk add --no-cache --allow-untrusted glibc-2.26-r0.apk glibc-bin-2.26-r0.apk glibc-i18n-2.26-r0.apk \
-    && rm -f glibc-2.26-r0.apk glibc-bin-2.26-r0.apk glibc-i18n-2.26-r0.apk
+ARG GLIBC_INST_VERSION="2.27-r0"
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-${GLIBC_INST_VERSION}.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-bin-${GLIBC_INST_VERSION}.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-i18n-${GLIBC_INST_VERSION}.apk \
+    && apk add --no-cache --allow-untrusted glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
+    && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk
 
-# Create system symlinks to Confluent's binaries
+# Create system symlinks to Kafka binaries
 ADD binaries /opt/landoop/kafka/bin-install
 RUN bash -c 'for i in $(find /opt/landoop/kafka/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done' \
     && cd /opt/landoop/kafka/bin \
     && ln -s kafka-run-class kafka-run-class.sh
 
-# Configure Confluent
+# Configure Connect and Confluent Components to support CORS
 RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
     && echo 'access.control.allow.origin=*' >> /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
     && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
@@ -99,10 +100,10 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/land
 #     && unzip /kafka-manager-1.3.2.1.zip -d /opt \
 #     && rm -rf /kafka-manager-1.3.2.1.zip
 
-# # Add Twitter Connector
-# ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-af63e4c-cp3.3.0-jar-with-dependencies.jar"
-# RUN mkdir -p /opt/landoop/kafka/share/java/kafka-connect-twitter \
-#     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/kafka/share/java/kafka-connect-twitter
+# Add Twitter Connector
+ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
+RUN mkdir -p /opt/landoop/connectors-3rd-party/kafka-connect-twitter \
+    && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors-3rd-party/kafka-connect-twitter
 
 # Add dumb init and quickcert
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \

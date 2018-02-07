@@ -20,6 +20,6 @@ Landoop Schema Registry UI    : BSL (http://www.landoop.com/bsl/)
 
 Third Party:
 Caddy                                  : Apache 2.0
-Apache Kafka (incl connect, zookeeper) : Apache 2.0
-Confluent Schema Registry              : Apache 2.0
-Confluent REST Proxy                   : Apache 2.0
+Apache Kafka (incl Connect, Zookeeper) : Apache 2.0
+Confluent Schema Registry, REST Proxy  : Apache 2.0
+
