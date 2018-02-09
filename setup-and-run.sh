@@ -66,6 +66,7 @@ schema.registry.url=http://localhost:$REGISTRY_PORT
 zookeeper.connect=localhost:$ZK_PORT
 # fix for Kafka REST consumer issues
 consumer.request.timeout.ms=30000
+bootstrap.servers=PLAINTEXT://localhost:$BROKER_PORT
 EOF
 
 ## Schema Registry specific
