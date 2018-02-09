@@ -33,8 +33,8 @@ ARG DEVARCH_USER
 ARG DEVARCH_PASS
 # Add Apache Kafka (includes Connect and Zookeeper)
 ENV KAFKA_VERSION="1.0.0"
-ENV KAFKA_LVERSION="1.0.0-L1-lkd"
-ARG KAFKA_URL="https://archive.landoop.com/lkd/packages/kafka_2.11-${KAFKA_LVERSION}.tar.gz"
+ENV KAFKA_LVERSION="1.0.0-L1"
+ARG KAFKA_URL="https://archive.landoop.com/lkd/packages/kafka_2.11-${KAFKA_LVERSION}-lkd.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && tar --no-same-owner -xzf /opt/kafka.tar.gz -C /opt \
     && mkdir /opt/landoop/kafka/logs && chmod 1777 /opt/landoop/kafka/logs \
@@ -100,10 +100,18 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/land
 #     && unzip /kafka-manager-1.3.2.1.zip -d /opt \
 #     && rm -rf /kafka-manager-1.3.2.1.zip
 
-# Add Twitter Connector
+# Add Third Party Connectors
+## Twitter
 ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
 RUN mkdir -p /opt/landoop/connectors-3rd-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors-3rd-party/kafka-connect-twitter
+## Kafka Connect JDBC
+ENV KAFKA_CONNECT_JDBC_VERSION="4.0.0-lkd"
+ARG KAFKA_CONNECT_JDBC_URL="https://archive.landoop.com/lkd/packages/kafka-connect-jdbc_${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" -O /opt/kafka-connect-jdbc.tar.gz \
+    && mkdir -p /opt/landoop/connectors-3rd-party/ \
+    && tar --no-same-owner -xzf /opt/kafka-connect-jdbc.tar.gz -C /opt/landoop/connectors-3rd-party/ \
+    && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 # Add dumb init and quickcert
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
@@ -177,14 +185,16 @@ ARG BUILD_BRANCH
 ARG BUILD_COMMIT
 ARG BUILD_TIME
 ARG DOCKER_REPO=local
-RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
-    && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
-    && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
-    && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
-    && echo "KAFKA_VERSION=${KAFKA_VERSION}" | tee -a /build.info \
-    && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"      | tee -a /build.info \
-    && echo "REST_PROXY_VERSION=${REST_VERSION}"               | tee -a /build.info \
-    && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}" | tee -a /build.info
+RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"                                | tee /build.info \
+    && echo "BUILD_COMMIT=${BUILD_COMMIT}"                             | tee -a /build.info \
+    && echo "BUILD_TIME=${BUILD_TIME}"                                 | tee -a /build.info \
+    && echo "DOCKER_REPO=${DOCKER_REPO}"                               | tee -a /build.info \
+    && echo "KAFKA_VERSION=${KAFKA_LVERSION}"                          | tee -a /build.info \
+    && echo "CONNECT_VERSION=${KAFKA_LVERSION}"                        | tee -a /build.info \
+    && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /build.info \
+    && echo "REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /build.info \
+    && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /build.info \
+    && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
