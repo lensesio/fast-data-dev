@@ -1,10 +1,10 @@
 var runningServices = [
   {
-    "name" : "Kafka 0.11.0.1 — Confluent OSS 3.3.1",
+    "name" : "Kafka 1.0.0-L1 @ Landoop's Apache Kafka Distribution",
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
   {
-    "name" : "Landoop Stream Reactor 0.4.0",
+    "name" : "Landoop Stream Reactor 1.0.0",
     "description" : "Source & Sink connectors collection (25+) supporting KCQL"
   },
   {

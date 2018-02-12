@@ -39,26 +39,26 @@ fi
 
 ## Some basic replacements
 sed -e 's/2181/'"$ZK_PORT"'/' -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' -i \
-    /opt/confluent/etc/kafka/zookeeper.properties \
-    /opt/confluent/etc/kafka/server.properties \
-    /opt/confluent/etc/schema-registry/schema-registry.properties \
-    /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+    /opt/landoop/kafka/etc/kafka/zookeeper.properties \
+    /opt/landoop/kafka/etc/kafka/server.properties \
+    /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
+    /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 ## Broker specific
-cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
 
 listeners=PLAINTEXT://:$BROKER_PORT
 confluent.support.metrics.enable=false
 EOF
 
 ## Disabled because the basic replacements catch it
-# cat <<EOF >>/opt/confluent/etc/schema-registry/schema-registry.properties
+# cat <<EOF >>/opt/landoop/kafka/etc/schema-registry/schema-registry.properties
 
 # listeners=http://0.0.0.0:$REGISTRY_PORT
 # EOF
 
 ## REST Proxy specific
-cat <<EOF >>/opt/confluent/etc/kafka-rest/kafka-rest.properties
+cat <<EOF >>/opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties
 
 listeners=http://0.0.0.0:$REST_PORT
 schema.registry.url=http://localhost:$REGISTRY_PORT
@@ -68,7 +68,7 @@ consumer.request.timeout.ms=30000
 EOF
 
 ## Schema Registry specific
-cat <<EOF >>/opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+cat <<EOF >>/opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 rest.port=$CONNECT_PORT
 EOF
@@ -83,7 +83,7 @@ sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PO
 
 # Allow for topic deletion by default, unless TOPIC_DELETE is set
 if echo "$TOPIC_DELETE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+    cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
 delete.topic.enable=true
 EOF
 fi
@@ -92,7 +92,7 @@ fi
 # Remove ElasticSearch if needed
 PREFER_HBASE="${PREFER_HBASE:-false}"
 if echo "$PREFER_HBASE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    rm -rf /extra-connect-jars/* /opt/confluent-*/share/java/kafka-connect-elastic*
+    rm -rf /extra-connect-jars/* /opt/landoop/kafka-*/share/java/kafka-connect-elastic*
     echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
 fi
 
@@ -101,18 +101,16 @@ OLD_IFS="$IFS"
 IFS=","
 for connector in $DISABLE; do
     echo "Disabling connector: kafka-connect-${connector}"
-    rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
-    [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
+    rm -rf "/opt/landoop/connectors/kafka-connect-${connector}" "/opt/landoop/connectors-3rd-party/kafka-connect-${connector}"
 done
 # Enable Connectors
 if [[ ! -z "$CONNECTORS" ]]; then
-    CONNECTOR_LIST="$(find /opt/confluent/share/java/ /opt/connectors/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/landoop/connectors/ /opt/landoop/connectors-3rd-party/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     CONNECTORS=" ${CONNECTORS//,/ } "
     for connector in $CONNECTOR_LIST; do
         if [[ ! "$CONNECTORS" =~ " $connector " ]]; then
             echo "Disabling connector: kafka-connect-${connector}"
-            rm -rf "/opt/confluent/share/java/kafka-connect-${connector}" "/opt/connectors/kafka-connect-${connector}"
-            [[ "elastic" == "$connector" ]] && rm -rf /extra-connect-jars/*
+            rm -rf "/opt/landoop/connectors/kafka-connect-${connector}" "/opt/landoop/connectors-3rd-party/kafka-connect-${connector}"
         fi
     done
 fi
@@ -122,9 +120,9 @@ IFS="$OLD_IFS"
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
-         >> /opt/confluent/etc/kafka/server.properties
+         >> /opt/landoop/kafka/etc/kafka/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
-         >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+         >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
     sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js /etc/supervisord.d/*
 fi
 
@@ -203,7 +201,7 @@ if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
                     -file lfddca.crt.pem \
                     -storepass fastdata
 
-            cat <<EOF >>/opt/confluent/etc/kafka/server.properties
+            cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
 ssl.client.auth=required
 ssl.key.password=fastdata
 ssl.keystore.location=$PWD/kafka.jks
@@ -216,10 +214,10 @@ ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
             sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
-                -i /opt/confluent/etc/kafka/server.properties
+                -i /opt/landoop/kafka/etc/kafka/server.properties
             [[ ! -z "${ADV_HOST}" ]] \
                 && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
-                       -i /opt/confluent/etc/kafka/server.properties
+                       -i /opt/landoop/kafka/etc/kafka/server.properties
 
             mkdir -p /var/www/certs/
             cp client.jks truststore.jks /var/www/certs/
@@ -301,7 +299,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka $KAFKA_VERSION, CP OSS $CP_VERSION.\e[39m"
+echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka ${KAFKA_VERSION}-LKD (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/developers-guide/ \e[39m"
@@ -309,9 +307,13 @@ echo -e "\e[92mIf you have trouble running the image or want to give us feedback
 export FDD_DHOST="http://${PRINT_HOST}:${LENSES_PORT}"
 
 # Set connect heap size if needed
-CONNECT_HEAP="${CONNECT_HEAP:-1G}"
-export CONNECT_HEAP
-sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.d/*.conf
+CONNECT_HEAP_OPTS="${CONNECT_HEAP_OPTS:-$CONNECT_HEAP}"
+export CONNECT_HEAP_OPTS="${CONNECT_HEAP_OPTS:--Xmx640M -Xms128M}"
+export BROKER_HEAP_OPTS="${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}"
+export ZOOKEEPER_HEAP_OPTS="${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}"
+export SCHEMA_REGISTRY_HEAP_OPTS="${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}"
+export KAFKA_REST_HEAP_OPTS="${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}"
+#sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.d/*.conf
 
 # Set sample data if needed
 if echo "$RUNNING_SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1" && echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then

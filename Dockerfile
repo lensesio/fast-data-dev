@@ -28,51 +28,70 @@ RUN apk add --no-cache \
 # Create Landoop configuration directory
 RUN mkdir /usr/share/landoop
 
-# Add Confluent Distribution
-ENV CP_VERSION="3.3.1" KAFKA_VERSION="0.11.0.1"
-ARG CP_URL="https://packages.confluent.io/archive/3.3/confluent-oss-${CP_VERSION}-2.11.tar.gz"
-RUN wget "$CP_URL" -O /opt/confluent.tar.gz \
-    && mkdir -p /opt/confluent \
-    && tar --no-same-owner --strip-components 1 -xzf /opt/confluent.tar.gz -C /opt/confluent \
-    && mkdir /opt/confluent/logs && chmod 1777 /opt/confluent/logs \
-    && rm -rf /opt/confluent.tar.gz \
-    && ln -s /opt/confluent "/opt/confluent-${CP_VERSION}"
+# Login args for development archives
+ARG DEVARCH_USER
+ARG DEVARCH_PASS
+# Add Apache Kafka (includes Connect and Zookeeper)
+ENV KAFKA_VERSION="1.0.0"
+ENV KAFKA_LVERSION="1.0.0-L1"
+ARG KAFKA_URL="https://archive.landoop.com/lkd/packages/kafka_2.11-${KAFKA_LVERSION}-lkd.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
+    && tar --no-same-owner -xzf /opt/kafka.tar.gz -C /opt \
+    && mkdir /opt/landoop/kafka/logs && chmod 1777 /opt/landoop/kafka/logs \
+    && rm -rf /opt/kafka.tar.gz \
+    && ln -s /opt/landoop/kafka "/opt/landoop/kafka-${KAFKA_VERSION}"
 
+# Add Schema Registry and REST Proxy
+ENV REGISTRY_VERSION="4.0.0-lkd"
+ARG REGISTRY_URL="https://archive.landoop.com/lkd/packages/schema_registry_${REGISTRY_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
+    && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
+    && rm -rf /opt/registry.tar.gz
+
+ENV REST_VERSION="4.0.0-lkd"
+ARG REST_URL="https://archive.landoop.com/lkd/packages/rest_proxy_${REST_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
+    && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
+    && rm -rf /opt/rest.tar.gz
 
 # Add Stream Reactor and Elastic Search (for elastic connector)
-ENV STREAM_REACTOR_VERSION="0.4.0"
+ENV STREAM_REACTOR_VERSION="1.0.0"
 ARG STREAM_REACTOR_URL=https://archive.landoop.com/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz
+ARG CALCITE_LINQ4J_URL="https://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/1.12.0/calcite-linq4j-1.12.0.jar"
 RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
-    && mkdir -p /opt/connectors \
-    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/connectors \
+    && mkdir -p /opt/landoop/connectors \
+    && tar -xzf stream-reactor.tar.gz --no-same-owner --strip-components=1 -C /opt/landoop/connectors \
     && rm /stream-reactor.tar.gz \
     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.1/elasticsearch-2.4.1.tar.gz \
     && tar xf /elasticsearch-2.4.1.tar.gz --no-same-owner \
-    && mv /elasticsearch-2.4.1/lib/*.jar /opt/connectors/kafka-connect-elastic/ \
+    && mv /elasticsearch-2.4.1/lib/*.jar /opt/landoop/connectors/kafka-connect-elastic/ \
     && rm -rf /elasticsearch-2.4.1* \
-    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/5.15.2/activemq-all-5.15.2.jar -P /opt/connectors/kafka-connect-jms \
-    && echo "plugin.path=/opt/connectors,/extra-connect-jars,/connectors" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/5.15.2/activemq-all-5.15.2.jar -P /opt/landoop/connectors/kafka-connect-jms \
+    && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/1.12.0/calcite-linq4j-1.12.0.jar -O /calcite-linq4j-1.12.0.jar \
+    && bash -c 'for path in /opt/landoop/connectors/kafka-connect-*; do cp /calcite-linq4j-1.12.0.jar $path/; done' \
+    && rm /calcite-linq4j-1.12.0.jar \
+    && echo "plugin.path=/opt/landoop/connectors,/opt/landoop/connectors-3rd-party,/extra-connect-jars,/connectors" >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 # Add glibc (for Lenses branch, for HDFS connector etc as some java libs need some functions provided by glibc)
-RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.27-r0/glibc-2.27-r0.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.27-r0/glibc-bin-2.27-r0.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.27-r0/glibc-i18n-2.27-r0.apk \
-    && apk add --no-cache --allow-untrusted glibc-2.27-r0.apk glibc-bin-2.27-r0.apk glibc-i18n-2.27-r0.apk \
-    && rm -f glibc-2.27-r0.apk glibc-bin-2.27-r0.apk glibc-i18n-2.27-r0.apk
+ARG GLIBC_INST_VERSION="2.27-r0"
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-${GLIBC_INST_VERSION}.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-bin-${GLIBC_INST_VERSION}.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-i18n-${GLIBC_INST_VERSION}.apk \
+    && apk add --no-cache --allow-untrusted glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
+    && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk
 
-# Create system symlinks to Confluent's binaries
-ADD binaries /opt/confluent/bin-install
-RUN bash -c 'for i in $(find /opt/confluent/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done' \
-    && cd /opt/confluent/bin \
+# Create system symlinks to Kafka binaries
+RUN bash -c 'for i in $(find /opt/landoop/kafka/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done' \
+    && cd /opt/landoop/kafka/bin \
     && ln -s kafka-run-class kafka-run-class.sh
 
-# Configure Confluent
-RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/schema-registry/schema-registry.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent/etc/schema-registry/schema-registry.properties \
-    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/kafka-rest/kafka-rest.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent/etc/kafka-rest/kafka-rest.properties \
-    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties \
-    && echo 'access.control.allow.origin=*' >> /opt/confluent/etc/schema-registry/connect-avro-distributed.properties
+# Configure Connect and Confluent Components to support CORS
+RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
+    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
+    && echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
+    && echo 'access.control.allow.origin=*' >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 # # Add and setup Kafka Manager
 # RUN wget https://archive.landoop.com/third-party/kafka-manager/kafka-manager-1.3.2.1.zip \
@@ -80,10 +99,18 @@ RUN echo "access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS" >> /opt/conf
 #     && unzip /kafka-manager-1.3.2.1.zip -d /opt \
 #     && rm -rf /kafka-manager-1.3.2.1.zip
 
-# Add Twitter Connector
-ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-af63e4c-cp3.3.0-jar-with-dependencies.jar"
-RUN mkdir -p /opt/confluent/share/java/kafka-connect-twitter \
-    && wget "$TWITTER_CONNECTOR_URL" -P /opt/confluent/share/java/kafka-connect-twitter
+# Add Third Party Connectors
+## Twitter
+ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
+RUN mkdir -p /opt/landoop/connectors-3rd-party/kafka-connect-twitter \
+    && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors-3rd-party/kafka-connect-twitter
+## Kafka Connect JDBC
+ENV KAFKA_CONNECT_JDBC_VERSION="4.0.0-lkd"
+ARG KAFKA_CONNECT_JDBC_URL="https://archive.landoop.com/lkd/packages/kafka-connect-jdbc_${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" -O /opt/kafka-connect-jdbc.tar.gz \
+    && mkdir -p /opt/landoop/connectors-3rd-party/ \
+    && tar --no-same-owner -xzf /opt/kafka-connect-jdbc.tar.gz -C /opt/landoop/connectors-3rd-party/ \
+    && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 # Add dumb init and quickcert
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
@@ -173,16 +200,19 @@ ARG BUILD_BRANCH
 ARG BUILD_COMMIT
 ARG BUILD_TIME
 ARG DOCKER_REPO=local
-RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
-    && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
-    && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
-    && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
+RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"                                | tee /build.info \
+    && echo "BUILD_COMMIT=${BUILD_COMMIT}"                             | tee -a /build.info \
+    && echo "BUILD_TIME=${BUILD_TIME}"                                 | tee -a /build.info \
+    && echo "DOCKER_REPO=${DOCKER_REPO}"                               | tee -a /build.info \
     && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && echo "KAFKA_VERSION=${KAFKA_VERSION}" | tee -a /build.info \
-    && echo "CP_VERSION=${CP_VERSION}"       | tee -a /build.info \
-    && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}" | tee -a /build.info
+    && echo "KAFKA_VERSION=${KAFKA_LVERSION}"                          | tee -a /build.info \
+    && echo "CONNECT_VERSION=${KAFKA_LVERSION}"                        | tee -a /build.info \
+    && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /build.info \
+    && echo "REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /build.info \
+    && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /build.info \
+    && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
