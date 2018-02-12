@@ -304,9 +304,13 @@ echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka ${KAFKA_VERSION}-LKD (La
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about \e[96ma minute\e[34m.\e[39m"
 
 # Set connect heap size if needed
-CONNECT_HEAP="${CONNECT_HEAP:-1G}"
-export CONNECT_HEAP
-sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.d/*.conf
+CONNECT_HEAP_OPTS="${CONNECT_HEAP_OPTS:-$CONNECT_HEAP}"
+export CONNECT_HEAP_OPTS="${CONNECT_HEAP_OPTS:--Xmx640M -Xms128M}"
+export BROKER_HEAP_OPTS="${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}"
+export ZOOKEEPER_HEAP_OPTS="${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}"
+export SCHEMA_REGISTRY_HEAP_OPTS="${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}"
+export KAFKA_REST_HEAP_OPTS="${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}"
+#sed -e 's|{{CONNECT_HEAP}}|'"${CONNECT_HEAP}"'|' -i /etc/supervisord.d/*.conf
 
 # Set sample data if needed
 if echo "$RUNNING_SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1" && echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
