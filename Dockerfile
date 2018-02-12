@@ -81,8 +81,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_
     && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk
 
 # Create system symlinks to Kafka binaries
-ADD binaries /opt/landoop/kafka/bin-install
-RUN bash -c 'for i in $(find /opt/landoop/kafka/bin-install); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done' \
+RUN bash -c 'for i in $(find /opt/landoop/kafka/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done' \
     && cd /opt/landoop/kafka/bin \
     && ln -s kafka-run-class kafka-run-class.sh
 

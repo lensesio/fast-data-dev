@@ -245,10 +245,11 @@
         zookeeper=localhost:2181
         rest.port=38783
         port=38783
-        plugin.path=/opt/landoop/kafka/share/java
+        plugin.path=/opt/landoop/connectors-3rd-party
     - name: Read SQLite into Topic (connect standalone)
       command: timeout -k 5 45 connect-standalone coyote_connect_standalone.properties coyote_sqlite_connector.properties
       stdout_not_has: [ 'ERROR' ]
+      stderr_not_has: [ 'Exception in thread "main"', 'Invalid value io.confluent.connect.avro.AvroConverter' ]
       ignore_exit_code: true
     - name: Run Console Consumer (basic kafka)
       command: |
