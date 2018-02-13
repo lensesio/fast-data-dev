@@ -106,11 +106,34 @@ RUN mkdir -p /opt/landoop/connectors-3rd-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors-3rd-party/kafka-connect-twitter
 ## Kafka Connect JDBC
 ENV KAFKA_CONNECT_JDBC_VERSION="4.0.0-lkd"
-ARG KAFKA_CONNECT_JDBC_URL="https://archive.landoop.com/lkd/packages/kafka-connect-jdbc_${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
+ARG KAFKA_CONNECT_JDBC_URL="https://archive.landoop.com/lkd/packages/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" -O /opt/kafka-connect-jdbc.tar.gz \
     && mkdir -p /opt/landoop/connectors-3rd-party/ \
     && tar --no-same-owner -xzf /opt/kafka-connect-jdbc.tar.gz -C /opt/landoop/connectors-3rd-party/ \
     && rm -rf /opt/kafka-connect-jdbc.tar.gz
+## Kafka Connect ELASTICSEARCH
+ENV KAFKA_CONNECT_ELASTICSEARCH_VERSION="4.0.0-lkd"
+ARG KAFKA_CONNECT_ELASTICSEARCH_URL="https://archive.landoop.com/lkd/packages/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" -O /opt/kafka-connect-elasticsearch.tar.gz \
+    && mkdir -p /opt/landoop/connectors-3rd-party/ \
+    && tar --no-same-owner -xzf /opt/kafka-connect-elasticsearch.tar.gz -C /opt/landoop/connectors-3rd-party/ \
+    && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
+## Kafka Connect HDFS
+ENV KAFKA_CONNECT_HDFS_VERSION="4.0.0-lkd"
+ARG KAFKA_CONNECT_HDFS_URL="https://archive.landoop.com/lkd/packages/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" -O /opt/kafka-connect-hdfs.tar.gz \
+    && mkdir -p /opt/landoop/connectors-3rd-party/ \
+    && tar --no-same-owner -xzf /opt/kafka-connect-hdfs.tar.gz -C /opt/landoop/connectors-3rd-party/ \
+    && rm -rf /opt/kafka-connect-hdfs.tar.gz
+## Kafka Connect S3
+ENV KAFKA_CONNECT_S3_VERSION="4.0.0-lkd"
+ARG KAFKA_CONNECT_S3_URL="https://archive.landoop.com/lkd/packages/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" -O /opt/kafka-connect-s3.tar.gz \
+    && mkdir -p /opt/landoop/connectors-3rd-party/ \
+    && tar --no-same-owner -xzf /opt/kafka-connect-s3.tar.gz -C /opt/landoop/connectors-3rd-party/ \
+    && rm -rf /opt/kafka-connect-s3.tar.gz
+
+
 
 # Add dumb init and quickcert
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
@@ -193,7 +216,10 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"                                | tee /bu
     && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /build.info \
     && echo "REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /build.info \
     && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /build.info \
-    && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /build.info
+    && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /build.info \
+    && echo "KAFKA_CONNECT_ELASTICSEARCH_VERSION=${KAFKA_CONNECT_ELASTICSEARCH_VERSION}" | tee -a /build.info \
+    && echo "KAFKA_CONNECT_HDFS_VERSION=${KAFKA_CONNECT_HDFS_VERSION}" | tee -a /build.info \
+    && echo "KAFKA_CONNECT_S3_VERSION=${KAFKA_CONNECT_S3_VERSION}"     | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
