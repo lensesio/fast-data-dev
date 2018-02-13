@@ -118,22 +118,23 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" -O /opt/
     && mkdir -p /opt/landoop/connectors-3rd-party/ \
     && tar --no-same-owner -xzf /opt/kafka-connect-elasticsearch.tar.gz -C /opt/landoop/connectors-3rd-party/ \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
-## Kafka Connect HDFS
+## Kafka Connect HDFS and Kafka Connect S3 (they share many jars, so we put them together to duphard them)
 ENV KAFKA_CONNECT_HDFS_VERSION="4.0.0-lkd"
 ARG KAFKA_CONNECT_HDFS_URL="https://archive.landoop.com/lkd/packages/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
+ENV KAFKA_CONNECT_S3_VERSION="4.0.0-lkd"
+ARG KAFKA_CONNECT_S3_URL="https://archive.landoop.com/lkd/packages/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" -O /opt/kafka-connect-hdfs.tar.gz \
     && mkdir -p /opt/landoop/connectors-3rd-party/ \
     && tar --no-same-owner -xzf /opt/kafka-connect-hdfs.tar.gz -C /opt/landoop/connectors-3rd-party/ \
-    && rm -rf /opt/kafka-connect-hdfs.tar.gz
-## Kafka Connect S3
-ENV KAFKA_CONNECT_S3_VERSION="4.0.0-lkd"
-ARG KAFKA_CONNECT_S3_URL="https://archive.landoop.com/lkd/packages/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" -O /opt/kafka-connect-s3.tar.gz \
+    && rm -rf /opt/kafka-connect-hdfs.tar.gz \
+    && wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" -O /opt/kafka-connect-s3.tar.gz \
     && mkdir -p /opt/landoop/connectors-3rd-party/ \
     && tar --no-same-owner -xzf /opt/kafka-connect-s3.tar.gz -C /opt/landoop/connectors-3rd-party/ \
-    && rm -rf /opt/kafka-connect-s3.tar.gz
-
-
+    && rm -rf /opt/kafka-connect-s3.tar.gz \
+    && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
+    && chmod +x /duphard \
+    && /duphard -d=0 /opt/landoop/ \
+    && rm /duphard
 
 # Add dumb init and quickcert
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -O /usr/local/bin/dumb-init \
