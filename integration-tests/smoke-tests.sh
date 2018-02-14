@@ -20,7 +20,7 @@ cat <<EOF > /var/www/coyote-tests/results
 }
 EOF
 
-coyote -c /usr/share/landoop/kafka-tests.yml -out /var/www/coyote-tests/index.html
+/opt/landoop/tools/bin/coyote -c /opt/landoop/tools/share/coyote/examples/simple-integration-tests.yml -out /var/www/coyote-tests/index.html
 
 EXITCODE=$?
 
