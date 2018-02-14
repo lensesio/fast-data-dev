@@ -70,7 +70,13 @@ RUN wget "${STREAM_REACTOR_URL}" -O stream-reactor.tar.gz \
     && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/1.12.0/calcite-linq4j-1.12.0.jar -O /calcite-linq4j-1.12.0.jar \
     && bash -c 'for path in /opt/landoop/connectors/kafka-connect-*; do cp /calcite-linq4j-1.12.0.jar $path/; done' \
     && rm /calcite-linq4j-1.12.0.jar \
-    && echo "plugin.path=/opt/landoop/connectors,/opt/landoop/connectors-3rd-party,/extra-connect-jars,/connectors" >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
+    && echo "plugin.path=/opt/landoop/connectors,/opt/landoop/connectors-3rd-party,/extra-connect-jars,/connectors" \
+             >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
+
+ADD kafka-connect-landoop-common.sh /
+RUN mkdir -p /opt/landoop/kafka/share/java/landoop-common \
+    && bash /kafka-connect-landoop-common.sh \
+    && rm /kafka-connect-landoop-common.sh
 
 # Add glibc (for Lenses branch, for HDFS connector etc as some java libs need some functions provided by glibc)
 ARG GLIBC_INST_VERSION="2.27-r0"
@@ -133,7 +139,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" -O /opt/kafka-con
     && rm -rf /opt/kafka-connect-s3.tar.gz \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /duphard \
     && chmod +x /duphard \
-    && /duphard -d=0 /opt/landoop/ \
+    && /duphard -d=0 /opt/landoop \
     && rm /duphard
 
 # Add dumb init and quickcert
