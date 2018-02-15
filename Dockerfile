@@ -3,6 +3,7 @@ MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
 RUN apt-get update \
     && apt-get install -y \
+         unzip \
          wget \
     && rm -rf /var/lib/apt/lists/* \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
@@ -24,8 +25,8 @@ ARG LKD_VERSION=${LKD_VERSION:-1.0.0-r0}
 
 # Add Apache Kafka (includes Connect and Zookeeper)
 ARG KAFKA_VERSION="${KAFKA_VERSION:-1.0.0}"
-ARG KAFKA_LVERSION="${KAFKA_LVERSION:-${KAFKA_VERSION}-L1}"
-ARG KAFKA_URL="${KAFKA_URL:-https://archive.landoop.com/lkd/packages/kafka_2.11-${KAFKA_LVERSION}-lkd.tar.gz}"
+ARG KAFKA_LVERSION="${KAFKA_LVERSION:-${KAFKA_VERSION}-L1-r0}"
+ARG KAFKA_URL="${KAFKA_URL:-https://archive.landoop.com/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz}"
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && tar --no-same-owner -xzf /opt/kafka.tar.gz -C /opt \
@@ -33,14 +34,14 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry and REST Proxy
-ARG REGISTRY_VERSION="${REGISTRY_VERSION:-4.0.0-lkd}"
-ARG REGISTRY_URL="${REGISTRY_URL:-https://archive.landoop.com/lkd/packages/schema_registry_${REGISTRY_VERSION}.tar.gz}"
+ARG REGISTRY_VERSION="${REGISTRY_VERSION:-4.0.0-lkd-r0}"
+ARG REGISTRY_URL="${REGISTRY_URL:-https://archive.landoop.com/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz}"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
     && rm -rf /opt/registry.tar.gz
 
-ARG REST_VERSION="${REST_VERSION:-4.0.0-lkd}"
-ARG REST_URL="${REST_URL:-https://archive.landoop.com/lkd/packages/rest_proxy_${REST_VERSION}.tar.gz}"
+ARG REST_VERSION="${REST_VERSION:-4.0.0-lkd-r0}"
+ARG REST_URL="${REST_URL:-https://archive.landoop.com/lkd/packages/rest-proxy/rest-proxy-${REST_VERSION}.tar.gz}"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
     && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
     && rm -rf /opt/rest.tar.gz
@@ -58,7 +59,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION="${STREAM_REACTOR_VERSION:-1.0.0}"
-ARG STREAM_REACTOR_URL="${STREAM_REACTOR_URL:-https://archive.landoop.com/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz}"
+ARG STREAM_REACTOR_URL="${STREAM_REACTOR_URL:-https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz}"
 ARG ELASTICSEARCH_2X_VERSION="${ELASTICSEARCH_2X_VERSION:-2.4.6}"
 ARG ACTIVEMQ_VERSION="${ACTIVEMQ_VERSION:-5.12.3}"
 ARG CALCITE_LINQ4J_VERSION="${CALCITE_LINQ4J_VERSION:-1.12.0}"
@@ -103,8 +104,8 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
 ## Kafka Connect JDBC
-ARG KAFKA_CONNECT_JDBC_VERSION="${KAFKA_CONNECT_JDBC_VERSION:-4.0.0-lkd}"
-ARG KAFKA_CONNECT_JDBC_URL="${KAFKA_CONNECT_JDBC_URL:-https://archive.landoop.com/lkd/packages/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz}"
+ARG KAFKA_CONNECT_JDBC_VERSION="${KAFKA_CONNECT_JDBC_VERSION:-4.0.0-lkd-r0}"
+ARG KAFKA_CONNECT_JDBC_URL="${KAFKA_CONNECT_JDBC_URL:-https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-jdbc/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz}"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
          -O /opt/kafka-connect-jdbc.tar.gz \
     && mkdir -p /opt/landoop/connectors/third-party/ \
@@ -113,8 +114,8 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
     && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 ## Kafka Connect ELASTICSEARCH
-ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION="${KAFKA_CONNECT_ELASTICSEARCH_VERSION:-4.0.0-lkd}"
-ARG KAFKA_CONNECT_ELASTICSEARCH_URL="${KAFKA_CONNECT_ELASTICSEARCH_URL:-https://archive.landoop.com/lkd/packages/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz}"
+ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION="${KAFKA_CONNECT_ELASTICSEARCH_VERSION:-4.0.0-lkd-r0}"
+ARG KAFKA_CONNECT_ELASTICSEARCH_URL="${KAFKA_CONNECT_ELASTICSEARCH_URL:-https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-elasticsearch/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz}"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
          -O /opt/kafka-connect-elasticsearch.tar.gz \
     && mkdir -p /opt/landoop/connectors/third-party/ \
@@ -123,8 +124,8 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
 
 ## Kafka Connect HDFS
-ARG KAFKA_CONNECT_HDFS_VERSION="${KAFKA_CONNECT_HDFS_VERSION:-4.0.0-lkd}"
-ARG KAFKA_CONNECT_HDFS_URL="${KAFKA_CONNECT_HDFS_URL:-https://archive.landoop.com/lkd/packages/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz}"
+ARG KAFKA_CONNECT_HDFS_VERSION="${KAFKA_CONNECT_HDFS_VERSION:-4.0.0-lkd-r0}"
+ARG KAFKA_CONNECT_HDFS_URL="${KAFKA_CONNECT_HDFS_URL:-https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz}"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
          -O /opt/kafka-connect-hdfs.tar.gz \
     && mkdir -p /opt/landoop/connectors/third-party/ \
@@ -133,8 +134,8 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
     && rm -rf /opt/kafka-connect-hdfs.tar.gz
 
 # Kafka Connect S3
-ARG KAFKA_CONNECT_S3_VERSION="${KAFKA_CONNECT_S3_VERSION:-4.0.0-lkd}"
-ARG KAFKA_CONNECT_S3_URL="${KAFKA_CONNECT_S3_URL:-https://archive.landoop.com/lkd/packages/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz}"
+ARG KAFKA_CONNECT_S3_VERSION="${KAFKA_CONNECT_S3_VERSION:-4.0.0-lkd-r0}"
+ARG KAFKA_CONNECT_S3_URL="${KAFKA_CONNECT_S3_URL:-https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-s3/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz}"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
          -O /opt/kafka-connect-s3.tar.gz \
     && mkdir -p /opt/landoop/connectors/third-party/ \
@@ -142,6 +143,46 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
            -C /opt/landoop/connectors/third-party/ \
     && rm -rf /opt/kafka-connect-s3.tar.gz
 
+# Kafka Connect Couchbase
+ARG KAFKA_CONNECT_COUCHBASE_VERSION="${KAFKA_CONNECT_COUCHBASE_VERSION:-3.2.2}"
+ARG KAFKA_CONNECT_COUCHBASE_URL="${KAFKA_CONNECT_COUCHBASE_URL:-http://packages.couchbase.com/clients/kafka/${KAFKA_CONNECT_COUCHBASE_VERSION}/kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}.zip}"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
+         -O /couchbase.zip \
+    && mkdir -p /couchbase /opt/landoop/connectors/third-party/kafka-connect-couchbase \
+    && unzip /couchbase.zip -d /couchbase \
+    && cp -ax /couchbase/kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}/* \
+          /opt/landoop/connectors/third-party/kafka-connect-couchbase \
+    && chown -R root:root /opt/landoop/connectors/third-party/kafka-connect-couchbase \
+    && rm -rf /couchbase.zip /couchbase
+
+# Kafka Connect Dbvisit Replicate
+ARG KAFKA_CONNECT_DBVISITREPLICATE_VERSION="2.0.0-SNAPSHOT"
+ARG KAFKA_CONNECT_DBVISITREPLICATE_URL="https://www.dropbox.com/s/nhs8v3lwmigpks1/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar?dl=0"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate \
+    && wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_DBVISITREPLICATE_URL" \
+            -O /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar
+
+# Kafka Connect Debezium MongoDB / MySQL / Postgres
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION="0.7.2"
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION="0.7.2"
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION="0.7.2"
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
+    && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
+    && tar -xf /debezium-mongodb.tgz \
+           --owner=root --group=root --strip-components=1 \
+           -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-mongodb \
+    && wget "$KAFKA_CONNECT_DEBEZIUM_MYSQL_URL" -O /debezium-mysql.tgz \
+    && tar -xf /debezium-mysql.tgz \
+           --owner=root --group=root --strip-components=1 \
+           -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-mysql \
+    && wget "$KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL" -O /debezium-postgres.tgz \
+    && tar -xf /debezium-postgres.tgz \
+           --owner=root --group=root --strip-components=1 \
+           -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-postgres \
+    && rm -rf /debezium-{mongodb,mysql,postgres}.tgz
 
 ############
 # Add tools/
@@ -157,8 +198,7 @@ RUN mkdir -p /opt/landoop/tools/bin/win \
     && wget "$COYOTE_URL"-darwin-amd64 -O /opt/landoop/tools/bin/mac/coyote \
     && wget "$COYOTE_URL"-windows-amd64.exe -O /opt/landoop/tools/bin/win/coyote \
     && chmod +x /opt/landoop/tools/bin/coyote \
-                /opt/landoop/tools/bin/mac/coyote \
-                /opt/landoop/tools/bin/win/coyote
+                /opt/landoop/tools/bin/mac/coyote
 ADD lkd/simple-integration-tests.yml /opt/landoop/tools/share/coyote/examples/
 
 # Add Kafka Topic UI, Schema Registry UI, Kafka Connect UI
@@ -188,6 +228,22 @@ RUN mkdir -p /opt/landoop/tools/share/kafka-autocomplete \
     && wget "$KAFKA_AUTOCOMPLETE_URL" \
             -O /opt/landoop/tools/share/bash-completion/completions/kafka
 
+# Add normcat
+ARG NORMCAT_VERSION="1.1.1"
+ARG NORMCAT_URL="https://github.com/andmarios/normcat/releases/download/${NORMCAT_VERSION}/normcat-${NORMCAT_VERSION}"
+RUN mkdir -p /opt/landoop/tools/bin/win \
+             /opt/landoop/tools/bin/mac \
+    && wget "$NORMCAT_URL"-linux-amd64-lowmem.tar.gz -O /normcat-linux.tgz \
+    && tar -xf /normcat-linux.tgz -C /opt/landoop/tools/bin \
+    && wget "$NORMCAT_URL"-darwin-amd64.zip -O /normcat-mac.zip \
+    && unzip /normcat-mac.zip -d /opt/landoop/tools/bin/mac \
+    && wget "$NORMCAT_URL"-windows-amd64.zip -O /normcat-win.zip \
+    && unzip /normcat-win.zip -d /opt/landoop/tools/bin/win \
+    && chmod +x /opt/landoop/tools/bin/coyote \
+                /opt/landoop/tools/bin/mac/coyote \
+    && rm -f /normcat-linux.tg /normcat-mac.zip /normcat-win.zip
+
+
 ##########
 # Finalize
 ##########
@@ -203,11 +259,22 @@ RUN echo "LKD_VERSION=${LKD_VERSION}"                                  | tee -a 
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_HDFS_VERSION=${KAFKA_CONNECT_HDFS_VERSION}" | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_S3_VERSION=${KAFKA_CONNECT_S3_VERSION}"     | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_TOPICS_UI=${KAFKA_TOPICS_UI_VERSION}"               | tee -a /opt/landoop/build.info \
-    && echo "SCHEMA_REGISTRY_UI=${SCHEMA_REGISTRY_UI_VERSION}"         | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_UI=${KAFKA_CONNECT_UI_VERSION}"             | tee -a /opt/landoop/build.info \
-    && echo "COYOTE=${COYOTE_VERSION}"                                 | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_AUTOCOMPLETE=${KAFKA_AUTOCOMPLETE_VERSION}"         | tee -a /opt/landoop/build.info
+    && echo "KAFKA_CONNECT_COUCHBASE_VERSION=${KAFKA_CONNECT_COUCHBASE_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_DBVISITREPLICATE_VERSION=${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/landoop/build.info \
+    && echo "SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
+    && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
+    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
 RUN duphard -d=0 /opt/landoop \
@@ -255,15 +322,6 @@ RUN apk add --no-cache \
     && mkdir /extra-connect-jars /connectors \
     && mkdir /etc/supervisord.d /etc/supervisord.templates.d
 
-# # Install LKD (Landoop’s Kafka Distribution)
-# ENV LKD_VERSION="1.0.0-r0"
-# ARG LKD_URL="https://archive.landoop.com/lkd/packages/lkd-${LKD_VERSION}.tar.gz"
-# RUN wget "$LKD_URL" -O /lkd.tar.gz \
-#     && tar xf /lkd.tar.gz -C /opt \
-#     && rm /lkd.tar.gz \
-#     && echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party,/connectors,/extra-jars" \
-#              >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
-
 RUN echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party,/connectors,/extra-jars" \
           >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
@@ -279,7 +337,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_
     && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk
 
 # Create system symlinks to Kafka binaries
-RUN bash -c 'for i in $(find /opt/landoop/kafka/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Add quickcert
 RUN wget https://github.com/andmarios/quickcert/releases/download/1.0/quickcert-1.0-linux-amd64-alpine -O /usr/local/bin/quickcert \
@@ -316,11 +374,6 @@ COPY web/index.html web/env.js web/env-webonly.js /var/www/
 COPY web/img /var/www/img
 RUN ln -s /var/log /var/www/logs
 
-# Add sample data and install normcat
-ARG NORMCAT_URL=https://archive.landoop.com/tools/normcat/normcat_lowmem-1.1.1.tgz
-RUN wget "$NORMCAT_URL" -O /normcat.tgz \
-    && tar xf /normcat.tgz -C /usr/local/bin \
-    && rm /normcat.tgz
 COPY sample-data /usr/share/landoop/sample-data
 
 # Add executables, settings and configuration

@@ -69,6 +69,8 @@
     - name: Delete Consumer Group Info
       command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote-avro
       stdout_not_has: [ 'Error', 'failed' ]
+    - command: sleep 5
+      nolog: true
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-avro --delete
       nolog: true
 
@@ -83,7 +85,7 @@
               --data '{"name": "a-consumer", "format": "json", "auto.offset.reset": "smallest"}'
               "http://localhost:8082/consumers/coyote-json"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
-    - command: sleep 5
+    - command: sleep 2
       nolog: true
     - name: Consume JSON Message (rest proxy)
       command: |
@@ -97,6 +99,8 @@
     - name: Delete Consumer Group Info
       command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote-json
       stdout_not_has: [ 'Error', 'failed' ]
+    - command: sleep 2
+      nolog: true
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-json --delete
       nolog: true
 
@@ -111,7 +115,7 @@
               --data '{"name": "a-consumer", "format": "binary", "auto.offset.reset": "smallest"}'
               "http://localhost:8082/consumers/coyote-binary"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
-    - command: sleep 5
+    - command: sleep 2
       nolog: true
     - name: Consume Binary Message (rest proxy)
       command: |
@@ -125,6 +129,8 @@
     - name: Delete Consumer Group Info
       command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote-binary
       stdout_not_has: [ 'Error', 'failed' ]
+    - command: sleep 5
+      nolog: true
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-binary --delete
       nolog: true
 
