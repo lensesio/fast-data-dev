@@ -82,7 +82,7 @@ echo "plugin.path=/var/run/connect/connectors/stream-reactor,/var/run/connect/co
 cat /usr/local/share/landoop/etc/supervisord.templates.d/* > /etc/supervisord.d/01-fast-data.conf
 
 # Set webserver basicauth username and password
-USER="${USER:-kafka}"
+USER="${USER:-admin}"
 PASSWORD="${PASSWORD:-}"
 export USER
 if [[ ! -z "$PASSWORD" ]]; then
@@ -399,6 +399,7 @@ else
 fi
 
 EULA="${EULA:-$LICENSE_URL}"
+LICENSE="${LICENSE:-}"
 # Configure lenses
 if [[ -f /license.json ]]; then
     cp /license.json /opt/lenses/license.conf

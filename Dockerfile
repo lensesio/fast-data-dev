@@ -352,6 +352,23 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz
 
+# Add and setup Lenses
+ARG AD_UN
+ARG AD_PW
+ARG AD_URL="https://archive.landoop.com/lenses/1.1/lenses-1.1.1-linux64.tar.gz"
+RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
+    && tar xf /lenses.tgz -C /opt \
+    && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
+    && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
+    && rm /lenses.tgz
+
+# Add cc_payments generator
+RUN wget https://archive.landoop.com/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
+    && mkdir -p /opt/generator \
+    && tar xf /generator.tgz --no-same-owner --strip-components=1 -C /opt/generator \
+    && sed -e 's/localhost/0.0.0.0/' -i /opt/generator/lenses.conf \
+    && rm -f /generator.tgz
+
 COPY /filesystem /
 RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
              /usr/local/share/landoop/sample-data/*.sh
@@ -376,23 +393,6 @@ RUN mkdir -p \
 
 RUN ln -s /var/log /var/www/logs
 
-# Add and setup Lenses
-ARG AD_UN
-ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/1.1/lenses-1.1.1-linux64.tar.gz"
-RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
-    && tar xf /lenses.tgz -C /opt \
-    && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
-    && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
-    && rm /lenses.tgz
-
-# Add cc_payments generator
-RUN wget https://archive.landoop.com/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
-    && mkdir -p /opt/generator \
-    && tar xf /generator.tgz --no-same-owner --strip-components=1 -C /opt/generator \
-    && sed -e 's/localhost/0.0.0.0/' -i /opt/generator/lenses.conf \
-    && rm -f /generator.tgz
-
 ADD setup-and-run.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup-and-run.sh \
     && ln -s /usr/local/share/landoop/etc/bashrc /root/.bashrc
@@ -405,7 +405,6 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
-    && echo "LKD=${LKD_VERSION}"             | tee -a /build.info \
     && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
     && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \

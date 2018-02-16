@@ -1,5 +1,9 @@
 var runningServices = [
   {
+    "name" : "Landoop Lenses $LENSES_VERSION",
+    "description": "Enterprise grade product that provides faster streaming application deliveries and data flow management that natively integrates."
+  },
+  {
     "name" : "Kafka $KAFKA_VERSION @ Landoop's Apache Kafka Distribution",
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
