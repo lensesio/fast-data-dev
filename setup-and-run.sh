@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+set -u
+set -o pipefail
+
 ZK_PORT="${ZK_PORT:-2181}"
 BROKER_PORT="${BROKER_PORT:-9092}"
 BROKER_SSL_PORT="${BROKER_SSL_PORT:-9093}"
@@ -7,59 +11,101 @@ REGISTRY_PORT="${REGISTRY_PORT:-8081}"
 REST_PORT="${REST_PORT:-8082}"
 CONNECT_PORT="${CONNECT_PORT:-8083}"
 WEB_PORT="${WEB_PORT:-3030}"
-#KAFKA_MANAGER_PORT="3031"
-RUN_AS_ROOT="${RUN_AS_ROOT:false}"
+RUN_AS_ROOT="${RUN_AS_ROOT:-false}"
 ZK_JMX_PORT="9585"
 BROKER_JMX_PORT="9581"
 REGISTRY_JMX_PORT="9582"
 REST_JMX_PORT="9583"
 CONNECT_JMX_PORT="9584"
-DISABLE_JMX="${DISABLE_JMX:false}"
-ENABLE_SSL="${ENABLE_SSL:false}"
+DISABLE_JMX="${DISABLE_JMX:-false}"
+ENABLE_SSL="${ENABLE_SSL:-false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 DEBUG="${DEBUG:-false}"
 TOPIC_DELETE="${TOPIC_DELETE:-true}"
 SAMPLEDATA="${SAMPLEDATA:-1}"
 RUNNING_SAMPLEDATA="${RUNNING_SAMPLEDATA:-0}"
+DISABLE="${DISABLE:-}"
+CONNECTORS="${CONNECTORS:-}"
+ADV_HOST="${ADV_HOST:-}"
+CONNECT_HEAP="${CONNECT_HEAP:-}"
+WEB_ONLY="${WEB_ONLY:-}"
 export ZK_PORT BROKER_PORT BROKER_SSL_PORT REGISTRY_PORT REST_PORT CONNECT_PORT WEB_PORT RUN_AS_ROOT
 export ZK_JMX_PORT BROKER_JMX_PORT REGISTRY_JMX_PORT REST_JMX_PORT CONNECT_JMX_PORT DISABLE_JMX
 export ENABLE_SSL SSL_EXTRA_HOSTS DEBUG TOPIC_DELETE SAMPLEDATA RUNNING_SAMPLEDATA
 
+PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT"
 
-PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $KAFKA_MANAGER_PORT"
+# Export versions so envsubst will work
+source build.info
+export $(cut -d= -f1 /build.info)
+
+# Create run directories for various services and initialize where applicable with configuration files.
+mkdir -p \
+      /var/run/zookeeper \
+      /var/run/broker \
+      /var/run/schema-registry \
+      /var/run/connect \
+      /var/run/connect/connectors/{stream-reactor,third-party} \
+      /var/run/rest-proxy \
+      /var/run/coyote \
+      /var/run/caddy \
+      /var/run/other
+
+cp /opt/landoop/kafka/etc/kafka/zookeeper.properties \
+   /opt/landoop/kafka/etc/kafka/log4j.properties \
+   /var/run/zookeeper/
+cp /opt/landoop/kafka/etc/kafka/server.properties \
+   /opt/landoop/kafka/etc/kafka/log4j.properties \
+   /var/run/broker/
+cp /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
+   /opt/landoop/kafka/etc/schema-registry/log4j.properties \
+   /var/run/schema-registry/
+cp /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
+   /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
+   /var/run/connect/
+cp /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
+   /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
+   /var/run/rest-proxy/
+cp /usr/local/share/landoop/etc/Caddyfile \
+   /var/run/caddy/Caddyfile
+cp /opt/landoop/tools/share/coyote/examples/simple-integration-tests.yml \
+   /var/run/coyote/simple-integration-tests.yml
+cp /usr/local/bin/logs-to-kafka.sh \
+   /var/run/other/
+cat /usr/local/share/landoop/etc/fast-data-dev-ui/env.js \
+    | envsubst > /var/www/env.js
+
+echo "plugin.path=/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors" \
+      >> /var/run/connect/connect-avro-distributed.properties
+
+cat /usr/local/share/landoop/etc/supervisord.templates.d/* > /etc/supervisord.d/01-fast-data.conf
 
 # Set webserver basicauth username and password
 USER="${USER:-kafka}"
+PASSWORD="${PASSWORD:-}"
 export USER
 if [[ ! -z "$PASSWORD" ]]; then
     echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96m${PASSWORD}'\e[34m\e[92m.\e[34m"
-    echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /usr/share/landoop/Caddyfile
+    echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /var/run/caddy/Caddyfile
 fi
 
 # Adjust custom ports
 
 ## Some basic replacements
 sed -e 's/2181/'"$ZK_PORT"'/' -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' -i \
-    /opt/landoop/kafka/etc/kafka/zookeeper.properties \
-    /opt/landoop/kafka/etc/kafka/server.properties \
-    /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
-    /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
+    /var/run/zookeeper/zookeeper.properties \
+    /var/run/broker/server.properties \
+    /var/run/schema-registry/schema-registry.properties \
+    /var/run/connect/connect-avro-distributed.properties
 
 ## Broker specific
-cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
+cat <<EOF >>/var/run/broker/server.properties
 
 listeners=PLAINTEXT://:$BROKER_PORT
-confluent.support.metrics.enable=false
 EOF
 
-## Disabled because the basic replacements catch it
-# cat <<EOF >>/opt/landoop/kafka/etc/schema-registry/schema-registry.properties
-
-# listeners=http://0.0.0.0:$REGISTRY_PORT
-# EOF
-
 ## REST Proxy specific
-cat <<EOF >>/opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties
+cat <<EOF >>/var/run/rest-proxy/kafka-rest.properties
 
 listeners=http://0.0.0.0:$REST_PORT
 schema.registry.url=http://localhost:$REGISTRY_PORT
@@ -70,7 +116,7 @@ max.poll.interval.ms=18000
 EOF
 
 ## Schema Registry specific
-cat <<EOF >>/opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
+cat <<EOF >>/var/run/connect/connect-avro-distributed.properties
 
 rest.port=$CONNECT_PORT
 EOF
@@ -78,54 +124,72 @@ EOF
 ## Other infra specific (caddy, web ui, tests, logs)
 sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' \
     -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/8082/'"$REST_PORT"'/' -e 's/8083/'"$CONNECT_PORT"'/' \
-    -i /usr/share/landoop/Caddyfile \
+    -i /var/run/caddy/Caddyfile \
        /var/www/env.js \
-       /usr/share/landoop/kafka-tests.yml \
-       /usr/local/bin/logs-to-kafka.sh
+       /var/run/coyote/simple-integration-tests.yml \
+       /var/run/other/logs-to-kafka.sh
 
 # Allow for topic deletion by default, unless TOPIC_DELETE is set
 if echo "$TOPIC_DELETE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
+    cat <<EOF >>/var/run/broker/server.properties
 delete.topic.enable=true
 EOF
-fi
-
-## TODO: deprecate
-# Remove ElasticSearch if needed
-PREFER_HBASE="${PREFER_HBASE:-false}"
-if echo "$PREFER_HBASE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    rm -rf /extra-connect-jars/* /opt/landoop/kafka-*/share/java/kafka-connect-elastic*
-    echo -e "\e[92mFixing HBase connector: Removing ElasticSearch and Twitter connector.\e[39m"
 fi
 
 # Disable Connectors
 OLD_IFS="$IFS"
 IFS=","
-for connector in $DISABLE; do
-    echo "Disabling connector: kafka-connect-${connector}"
-    rm -rf "/opt/landoop/connectors/kafka-connect-${connector}" "/opt/landoop/connectors-3rd-party/kafka-connect-${connector}"
-done
-# Enable Connectors
-if [[ ! -z "$CONNECTORS" ]]; then
-    CONNECTOR_LIST="$(find /opt/landoop/connectors/ /opt/landoop/connectors-3rd-party/ -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
-    CONNECTORS=" ${CONNECTORS//,/ } "
+if [[ -z "$CONNECTORS" ]] && [[ -z "$DISABLE" ]]; then
+    DISABLE="random_string_hope_not_a_connector_name"
+fi
+if [[ -n "$DISABLE" ]]; then
+    DISABLE=" ${DISABLE//,/ } "
+    CONNECTOR_LIST="$(find /opt/landoop/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
-        if [[ ! "$CONNECTORS" =~ " $connector " ]]; then
-            echo "Disabling connector: kafka-connect-${connector}"
-            rm -rf "/opt/landoop/connectors/kafka-connect-${connector}" "/opt/landoop/connectors-3rd-party/kafka-connect-${connector}"
+        if [[ "$DISABLE" =~ " $connector " ]]; then
+            echo "Skipping connector: kafka-connect-${connector}"
+        else
+            ln -s /opt/landoop/connectors/stream-reactor/kafka-connect-${connector} /var/run/connect/connectors/stream-reactor/kafka-connect-${connector}
+        fi
+    done
+    CONNECTOR_LIST="$(find /opt/landoop/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    for connector in $CONNECTOR_LIST; do
+        if [[ "$DISABLE" =~ " $connector " ]]; then
+            echo "Skipping connector: kafka-connect-${connector}"
+        else
+            ln -s /opt/landoop/connectors/third-party/kafka-connect-${connector} /var/run/connect/connectors/third-party/kafka-connect-${connector}
+        fi
+    done
+fi
+# Enable Connectors
+if [[ -n "$CONNECTORS" ]]; then
+    CONNECTORS=" ${CONNECTORS//,/ } "
+    CONNECTOR_LIST="$(find /opt/landoop/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    for connector in $CONNECTOR_LIST; do
+        if [[ "$CONNECTORS" =~ " $connector " ]]; then
+            echo "Enabling connector: kafka-connect-${connector}"
+            ln -s /opt/landoop/connectors/stream-reactor/kafka-connect-${connector} /var/run/connect/connectors/stream-reactor/kafka-connect-${connector}
+        fi
+    done
+    CONNECTOR_LIST="$(find /opt/landoop/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    for connector in $CONNECTOR_LIST; do
+        if [[ "$CONNECTORS" =~ " $connector " ]]; then
+            echo "Enabling connector: kafka-connect-${connector}"
+            ln -s /opt/landoop/connectors/third-party/kafka-connect-${connector} /var/run/connect/connectors/third-party/kafka-connect-${connector}
         fi
     done
 fi
 IFS="$OLD_IFS"
 
+
 # Set ADV_HOST if needed
 if [[ ! -z "${ADV_HOST}" ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
-         >> /opt/landoop/kafka/etc/kafka/server.properties
+         >> /var/run/broker/server.properties
     echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
-         >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
-    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /usr/share/landoop/kafka-tests.yml /var/www/env.js /etc/supervisord.d/*
+         >> /var/run/connect/connect-avro-distributed.properties
+    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js /etc/supervisord.d/*
 fi
 
 # Configure JMX if needed or disable it.
@@ -203,7 +267,7 @@ if echo "$ENABLE_SSL" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
                     -file lfddca.crt.pem \
                     -storepass fastdata
 
-            cat <<EOF >>/opt/landoop/kafka/etc/kafka/server.properties
+            cat <<EOF >>/var/run/broker/server.properties
 ssl.client.auth=required
 ssl.key.password=fastdata
 ssl.keystore.location=$PWD/kafka.jks
@@ -216,10 +280,10 @@ ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
             sed -r -e 's|^(listeners=.*)|\1,SSL://:'"${BROKER_SSL_PORT}"'|' \
-                -i /opt/landoop/kafka/etc/kafka/server.properties
+                -i /var/run/broker/server.properties
             [[ ! -z "${ADV_HOST}" ]] \
                 && sed -r -e 's|^(advertised.listeners=.*)|\1,'"SSL://${ADV_HOST}:${BROKER_SSL_PORT}"'|' \
-                       -i /opt/landoop/kafka/etc/kafka/server.properties
+                       -i /var/run/broker/server.properties
 
             mkdir -p /var/www/certs/
             cp client.jks truststore.jks /var/www/certs/
@@ -238,8 +302,10 @@ fi
 if echo "$WEB_ONLY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$WEB_PORT"
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
-    cp /usr/share/landoop/supervisord-web-only.conf /etc/supervisord.d/*
-    cp /var/www/env-webonly.js /var/www/env.js
+    rm -rf /etc/supervisord.d/*
+    cp /usr/local/share/etc/landoop/supervisord.d/supervisord-web-only.conf /etc/supervisord.d/
+    cat /usr/local/share/landoop/etc/fast-data-dev-ui/env-webonly.js \
+        | envsubst > /var/www/env.js
     export RUNTESTS="${RUNTESTS:-0}"
 fi
 
@@ -301,7 +367,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is landoop’s fast-data-dev. Kafka ${KAFKA_VERSION}-LKD (Landoop's Kafka Distribution).\e[39m"
+echo -e "\e[92mThis is Landoop’s fast-data-dev. Kafka ${KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about \e[96ma minute\e[34m.\e[39m"
 
 # Set connect heap size if needed
@@ -315,11 +381,11 @@ export KAFKA_REST_HEAP_OPTS="${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}"
 
 # Set sample data if needed
 if echo "$RUNNING_SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1" && echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-        cp /usr/share/landoop/99-supervisord-running-sample-data.conf /etc/supervisord.d/
+        cp /usr/local/share/landoop/etc/supervisord.d/99-supervisord-running-sample-data.conf /etc/supervisord.d/
 elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     # This should be added only if we don't have running data, because it sets
     # retention period to 10 years (as the data is so few in this case).
-    cp /usr/share/landoop/99-supervisord-sample-data.conf /etc/supervisord.d/
+    cp /usr/local/share/landoop/etc/supervisord.d/99-supervisord-sample-data.conf /etc/supervisord.d/
 else
     # If SAMPLEDATA=0 and FORWARDLOGS connector not explicitly requested
     [[ -z "$FORWARDLOGS" ]] && export FORWARDLOGS=0
