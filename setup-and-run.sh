@@ -11,7 +11,7 @@ REGISTRY_PORT="${REGISTRY_PORT:-8081}"
 REST_PORT="${REST_PORT:-8082}"
 CONNECT_PORT="${CONNECT_PORT:-8083}"
 WEB_PORT="${WEB_PORT:-3031}"
-LENSES_PORT="${LENSES_PORT:-3030}"
+export LENSES_PORT="${LENSES_PORT:-3030}"
 RUN_AS_ROOT="${RUN_AS_ROOT:-false}"
 ZK_JMX_PORT="9585"
 BROKER_JMX_PORT="9581"
@@ -30,6 +30,7 @@ CONNECTORS="${CONNECTORS:-}"
 ADV_HOST="${ADV_HOST:-}"
 CONNECT_HEAP="${CONNECT_HEAP:-}"
 WEB_ONLY="${WEB_ONLY:-}"
+RUNTESTS="{RUNTESTS:-0}"
 export ZK_PORT BROKER_PORT BROKER_SSL_PORT REGISTRY_PORT REST_PORT CONNECT_PORT WEB_PORT RUN_AS_ROOT
 export ZK_JMX_PORT BROKER_JMX_PORT REGISTRY_JMX_PORT REST_JMX_PORT CONNECT_JMX_PORT DISABLE_JMX
 export ENABLE_SSL SSL_EXTRA_HOSTS DEBUG TOPIC_DELETE SAMPLEDATA RUNNING_SAMPLEDATA
@@ -386,7 +387,8 @@ export KAFKA_REST_HEAP_OPTS="${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}"
 
 # Set sample data if needed
 if echo "$RUNNING_SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1" && echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-        cp /usr/local/share/landoop/etc/supervisord.d/99-supervisord-running-sample-data.conf /etc/supervisord.d/
+    cp /usr/local/share/landoop/etc/supervisord.d/99-supervisord-running-sample-data.conf /etc/supervisord.d/
+    cp /usr/local/share/landoop/etc/supervisord.d/09-nullsink-connector.conf /etc/supervisord.d/
 elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     # This should be added only if we don't have running data, because it sets
     # retention period to 10 years (as the data is so few in this case).
@@ -394,8 +396,8 @@ elif echo "$SAMPLEDATA" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
 else
     # If SAMPLEDATA=0 and FORWARDLOGS connector not explicitly requested
     [[ -z "$FORWARDLOGS" ]] && export FORWARDLOGS=0
-    # If SAMPLEDATA=0 and NULLSINK connector not explicitly requested
-    [[ -z "$NULLSINK" ]] && export NULLSINK=0
+    # # If SAMPLEDATA=0 and NULLSINK connector not explicitly requested
+    # [[ -z "$NULLSINK" ]] && export NULLSINK=0
 fi
 
 EULA="${EULA:-$LICENSE_URL}"
