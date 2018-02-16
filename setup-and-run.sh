@@ -79,7 +79,7 @@ cat /usr/local/share/landoop/etc/fast-data-dev-ui/env.js \
 echo "plugin.path=/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors" \
       >> /var/run/connect/connect-avro-distributed.properties
 
-cat /usr/local/share/landoop/etc/supervisord.templates.d/* > /etc/supervisord.d/01-fast-data.conf
+cat /usr/local/share/landoop/etc/supervisord.templates.d/*.conf > /etc/supervisord.d/01-fast-data.conf
 
 # Set webserver basicauth username and password
 USER="${USER:-admin}"
