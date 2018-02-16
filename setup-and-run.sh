@@ -462,7 +462,8 @@ lenses.secret.file="/opt/lenses/security.conf"
 EOF
 cat <<EOF> /opt/lenses/security.conf
 lenses.security.mode=BASIC
-lenses.security.users=[{"username": "${USER}", "password": "${PASSWORD}", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
+lenses.security.groups=[{"name": "adminGroup", "roles": ["admin", "write", "read"]}]
+lenses.security.users=[{"username": "${USER}", "password": "${PASSWORD}", "displayname": "Lenses Admin", "groups": ["adminGroup"]}]
 EOF
 if ! echo "$TELEMETRY" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     echo "lenses.telemetry.enable=false" >> /opt/lenses/lenses.conf
