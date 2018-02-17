@@ -17,15 +17,16 @@ WORKDIR /
 # Login args for development archives
 ARG DEVARCH_USER=${DEVARCH_USER:-}
 ARG DEVARCH_PASS=${DEVARCH_PASS:-}
-ARG LKD_VERSION=${LKD_VERSION:-1.0.0-r0}
+ARG LKD_VERSION=${LKD_VERSION:-1.0.1-rc1}
 
 ############
 # Add kafka/
 ############
 
 # Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION="${KAFKA_VERSION:-1.0.0}"
-ARG KAFKA_LVERSION="${KAFKA_LVERSION:-${KAFKA_VERSION}-L1-r0}"
+ARG KAFKA_VERSION="${KAFKA_VERSION:-1.0.1-rc1}"
+ARG KAFKA_VERSION_4SR="1.0.0"
+ARG KAFKA_LVERSION="${KAFKA_LVERSION:-${KAFKA_VERSION}-L0}"
 ARG KAFKA_URL="${KAFKA_URL:-https://archive.landoop.com/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz}"
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
@@ -59,7 +60,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION="${STREAM_REACTOR_VERSION:-1.0.0}"
-ARG STREAM_REACTOR_URL="${STREAM_REACTOR_URL:-https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION}.tar.gz}"
+ARG STREAM_REACTOR_URL="${STREAM_REACTOR_URL:-https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz}"
 ARG ELASTICSEARCH_2X_VERSION="${ELASTICSEARCH_2X_VERSION:-2.4.6}"
 ARG ACTIVEMQ_VERSION="${ACTIVEMQ_VERSION:-5.12.3}"
 ARG CALCITE_LINQ4J_VERSION="${CALCITE_LINQ4J_VERSION:-1.12.0}"
@@ -93,6 +94,11 @@ RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
+    && for file in $(find /opt/landoop/kafka/share/java/{kafka,landoop-common} -maxdepth 1 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+2 " | awk '{print $2}' ); do \
+         echo "Removing duplicate /opt/landoop/kafka/share/java/landoop-common/$file."; \
+         rm -f /opt/landoop/kafka/share/java/landoop-common/$file; \
+       done \
+    && rm -f /opt/landoop/connectors/stream-reactor/*/*{javadoc,scaladoc,sources}.jar \
     && echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
             >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
