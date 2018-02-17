@@ -195,9 +195,6 @@ fi
 # Configure JMX if needed or disable it.
 if ! echo "$DISABLE_JMX" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
     PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
-    sed -r -e 's/^;(environment=JMX_PORT)/\1/' \
-        -e 's/^environment=VCON=1,KAFKA_HEAP_OPTS/environment=JMX_PORT='"$CONNECT_JMX_PORT"',KAFKA_HEAP_OPTS/' \
-        -i /etc/supervisord.d/*
 else
     sed -r -e 's/,KAFKA_JMX_OPTS="[^"]*"//' \
         -e 's/,SCHEMA_REGISTRY_JMX_OPTS="[^"]*"//' \
