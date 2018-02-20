@@ -112,7 +112,7 @@ schema.registry.url=http://localhost:$REGISTRY_PORT
 zookeeper.connect=localhost:$ZK_PORT
 # fix for Kafka REST consumer issues
 consumer.request.timeout.ms=20000
-max.poll.interval.ms=18000
+consumer.max.poll.interval.ms=18000
 EOF
 
 ## Schema Registry specific
