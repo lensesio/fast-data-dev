@@ -85,7 +85,7 @@ USER="${USER:-kafka}"
 PASSWORD="${PASSWORD:-}"
 export USER
 if [[ ! -z "$PASSWORD" ]]; then
-    echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96m${PASSWORD}'\e[34m\e[92m.\e[34m"
+    echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96mxxxxxxxx'\e[34m\e[92m.\e[34m"
     echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /var/run/caddy/Caddyfile
 fi
 
