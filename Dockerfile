@@ -17,7 +17,7 @@ WORKDIR /
 # Login args for development archives
 ARG DEVARCH_USER=${DEVARCH_USER:-}
 ARG DEVARCH_PASS=${DEVARCH_PASS:-}
-ARG LKD_VERSION=${LKD_VERSION:-1.0.1-rc1}
+ARG LKD_VERSION=${LKD_VERSION:-1.0.1-rc2}
 
 ############
 # Add kafka/
