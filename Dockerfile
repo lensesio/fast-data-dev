@@ -17,14 +17,14 @@ WORKDIR /
 # Login args for development archives
 ARG DEVARCH_USER=${DEVARCH_USER:-}
 ARG DEVARCH_PASS=${DEVARCH_PASS:-}
-ARG LKD_VERSION=${LKD_VERSION:-1.0.1-rc1}
+ARG LKD_VERSION=${LKD_VERSION:-1.1.0-rc0}
 
 ############
 # Add kafka/
 ############
 
 # Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION="${KAFKA_VERSION:-1.0.1-rc2}"
+ARG KAFKA_VERSION="${KAFKA_VERSION:-1.1.0-rc0}"
 ARG KAFKA_VERSION_4SR="1.0.0"
 ARG KAFKA_LVERSION="${KAFKA_LVERSION:-${KAFKA_VERSION}-L0}"
 ARG KAFKA_URL="${KAFKA_URL:-https://archive.landoop.com/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz}"
