@@ -60,6 +60,9 @@ cp /opt/landoop/kafka/etc/kafka/server.properties \
 cp /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
    /opt/landoop/kafka/etc/schema-registry/log4j.properties \
    /var/run/schema-registry/
+# # If we want to use only the brokers for schema registry (it can work without zookeeper now):
+# sed '/kafkastore.connection.url/d' -i /var/run/schema-registry/schema-registry.properties
+# echo "kafkastore.bootstrap.servers=PLAINTEXT://localhost:9092" >> /var/run/schema-registry/schema-registry.properties
 cp /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
    /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
    /var/run/connect/
