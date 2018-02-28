@@ -3,6 +3,8 @@
 set -e
 set -u
 set -o pipefail
+#set -x
+
 
 ZK_PORT="${ZK_PORT:-2181}"
 BROKER_PORT="${BROKER_PORT:-9092}"
@@ -21,7 +23,7 @@ DISABLE_JMX="${DISABLE_JMX:-false}"
 ENABLE_SSL="${ENABLE_SSL:-false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 DEBUG="${DEBUG:-false}"
-TOPIC_DELETE="${TOPIC_DELETE:-true}"
+#TOPIC_DELETE="${TOPIC_DELETE:-true}"
 SAMPLEDATA="${SAMPLEDATA:-1}"
 RUNNING_SAMPLEDATA="${RUNNING_SAMPLEDATA:-0}"
 DISABLE="${DISABLE:-}"
@@ -51,23 +53,23 @@ mkdir -p \
       /var/run/caddy \
       /var/run/other
 
-cp /opt/landoop/kafka/etc/kafka/zookeeper.properties \
-   /opt/landoop/kafka/etc/kafka/log4j.properties \
+#cp /opt/landoop/kafka/etc/kafka/zookeeper.properties \
+cp /opt/landoop/kafka/etc/kafka/log4j.properties \
    /var/run/zookeeper/
-cp /opt/landoop/kafka/etc/kafka/server.properties \
-   /opt/landoop/kafka/etc/kafka/log4j.properties \
+#cp /opt/landoop/kafka/etc/kafka/server.properties \
+cp /opt/landoop/kafka/etc/kafka/log4j.properties \
    /var/run/broker/
-cp /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
-   /opt/landoop/kafka/etc/schema-registry/log4j.properties \
+#cp /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
+cp /opt/landoop/kafka/etc/schema-registry/log4j.properties \
    /var/run/schema-registry/
 # # If we want to use only the brokers for schema registry (it can work without zookeeper now):
 # sed '/kafkastore.connection.url/d' -i /var/run/schema-registry/schema-registry.properties
 # echo "kafkastore.bootstrap.servers=PLAINTEXT://localhost:9092" >> /var/run/schema-registry/schema-registry.properties
-cp /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
-   /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
+# cp /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
+cp /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
    /var/run/connect/
-cp /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
-   /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
+#cp /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
+cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
    /var/run/rest-proxy/
 cp /usr/local/share/landoop/etc/Caddyfile \
    /var/run/caddy/Caddyfile
@@ -78,8 +80,69 @@ cp /usr/local/bin/logs-to-kafka.sh \
 cat /usr/local/share/landoop/etc/fast-data-dev-ui/env.js \
     | envsubst > /var/www/env.js
 
-echo "plugin.path=/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors" \
-      >> /var/run/connect/connect-avro-distributed.properties
+
+# Set env vars to configure Kafka
+export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-0}
+export KAFKA_NUM_NETWORK_THREADS=${KAFKA_NUM_NETWORK_THREADS:-2}
+export KAFKA_NUM_IO_THREADS=${KAFKA_NUM_IO_THREADS:-4}
+export KAFKA_LOG_DIRS=${KAFKA_LOG_DIRS:-/tmp/kafka-logs}
+#export KAFKA_NUM_PARTITIONS=${KAFKA_NUM_PARTITIONS:-1}
+export KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}
+export KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:-1}
+export KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-1}
+export KAFKA_LOG_RETENTION_HOURS=${KAFKA_LOG_RETENTION_HOURS:-168}
+export KAFKA_LOG_SEGMENT_BYTES=${KAFKA_LOG_SEGMENT_BYTES:-104857600}
+export KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
+export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS:-1000}
+export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT}
+export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
+
+# Set env vars to configure Schema Registry
+export SCHEMA_REGISTRY_LISTENERS=${SCHEMA_REGISTRY_LISTENERS:-http://0.0.0.0:$REGISTRY_PORT}
+export SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS:-PLAINTEXT://:$BROKER_PORT}
+export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
+export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
+
+# Set env vars for Kafka Connect Distributed
+export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
+export CONNECT_GROUP_ID=${CONNECT_GROUP_ID:-connect-fast-data}
+export CONNECT_KEY_CONVERTER=${CONNECT_KEY_CONVERTER:-io.confluent.connect.avro.AvroConverter}
+export CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=${CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export CONNECT_VALUE_CONVERTER=${CONNECT_VALUE_CONVERTER:-io.confluent.connect.avro.AvroConverter}
+export CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=${CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=${CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR:-1}
+export CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=${CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR:-1}
+export CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=${CONNECT_STATUS_STORAGE_REPLICATION_FACTOR:-1}
+export CONNECT_ACCESS_CONTROL_ALLOW_METHODS=${CONNECT_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
+export CONNECT_ACCESS_CONTROL_ALLOW_ORIGIN=${CONNECT_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
+export CONNECT_PLUGIN_PATH=${CONNECT_PLUGIN_PATH:-/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors}
+export CONNECT_REST_PORT=${CONNECT_REST_PORT:-$CONNECT_PORT}
+export CONNECT_INTERNAL_KEY_CONVERTER=${CONNECT_INTERNAL_KEY_CONVERTER:-org.apache.kafka.connect.json.JsonConverter}
+export CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE:-false}
+export CONNECT_INTERNAL_VALUE_CONVERTER=${CONNECT_INTERNAL_VALUE_CONVERTER:-org.apache.kafka.connect.json.JsonConverter}
+export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE:-false}
+export CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC:-connect-configs}
+export CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC:-connect-offsets}
+export CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC:-connect-statuses}
+
+# Set env vars for REST Proxy
+export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
+export KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS=${KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
+export KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN=${KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
+export KAFKA_REST_LISTENERS=${KAFKA_REST_LISTENERS:-http://0.0.0.0:$REST_PORT}
+export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS=${KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS:-20000}
+export KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS=${KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS:-18000}
+export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
+
+# Set env vars for ZOOKEEPER
+export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/tmp/zookeeper}
+export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
+export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
+
+# setup Kafka (and components)
+source /usr/local/share/landoop/config_kafka.sh
+
 
 cat /usr/local/share/landoop/etc/supervisord.templates.d/*.conf > /etc/supervisord.d/01-fast-data.conf
 
@@ -92,37 +155,7 @@ if [[ ! -z "$PASSWORD" ]]; then
     echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /var/run/caddy/Caddyfile
 fi
 
-# Adjust custom ports
 
-## Some basic replacements
-sed -e 's/2181/'"$ZK_PORT"'/' -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' -i \
-    /var/run/zookeeper/zookeeper.properties \
-    /var/run/broker/server.properties \
-    /var/run/schema-registry/schema-registry.properties \
-    /var/run/connect/connect-avro-distributed.properties
-
-## Broker specific
-cat <<EOF >>/var/run/broker/server.properties
-
-listeners=PLAINTEXT://:$BROKER_PORT
-EOF
-
-## REST Proxy specific
-cat <<EOF >>/var/run/rest-proxy/kafka-rest.properties
-
-listeners=http://0.0.0.0:$REST_PORT
-schema.registry.url=http://localhost:$REGISTRY_PORT
-zookeeper.connect=localhost:$ZK_PORT
-# fix for Kafka REST consumer issues
-consumer.request.timeout.ms=20000
-consumer.max.poll.interval.ms=18000
-EOF
-
-## Schema Registry specific
-cat <<EOF >>/var/run/connect/connect-avro-distributed.properties
-
-rest.port=$CONNECT_PORT
-EOF
 
 ## Other infra specific (caddy, web ui, tests, logs)
 sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' \
@@ -132,12 +165,6 @@ sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PO
        /var/run/coyote/simple-integration-tests.yml \
        /var/run/other/logs-to-kafka.sh
 
-# Allow for topic deletion by default, unless TOPIC_DELETE is set
-if echo "$TOPIC_DELETE" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    cat <<EOF >>/var/run/broker/server.properties
-delete.topic.enable=true
-EOF
-fi
 
 # Disable Connectors
 OLD_IFS="$IFS"
