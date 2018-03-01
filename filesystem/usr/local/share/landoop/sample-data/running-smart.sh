@@ -9,7 +9,7 @@ for key in 3; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
-        --zookeeper localhost:2181 \
+        --zookeeper localhost:${ZK_PORT} \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
@@ -25,7 +25,7 @@ for key in 3; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
-            --broker-list localhost:9092 \
+            --broker-list localhost:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property "key.separator=#"

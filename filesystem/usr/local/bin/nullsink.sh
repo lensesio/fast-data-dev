@@ -22,7 +22,7 @@ cat <<EOF >/tmp/connector-nullsink
 EOF
 
 curl -vs --stderr - -X POST -H "Content-Type: application/json" \
-     --data @/tmp/connector-nullsink "http://localhost:8083/connectors"
+     --data @/tmp/connector-nullsink "http://localhost:$CONNECT_PORT/connectors"
 
 rm /tmp/connector-nullsink
 
