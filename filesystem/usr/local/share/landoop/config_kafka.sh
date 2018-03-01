@@ -8,13 +8,13 @@ function process_variable {
            || [[ "$var" =~ [^=]+_[0-9]{1,5}_(TCP|UDP).* ]] \
            || [[ "$var" =~ [^=]+_SERVICE_PORT.* ]]; then
         echo "Skipping variable probably set by container supervisor: $var"
-        continue
+        return
     fi
 
     # If _OPTS, export them
     if [[ "$var" =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
         export "${var}"="${!var}"
-        continue
+        return
     fi
 
     # Start to process configuration options
