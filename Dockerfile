@@ -254,33 +254,33 @@ RUN mkdir -p /opt/landoop/tools/bin/win \
 # Finalize
 ##########
 
-RUN echo "LKD_VERSION=${LKD_VERSION}"                                  | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_VERSION=${KAFKA_LVERSION}"                          | tee -a /opt/landoop/build.info \
-    && echo "CONNECT_VERSION=${KAFKA_LVERSION}"                        | tee -a /opt/landoop/build.info \
-    && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /opt/landoop/build.info \
-    && echo "REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /opt/landoop/build.info \
-    && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_ELASTICSEARCH_VERSION=${KAFKA_CONNECT_ELASTICSEARCH_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_HDFS_VERSION=${KAFKA_CONNECT_HDFS_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_S3_VERSION=${KAFKA_CONNECT_S3_VERSION}"     | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_COUCHBASE_VERSION=${KAFKA_CONNECT_COUCHBASE_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_DBVISITREPLICATE_VERSION=${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/landoop/build.info \
-    && echo "SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
-    && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
+RUN echo "FDD_LKD_VERSION=${LKD_VERSION}"                                  | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_VERSION=${KAFKA_LVERSION}"                          | tee -a /opt/landoop/build.info \
+    && echo "FDD_CONNECT_VERSION=${KAFKA_LVERSION}"                        | tee -a /opt/landoop/build.info \
+    && echo "FDD_SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /opt/landoop/build.info \
+    && echo "FDD_REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /opt/landoop/build.info \
+    && echo "FDD_STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_ELASTICSEARCH_VERSION=${KAFKA_CONNECT_ELASTICSEARCH_VERSION}" \
+                                                                           | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_HDFS_VERSION=${KAFKA_CONNECT_HDFS_VERSION}" | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_S3_VERSION=${KAFKA_CONNECT_S3_VERSION}"     | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_COUCHBASE_VERSION=${KAFKA_CONNECT_COUCHBASE_VERSION}" \
+                                                                           | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_DBVISITREPLICATE_VERSION=${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}" \
+                                                                           | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
+                                                                           | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
+                                                                           | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
+                                                                           | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/landoop/build.info \
+    && echo "FDD_SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
+    && echo "FDD_COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
+    && echo "FDD_KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
+    && echo "FDD_NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
 RUN duphard -d=0 /opt/landoop \
@@ -295,7 +295,7 @@ RUN duphard -d=0 /opt/landoop \
 RUN tar xf /LKD-${LKD_VERSION}.tar.gz -C /opt \
     && rm /LKD-${LKD_VERSION}.tar.gz
 
-ENV LKD_VERSION=${LKD_VERSION}
+ENV FDD_LKD_VERSION=${LKD_VERSION}
 # If this stage is run as container and you mount `/mnt`, we will create the LKD archive there.
 CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt landoop; chown --reference=/mnt /mnt/LKD-${LKD_VERSION}.tar.gz"]
 
@@ -387,6 +387,8 @@ ADD setup-and-run.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup-and-run.sh \
     && ln -s /usr/local/share/landoop/etc/bashrc /root/.bashrc
 
+VOLUME ["/data"]
+
 ARG BUILD_BRANCH
 ARG BUILD_COMMIT
 ARG BUILD_TIME
@@ -395,7 +397,7 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"       | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}"    | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"        | tee -a /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"      | tee -a /build.info \
-    && echo "LKD=${LKD_VERSION}"              | tee -a /build.info \
+    && echo "LKD=${FDD_LKD_VERSION}"          | tee -a /build.info \
     && cat /opt/landoop/build.info            | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092

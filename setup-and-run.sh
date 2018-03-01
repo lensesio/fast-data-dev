@@ -5,87 +5,44 @@ set -u
 set -o pipefail
 #set -x
 
-
-ZK_PORT="${ZK_PORT:-2181}"
-BROKER_PORT="${BROKER_PORT:-9092}"
-BROKER_SSL_PORT="${BROKER_SSL_PORT:-9093}"
-REGISTRY_PORT="${REGISTRY_PORT:-8081}"
-REST_PORT="${REST_PORT:-8082}"
-CONNECT_PORT="${CONNECT_PORT:-8083}"
-WEB_PORT="${WEB_PORT:-3030}"
+# Default values
+export ZK_PORT="${ZK_PORT:-2181}"
+export ZK_JMX_PORT="${ZK_JMX_PORT:-9585}"
+export BROKER_PORT="${BROKER_PORT:-9092}"
+export BROKER_JMX_PORT="${BROKER_JMX_PORT:-9581}"
+export BROKER_SSL_PORT="${BROKER_SSL_PORT:-9093}"
+export REGISTRY_PORT="${REGISTRY_PORT:-8081}"
+export REGISTRY_JMX_PORT="${REGISTRY_JMX_PORT:-9582}"
+export CONNECT_PORT="${CONNECT_PORT:-8083}"
+export CONNECT_JMX_PORT="${CONNECT_JMX_PORT:-9584}"
+export REST_PORT="${REST_PORT:-8082}"
+export REST_JMX_PORT="${REST_JMX_PORT:-9583}"
+export WEB_PORT="${WEB_PORT:-3030}"
 RUN_AS_ROOT="${RUN_AS_ROOT:-false}"
-ZK_JMX_PORT="9585"
-BROKER_JMX_PORT="9581"
-REGISTRY_JMX_PORT="9582"
-REST_JMX_PORT="9583"
-CONNECT_JMX_PORT="9584"
 DISABLE_JMX="${DISABLE_JMX:-false}"
 ENABLE_SSL="${ENABLE_SSL:-false}"
 SSL_EXTRA_HOSTS="${SSL_EXTRA_HOSTS:-}"
 DEBUG="${DEBUG:-false}"
-#TOPIC_DELETE="${TOPIC_DELETE:-true}"
-SAMPLEDATA="${SAMPLEDATA:-1}"
-RUNNING_SAMPLEDATA="${RUNNING_SAMPLEDATA:-0}"
+export SAMPLEDATA="${SAMPLEDATA:-1}"
+export RUNNING_SAMPLEDATA="${RUNNING_SAMPLEDATA:-0}"
 DISABLE="${DISABLE:-}"
 CONNECTORS="${CONNECTORS:-}"
-ADV_HOST="${ADV_HOST:-}"
+export ADV_HOST="${ADV_HOST:-}"
 CONNECT_HEAP="${CONNECT_HEAP:-}"
 WEB_ONLY="${WEB_ONLY:-}"
-export ZK_PORT BROKER_PORT BROKER_SSL_PORT REGISTRY_PORT REST_PORT CONNECT_PORT WEB_PORT RUN_AS_ROOT
-export ZK_JMX_PORT BROKER_JMX_PORT REGISTRY_JMX_PORT REST_JMX_PORT CONNECT_JMX_PORT DISABLE_JMX
-export ENABLE_SSL SSL_EXTRA_HOSTS DEBUG TOPIC_DELETE SAMPLEDATA RUNNING_SAMPLEDATA
 
+# These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT"
 
 # Export versions so envsubst will work
 source build.info
 export $(cut -d= -f1 /build.info)
 
-# Create run directories for various services and initialize where applicable with configuration files.
-mkdir -p \
-      /var/run/zookeeper \
-      /var/run/broker \
-      /var/run/schema-registry \
-      /var/run/connect \
-      /var/run/connect/connectors/{stream-reactor,third-party} \
-      /var/run/rest-proxy \
-      /var/run/coyote \
-      /var/run/caddy \
-      /var/run/other
-
-#cp /opt/landoop/kafka/etc/kafka/zookeeper.properties \
-cp /opt/landoop/kafka/etc/kafka/log4j.properties \
-   /var/run/zookeeper/
-#cp /opt/landoop/kafka/etc/kafka/server.properties \
-cp /opt/landoop/kafka/etc/kafka/log4j.properties \
-   /var/run/broker/
-#cp /opt/landoop/kafka/etc/schema-registry/schema-registry.properties \
-cp /opt/landoop/kafka/etc/schema-registry/log4j.properties \
-   /var/run/schema-registry/
-# # If we want to use only the brokers for schema registry (it can work without zookeeper now):
-# sed '/kafkastore.connection.url/d' -i /var/run/schema-registry/schema-registry.properties
-# echo "kafkastore.bootstrap.servers=PLAINTEXT://localhost:9092" >> /var/run/schema-registry/schema-registry.properties
-# cp /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
-cp /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
-   /var/run/connect/
-#cp /opt/landoop/kafka/etc/kafka-rest/kafka-rest.properties \
-cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
-   /var/run/rest-proxy/
-cp /usr/local/share/landoop/etc/Caddyfile \
-   /var/run/caddy/Caddyfile
-cp /opt/landoop/tools/share/coyote/examples/simple-integration-tests.yml \
-   /var/run/coyote/simple-integration-tests.yml
-cp /usr/local/bin/logs-to-kafka.sh \
-   /var/run/other/
-cat /usr/local/share/landoop/etc/fast-data-dev-ui/env.js \
-    | envsubst > /var/www/env.js
-
-
 # Set env vars to configure Kafka
 export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-0}
 export KAFKA_NUM_NETWORK_THREADS=${KAFKA_NUM_NETWORK_THREADS:-2}
 export KAFKA_NUM_IO_THREADS=${KAFKA_NUM_IO_THREADS:-4}
-export KAFKA_LOG_DIRS=${KAFKA_LOG_DIRS:-/tmp/kafka-logs}
+export KAFKA_LOG_DIRS=${KAFKA_LOG_DIRS:-/data/kafka/logdir}
 #export KAFKA_NUM_PARTITIONS=${KAFKA_NUM_PARTITIONS:-1}
 export KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}
 export KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:-1}
@@ -131,20 +88,88 @@ export KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS=${KAFKA_REST_ACCESS_CONTROL_ALLOW
 export KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN=${KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
 export KAFKA_REST_LISTENERS=${KAFKA_REST_LISTENERS:-http://0.0.0.0:$REST_PORT}
 export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+# Next two lines are a fix for REST Proxy
 export KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS=${KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS:-20000}
 export KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS=${KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS:-18000}
 export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
 
 # Set env vars for ZOOKEEPER
-export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/tmp/zookeeper}
+export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/data/zookeeper}
 export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
 export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
+
+# Configure JMX if needed or disable it.
+if ! echo "$DISABLE_JMX" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
+    # If JMX is not disabled, we should check for port availability
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
+else
+    # This does not really disable JMX, but each service will start JMX
+    # in an ephemeral port, so it won't cause issues to the process.
+    export ZK_JMX_PORT=0
+    export BROKER_JMX_PORT=0
+    export REGISTRY_JMX_PORT=0
+    export CONNECT_JMX_PORT=0
+    export REST_JMX_PORT=0
+fi
+
+# Create run directories for various services and initialize where applicable with configuration files.
+mkdir -p \
+      /var/run/zookeeper \
+      /var/run/broker \
+      /var/run/schema-registry \
+      /var/run/connect \
+      /var/run/connect/connectors/{stream-reactor,third-party} \
+      /var/run/rest-proxy \
+      /var/run/coyote \
+      /var/run/caddy \
+      /var/run/other \
+      /data/{zookeeper,kafka}
+chmod 777 /data/{zookeeper,kafka}
+
+# Copy log4j files
+cp /opt/landoop/kafka/etc/kafka/log4j.properties \
+   /var/run/zookeeper/
+cp /opt/landoop/kafka/etc/kafka/log4j.properties \
+   /var/run/broker/
+cp /opt/landoop/kafka/etc/schema-registry/log4j.properties \
+   /var/run/schema-registry/
+cp /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
+   /var/run/connect/
+cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
+   /var/run/rest-proxy/
+
+# Copy tests
+# This differs in that we need to adjust it later
+cp /opt/landoop/tools/share/coyote/examples/simple-integration-tests.yml \
+   /var/run/coyote/simple-integration-tests.yml
+## Fix ports for integration-tests
+sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' \
+    -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/8082/'"$REST_PORT"'/' -e 's/8083/'"$CONNECT_PORT"'/' \
+    -i /var/run/coyote/simple-integration-tests.yml
+
+# Copy other templated files (caddy, logs-to-kafka, env.js)
+cat /usr/local/share/landoop/etc/Caddyfile \
+    | envsubst > /var/run/caddy/Caddyfile
+cat /usr/local/bin/logs-to-kafka.sh \
+    | envsubst > /var/run/other/logs-to-kafka.sh
+cat /usr/local/share/landoop/etc/fast-data-dev-ui/env.js \
+    | envsubst > /var/www/env.js
+
+# Set ADV_HOST if needed
+if [[ ! -z "${ADV_HOST}" ]]; then
+    echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
+    export KAFKA_CONNECT_ADVERTISED_LISTENERS="PLAINTEXT://${ADV_HOST}:$BROKER_PORT"
+    export CONNECT_REST_ADVERTISED_HOST_NAME="${ADV_HOST}"
+    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js /etc/supervisord.d/*
+fi
 
 # setup Kafka (and components)
 source /usr/local/share/landoop/config_kafka.sh
 
-
-cat /usr/local/share/landoop/etc/supervisord.templates.d/*.conf > /etc/supervisord.d/01-fast-data.conf
+# setup supervisord
+for service in /usr/local/share/landoop/etc/supervisord.templates.d/*.conf; do
+    cat $service | envsubst > /etc/supervisord.d/$(basename $service)
+done
 
 # Set webserver basicauth username and password
 USER="${USER:-kafka}"
@@ -154,17 +179,6 @@ if [[ ! -z "$PASSWORD" ]]; then
     echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96mxxxxxxxx'\e[34m\e[92m.\e[34m"
     echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /var/run/caddy/Caddyfile
 fi
-
-
-
-## Other infra specific (caddy, web ui, tests, logs)
-sed -e 's/3030/'"$WEB_PORT"'/' -e 's/2181/'"$ZK_PORT"'/' -e 's/9092/'"$BROKER_PORT"'/' \
-    -e 's/8081/'"$REGISTRY_PORT"'/' -e 's/8082/'"$REST_PORT"'/' -e 's/8083/'"$CONNECT_PORT"'/' \
-    -i /var/run/caddy/Caddyfile \
-       /var/www/env.js \
-       /var/run/coyote/simple-integration-tests.yml \
-       /var/run/other/logs-to-kafka.sh
-
 
 # Disable Connectors
 OLD_IFS="$IFS"
@@ -210,29 +224,6 @@ if [[ -n "$CONNECTORS" ]]; then
     done
 fi
 IFS="$OLD_IFS"
-
-
-# Set ADV_HOST if needed
-if [[ ! -z "${ADV_HOST}" ]]; then
-    echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
-    echo -e "\nadvertised.listeners=PLAINTEXT://${ADV_HOST}:$BROKER_PORT" \
-         >> /var/run/broker/server.properties
-    echo -e "\nrest.advertised.host.name=${ADV_HOST}" \
-         >> /var/run/connect/connect-avro-distributed.properties
-    sed -e 's#localhost#'"${ADV_HOST}"'#g' -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js /etc/supervisord.d/*
-fi
-
-# Configure JMX if needed or disable it.
-if ! echo "$DISABLE_JMX" | grep -sqE "true|TRUE|y|Y|yes|YES|1"; then
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
-else
-    sed -r -e 's/,KAFKA_JMX_OPTS="[^"]*"//' \
-        -e 's/,SCHEMA_REGISTRY_JMX_OPTS="[^"]*"//' \
-        -e 's/,KAFKAREST_JMX_OPTS="[^"]*"//' \
-        -i /etc/supervisord.d/*
-    sed -e 's/"jmx"\s*:[^,]*/"jmx"  : ""/' \
-        -i /var/www/env.js
-fi
 
 # Enable root-mode if needed
 if grep -sqE "true|TRUE|y|Y|yes|YES|1" <<<"$RUN_AS_ROOT" ; then
@@ -343,7 +334,9 @@ fi
 
 # Check for port availability
 for port in $PORTS; do
-    if ! /usr/local/bin/checkport -port "$port"; then
+    if [[ $port == 0 ]]; then
+        continue
+    elif ! /usr/local/bin/checkport -port "$port"; then
         echo "Could not successfully bind to port $port. Maybe some other service"
         echo "in your system is using it? Please free the port and try again."
         echo "Exiting."
@@ -352,11 +345,10 @@ for port in $PORTS; do
 done
 
 # Check for Container's Memory Limit
-MLMB="4096"
 if [[ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]]; then
     MLB="$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)"
     MLMB="$(( MLB / 1024 / 1024 ))"
-    MLREC=4096
+    MLREC=3584
     if [[ "$MLMB" -lt "$MLREC" ]]; then
         echo -e "\e[91mMemory limit for container is \e[93m${MLMB} MiB\e[91m, which is less than the lowest"
         echo -e "recommended of \e[93m${MLREC} MiB\e[91m. You will probably experience instability issues.\e[39m"
@@ -370,7 +362,7 @@ if [[ -z "$RAKB" ]]; then
         echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m4096 MiB\e[91m RAM available for fast-data-dev.\e[39m"
 else
     RAMB="$(( RAKB / 1024 ))"
-    RAREC=5120
+    RAREC=4096
     if [[ "$RAMB" -lt "$RAREC" ]]; then
         echo -e "\e[91mOperating system RAM available is \e[93m${RAMB} MiB\e[91m, which is less than the lowest"
         echo -e "recommended of \e[93m${RAREC} MiB\e[91m. Your system performance may be seriously impacted.\e[39m"
@@ -394,7 +386,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is Landoop’s fast-data-dev. Kafka ${KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
+echo -e "\e[92mThis is Landoop’s fast-data-dev. Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about \e[96ma minute\e[34m.\e[39m"
 
 # Set connect heap size if needed

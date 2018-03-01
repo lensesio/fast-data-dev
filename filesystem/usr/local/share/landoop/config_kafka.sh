@@ -48,6 +48,7 @@ if [[ ! -f "$CONFIG" ]]; then
 else
     echo "Broker config found at '$CONFIG'. We won't process variables."
 fi
+
 # Setup Connect
 CONFIG="/var/run/connect/connect-avro-distributed.properties"
 if [[ ! -f "$CONFIG" ]]; then
@@ -61,6 +62,7 @@ if [[ ! -f "$CONFIG" ]]; then
 else
     echo "Connect worker config found at '$CONFIG'. We won't process variables."
 fi
+
 # Setup Schema Registry
 CONFIG="/var/run/schema-registry/schema-registry.properties"
 if [[ ! -f "$CONFIG" ]]; then
@@ -74,6 +76,7 @@ if [[ ! -f "$CONFIG" ]]; then
 else
     echo "Schema registry config found at '$CONFIG'. We won't process variables."
 fi
+
 # Setup REST Proxy
 CONFIG="/var/run/rest-proxy/kafka-rest.properties"
 if [[ ! -f "$CONFIG" ]]; then
@@ -101,78 +104,3 @@ if [[ ! -f "$CONFIG" ]]; then
 else
     echo "Zookeeper config found at '$CONFIG'. We won't process variables."
 fi
-
-# cat <<EOF > /var/run/zookeeper/zookeeper.properties
-# dataDir=/tmp/zookeeper
-# clientPort=$ZK_PORT
-# maxClientCnxns=0
-# EOF
-
-# cat <<EOF > /var/run/broker/broker.properties
-# broker.id=0
-# num.network.threads=2
-# num.io.threads=4
-# #socket.send.buffer.bytes=102400
-# #socket.receive.buffer.bytes=102400
-# #socket.request.max.bytes=104857600
-# log.dirs=/tmp/kafka-logs
-# num.partitions=1
-# num.recovery.threads.per.data.dir=2
-# offsets.topic.replication.factor=1
-# transaction.state.log.replication.factor=1
-# transaction.state.log.min.isr=1
-# log.retention.hours=168
-# log.segment.bytes=1073741824
-# #log.retention.check.interval.ms=300000
-# zookeeper.connect=localhost:2181
-# zookeeper.connection.timeout.ms=6000
-# group.initial.rebalance.delay.ms=1000
-# listeners=PLAINTEXT://:9092
-# delete.topic.enable=true
-# EOF
-
-# cat <<EOF > /var/run/schema-registry/schema-registry.properties
-# listeners=http://0.0.0.0:8081
-# #kafkastore.connection.url=localhost:2181
-# kafkastore.bootstrap.servers=PLAINTEXT://localhost:9092
-# #kafkastore.topic=_schemas
-# #debug=false
-# access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS
-# access.control.allow.origin=*
-# EOF
-
-# cat <<EOF > /var/run/connect/connect-avro-distributed.properties
-# bootstrap.servers=PLAINTEXT://localhost:9092
-# group.id=connect-cluster
-# key.converter=io.confluent.connect.avro.AvroConverter
-# key.converter.schema.registry.url=http://localhost:8081
-# value.converter=io.confluent.connect.avro.AvroConverter
-# value.converter.schema.registry.url=http://localhost:8081
-# config.storage.topic=connect-configs
-# offset.storage.topic=connect-offsets
-# status.storage.topic=connect-statuses
-# config.storage.replication.factor=1
-# offset.storage.replication.factor=1
-# status.storage.replication.factor=1
-# internal.key.converter=org.apache.kafka.connect.json.JsonConverter
-# internal.value.converter=org.apache.kafka.connect.json.JsonConverter
-# internal.key.converter.schemas.enable=false
-# internal.value.converter.schemas.enable=false
-# access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS
-# access.control.allow.origin=*
-# plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party
-# plugin.path=/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors
-# rest.port=8083
-# EOF
-
-# cat <<EOF > /var/run/rest-proxy/kafka-rest.properties
-# bootstrap.servers=PLAINTEXT://localhost:9092
-# access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS
-# access.control.allow.origin=*
-# listeners=http://0.0.0.0:8082
-# schema.registry.url=http://localhost:8081
-# #zookeeper.connect=localhost:2181
-# consumer.request.timeout.ms=20000
-# consumer.max.poll.interval.ms=18000
-# EOF
-
