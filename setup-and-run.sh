@@ -224,8 +224,8 @@ if [[ -n $DISABLE ]]; then
     DISABLE=" ${DISABLE//,/ } "
     CONNECTOR_LIST="$(find /opt/landoop/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
-        connector=" $connector "
-        if [[ $DISABLE =~ $connector ]]; then
+        connectorTest=" $connector "
+        if [[ $DISABLE =~ $connectorTest ]]; then
             echo "Skipping connector: kafka-connect-${connector}"
         else
             ln -s /opt/landoop/connectors/stream-reactor/kafka-connect-"${connector}" \
@@ -234,8 +234,8 @@ if [[ -n $DISABLE ]]; then
     done
     CONNECTOR_LIST="$(find /opt/landoop/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
-        connector=" $connector "
-        if [[ $DISABLE =~ $connector ]]; then
+        connectorTest=" $connector "
+        if [[ $DISABLE =~ $connectorTest ]]; then
             echo "Skipping connector: kafka-connect-${connector}"
         else
             ln -s /opt/landoop/connectors/third-party/kafka-connect-"${connector}" \
@@ -248,8 +248,8 @@ if [[ -n $CONNECTORS ]]; then
     CONNECTORS=" ${CONNECTORS//,/ } "
     CONNECTOR_LIST="$(find /opt/landoop/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
-        connector=" $connector "
-        if [[ $CONNECTORS =~ $connector ]]; then
+        connectorTest=" $connector "
+        if [[ $CONNECTORS =~ $connectorTest ]]; then
             echo "Enabling connector: kafka-connect-${connector}"
             ln -s /opt/landoop/connectors/stream-reactor/kafka-connect-"${connector}" \
                /var/run/connect/connectors/stream-reactor/kafka-connect-"${connector}"
@@ -257,8 +257,8 @@ if [[ -n $CONNECTORS ]]; then
     done
     CONNECTOR_LIST="$(find /opt/landoop/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
-        connector=" $connector "
-        if [[ $CONNECTORS =~ $connector ]]; then
+        connectorTest=" $connector "
+        if [[ $CONNECTORS =~ $connectorTest ]]; then
             echo "Enabling connector: kafka-connect-${connector}"
             ln -s /opt/landoop/connectors/third-party/kafka-connect-"${connector}" \
                /var/run/connect/connectors/third-party/kafka-connect-"${connector}"
