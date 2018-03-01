@@ -3,10 +3,12 @@
 set -e
 set -u
 set -o pipefail
-#set -x
 
 TRUE_REG='^([tT][rR][uU][eE]|[yY]|[yY][eE][sS]|1)$'
 FALSE_REG='^([fF][aA][lL][sS][eE]|[nN]|[nN][oO]|0)$'
+
+DEBUG_SCRIPT=${DEBUG_SCRIPT:-false}
+if [[ $DEBUG_SCRIPT =~ $TRUE_REG ]]; then set -x; fi
 
 # Default values
 export ZK_PORT=${ZK_PORT:-2181}
@@ -31,6 +33,7 @@ export RUNNING_SAMPLEDATA=${RUNNING_SAMPLEDATA:-0}
 DISABLE=${DISABLE:-}
 CONNECTORS=${CONNECTORS:-}
 export ADV_HOST=${ADV_HOST:-}
+export ADV_HOST_JMX=${ADV_HOST:-localhost}
 CONNECT_HEAP=${CONNECT_HEAP:-}
 WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
@@ -176,7 +179,7 @@ if [[ ! -z ${ADV_HOST} ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     export KAFKA_CONNECT_ADVERTISED_LISTENERS="PLAINTEXT://${ADV_HOST}:$BROKER_PORT"
     export CONNECT_REST_ADVERTISED_HOST_NAME=${ADV_HOST}
-    sed -e "s#localhost#${ADV_HOST}#g" -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js /etc/supervisord.d/*
+    sed -e "s#localhost#${ADV_HOST}#g" -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js
 fi
 
 # setup Kafka (and components)
@@ -343,7 +346,7 @@ EOF
                 -i /var/run/broker/server.properties
             if [[ ! -z ${ADV_HOST} ]]; then
                 sed -r \
-                    -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}/" \
+                    -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
                     -i /var/run/broker/server.properties
             fi
 
