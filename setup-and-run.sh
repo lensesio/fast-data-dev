@@ -20,17 +20,17 @@ export REGISTRY_PORT=${REGISTRY_PORT:-8081}
 export REGISTRY_JMX_PORT=${REGISTRY_JMX_PORT:-9582}
 export CONNECT_PORT=${CONNECT_PORT:-8083}
 export CONNECT_JMX_PORT=${CONNECT_JMX_PORT:-9584}
-export REST_PORT=${REST_PORT:-8082}
+export REST_PORT=${REST_PORT:-0}
 export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3031}
-export LENSES_PORT="${LENSES_PORT:-3030}"
+export LENSES_PORT=${LENSES_PORT:-3030}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
 ENABLE_SSL=${ENABLE_SSL:-false}
 SSL_EXTRA_HOSTS=${SSL_EXTRA_HOSTS:-}
 DEBUG=${DEBUG:-false}
 export SAMPLEDATA=${SAMPLEDATA:-1}
-export RUNNING_SAMPLEDATA=${RUNNING_SAMPLEDATA:-0}
+export RUNNING_SAMPLEDATA=${RUNNING_SAMPLEDATA:-1}
 DISABLE=${DISABLE:-}
 CONNECTORS=${CONNECTORS:-}
 export ADV_HOST=${ADV_HOST:-}
@@ -38,7 +38,7 @@ export ADV_HOST_JMX=${ADV_HOST:-localhost}
 CONNECT_HEAP=${CONNECT_HEAP:-}
 WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
-export RUNTESTS=${RUNTESTS:-1}
+export RUNTESTS=${RUNTESTS:-0}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
@@ -142,7 +142,8 @@ mkdir -p \
       /var/run/coyote \
       /var/run/caddy \
       /var/run/other \
-      /data/{zookeeper,kafka}
+      /data/{zookeeper,kafka} \
+      /var/run/lenses
 chmod 777 /data/{zookeeper,kafka}
 
 # Copy log4j files
@@ -156,6 +157,8 @@ cp /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
    /var/run/connect/
 cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
    /var/run/rest-proxy/
+cp /opt/lenses/logback.xml \
+   /var/run/lenses/
 
 # Copy tests
 # This differs in that we need to adjust it later
@@ -172,7 +175,7 @@ sed -e "s/3030/$WEB_PORT/" \
 
 # Copy other templated files (caddy, logs-to-kafka, env.js)
 envsubst < /usr/local/share/landoop/etc/Caddyfile               > /var/run/caddy/Caddyfile
-envsubst < /usr/local/bin/logs-to-kafka.sh                      > /var/run/other/logs-to-kafka.sh
+envsubst '$CONNECT_PORT' < /usr/local/bin/logs-to-kafka.sh         > /var/run/other/logs-to-kafka.sh
 envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js > /var/www/env.js
 
 # Set ADV_HOST if needed
@@ -458,25 +461,28 @@ fi
 LICENSE_URL=${LICENSE_URL:-}
 EULA=${EULA:-$LICENSE_URL}
 LICENSE=${LICENSE:-}
+LICENSE_PATH=/var/run/lenses/license.conf
+LENSES_CONF=/var/run/lenses/lenses.conf
+LENSES_SECURITY_CONF=/var/run/lenses/security.conf
 # Configure lenses
 if [[ -f /license.json ]]; then
-    cp /license.json /opt/lenses/license.conf
-elif [[ ! -z $LICENSE ]] && [[ ! -f /opt/lenses/license.conf ]]; then
-    echo "$LICENSE" >> /opt/lenses/license.conf
-elif [[ ! -z $EULA ]] && [[ ! -f /opt/lenses/license.conf ]]; then
+    cp /license.json "$LICENSE_PATH"
+elif [[ ! -z $LICENSE ]] && [[ ! -f $LICENSE_PATH ]]; then
+    echo "$LICENSE" >> "$LICENSE_PATH"
+elif [[ ! -z $EULA ]] && [[ ! -f $LICENSE_PATH ]]; then
     if [[ $EULA =~ CHECK_YOUR_EMAIL_FOR_KEY ]]; then
         echo
         echo "Oops! It seems you just ran the sample command provided in the website."
         echo "Please check your email to find the actual URL of your license. :)"
         exit 1
     fi
-    wget -q "$EULA" -O /opt/lenses/license.conf
+    wget -q "$EULA" -O "$LICENSE_PATH"
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
         exit 1
     fi
-elif [[ -f /opt/lenses/license.conf ]]; then
+elif [[ -f $LICENSE_PATH ]]; then
     echo
 else
     echo -e "\e[91mNo license was provided. Lenses will not work."
@@ -485,15 +491,15 @@ else
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
 PASSWORD=${PASSWORD:-admin}
-chown nobody:nobody /opt/lenses/license.conf
-mkdir -p /opt/lenses/logs
-chmod 777 /opt/lenses/logs
+chown nobody:nobody "$LICENSE_PATH"
+mkdir -p /var/run//lenses/logs
+chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
 TELEMETRY=${TELEMETRY:-1}
 # Disabled due to k8s and rancher bugs. :(
-#sed -e 's/LENSES_PORT/'"$LENSES_PORT"'/' -i /var/www/index.html
-cat <<EOF> /opt/lenses/lenses.conf
-lenses.port=${LENSES_PORT}
+#sed -e "s/LENSES_PORT/$LENSES_PORT/" -i /var/www/index.html
+cat <<EOF > $LENSES_CONF
+lenses.port=$LENSES_PORT
 lenses.zookeeper.hosts="0.0.0.0:$ZK_PORT"
 
 lenses.kafka.brokers="PLAINTEXT://0.0.0.0:$BROKER_PORT"
@@ -513,16 +519,16 @@ lenses.jmx.schema.registry="0.0.0.0:$REGISTRY_JMX_PORT"
 lenses.jmx.connect=[{dev:"0.0.0.0:$CONNECT_JMX_PORT"}]
 lenses.jmx.zookeepers="0.0.0.0:$ZK_JMX_PORT"
 
-lenses.license.file="/opt/lenses/license.conf"
-lenses.secret.file="/opt/lenses/security.conf"
+lenses.license.file="$LICENSE_PATH"
+lenses.secret.file="$LENSES_SECURITY_CONF"
 EOF
-cat <<EOF> /opt/lenses/security.conf
+cat <<EOF > "$LENSES_SECURITY_CONF"
 lenses.security.mode=BASIC
 lenses.security.users=[{"username": "${USER}", "password": "${PASSWORD}", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
 EOF
 if [[ ! $TELEMETRY =~ $TRUE_REG ]]; then
-    echo "lenses.telemetry.enable=false" >> /opt/lenses/lenses.conf
+    echo "lenses.telemetry.enable=false" >> "$LENSES_CONF"
 fi
-chown nobody:nobody /opt/lenses/lenses.conf
+chown nobody:nobody /var/run/lenses/*
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf
