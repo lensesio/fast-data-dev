@@ -171,7 +171,7 @@ sed -e "s/3030/$WEB_PORT/" \
 
 # Copy other templated files (caddy, logs-to-kafka, env.js)
 envsubst < /usr/local/share/landoop/etc/Caddyfile               > /var/run/caddy/Caddyfile
-envsubst < /usr/local/bin/logs-to-kafka.sh                      > /var/run/other/logs-to-kafka.sh
+envsubst '$CONNECT_PORT' < /usr/local/bin/logs-to-kafka.sh      > /var/run/other/logs-to-kafka.sh
 envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js > /var/www/env.js
 
 # Set ADV_HOST if needed
