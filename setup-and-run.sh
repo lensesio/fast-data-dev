@@ -22,8 +22,9 @@ export CONNECT_PORT=${CONNECT_PORT:-8083}
 export CONNECT_JMX_PORT=${CONNECT_JMX_PORT:-9584}
 export REST_PORT=${REST_PORT:-0}
 export REST_JMX_PORT=${REST_JMX_PORT:-9583}
-export WEB_PORT=${WEB_PORT:-3031}
-export LENSES_PORT=${LENSES_PORT:-3030}
+export WEB_PORT=${WEB_PORT:-3030}
+export LENSES_PORT=${LENSES_PORT:-9091}
+export FDD_PORT=${FDD_PORT:-28371}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
 ENABLE_SSL=${ENABLE_SSL:-false}
@@ -222,7 +223,7 @@ fi
 # If BROWSECONFIGS, expose configs under /config
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     ln -s /var/run /var/www/config
-    echo "browse /config" >> /var/run/caddy/Caddyfile
+    echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
     sed -e 's/browseconfigs/1/' -i /var/www/env.js
 fi
 
@@ -535,5 +536,8 @@ if [[ ! $TELEMETRY =~ $TRUE_REG ]]; then
     echo "lenses.telemetry.enable=false" >> "$LENSES_CONF"
 fi
 chown nobody:nobody /var/run/lenses/*
+mkdir /var/www-lenses
+ln -s /var/www /var/www-lenses/fdd
+echo "}" >> /var/run/caddy/Caddyfile
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf

@@ -34,6 +34,11 @@ var disabled = [
 
 var servicesInfo = [
   {
+    "name" : "Landoop Lenses",
+    "port" : "$LENSES_PORT",
+    "url"  : "localhost"
+  },
+  {
     "name" : "Kafka Broker",
     "port" : "$BROKER_PORT",
     "jmx"  : "$BROKER_JMX_PORT : JMX",
@@ -80,17 +85,17 @@ var servicesInfo = [
 var exposedDirectories = [
   {
     "name" : "running services log files",
-    "url" : "/logs",
+    "url" : "/fdd/logs",
     "enabled" : "1"
   },
   {
     "name" : "certificates (truststore and client keystore)",
-    "url" : "/certs",
+    "url" : "/fdd/certs",
     "enabled" : "ssl_browse"
   },
   {
     "name" : "configuration of running services",
-    "url"  : "/config",
+    "url"  : "/fdd/config",
     "enabled" : "browseconfigs"
   }
 ];

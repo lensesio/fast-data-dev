@@ -1,26 +1,37 @@
-0.0.0.0:$WEB_PORT
-tls off
-log stdout
-errors stdout
-
-root /var/www
-
-proxy /api/schema-registry 0.0.0.0:$REGISTRY_PORT {
-    without /api/schema-registry
+0.0.0.0:$WEB_PORT {
+  tls off
+  log stdout
+  errors stdout
+  proxy /api localhost:$LENSES_PORT {
+    websocket
+  }
+  proxy /fdd localhost:$FDD_PORT
+  proxy / localhost:$LENSES_PORT
 }
 
-proxy /api/kafka-rest-proxy 0.0.0.0:$REST_PORT {
-    without /api/kafka-rest-proxy
-}
+0.0.0.0:$FDD_PORT {
+  tls off
+  log stdout
+  errors stdout
 
-proxy /api/kafka-connect 0.0.0.0:$CONNECT_PORT {
-    without /api/kafka-connect
-}
+  root /var/www-lenses
 
-proxy /lenses 0.0.0.0:9991
+  proxy /fdd/api/schema-registry 0.0.0.0:$REGISTRY_PORT {
+    without /fdd/api/schema-registry
+  }
 
-browse /certs
-browse /logs
+  proxy /fdd/api/kafka-rest-proxy 0.0.0.0:$REST_PORT {
+    without /fdd/api/kafka-rest-proxy
+  }
 
-header /coyote-tests/results Cache-Control "no-store"
-header /coyote-tests/index.html Cache-Control "no-store"
+  proxy /fdd/api/kafka-connect 0.0.0.0:$CONNECT_PORT {
+    without /fdd/api/kafka-connect
+  }
+
+  browse /fdd/certs
+  browse /fdd/logs
+
+  header /fdd/coyote-tests/results Cache-Control "no-store"
+  header /fdd/coyote-tests/index.html Cache-Control "no-store"
+
+

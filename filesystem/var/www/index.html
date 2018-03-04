@@ -140,14 +140,14 @@
           <md-card-content>
             <div layout="row" layout-xs="column" layout-wrap>
               <div flex>
-                <p class="bigTotal">{{brokers}}</p>
+                <p class="bigTotal">1</p>
               </div>
             </div>
           </md-card-content>
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Lenses</div>
             <div class="summary">management and monitoring</div>
-            <md-button class="md-primary summary" style="margin:5px;" href="//{{address}}:3030">Open Lenses™</md-button>
+            <md-button class="md-primary summary" style="margin:5px;" href="/">Open Lenses™</md-button>
           </md-card-actions>
         </md-card>
       </div>
@@ -580,22 +580,22 @@
 
     //SUMMARIES
      this.getSummaries = function (){
-    $http.get('/api/schema-registry/subjects/')
+    $http.get('/fdd/api/schema-registry/subjects/')
       .then(
         function successCallback(response) { $scope.schemas = response.data.length },
         function errorCallback(response) { $log.error("Failure with : " + response) });
 
-    $http.get('/api/kafka-rest-proxy/topics/')
+    $http.get('/fdd/api/kafka-rest-proxy/topics/')
       .then(
         function successCallback(response) { $scope.topics = response.data.length },
         function errorCallback(response) { $log.error("Failure with : " + response) });
 
-    $http.get('/api/kafka-connect/connectors')
+    $http.get('/fdd/api/kafka-connect/connectors')
       .then(
         function successCallback(response) { $scope.connectors = response.data.length},
         function errorCallback(response) { $log.error("Failure with : " + response) });
 
-    $http.get('/api/kafka-rest-proxy/brokers')
+    $http.get('/fdd/api/kafka-rest-proxy/brokers')
       .then(
         function successCallback(response) { $scope.brokers = response.data.brokers.length },
         function errorCallback(response) { $log.error("Failure with : " + response) });
@@ -618,7 +618,7 @@
     }
 
    this.loadCoyoteResults = function (){
-      $http.get('/coyote-tests/results').then(function(response){
+      $http.get('/fdd/coyote-tests/results').then(function(response){
               passed = response.data.passed;
               failed = response.data.failed;
               if (passed != 0 || failed != 0) {
