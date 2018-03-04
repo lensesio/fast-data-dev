@@ -87,5 +87,10 @@ var exposedDirectories = [
     "name" : "certificates (truststore and client keystore)",
     "url" : "/certs",
     "enabled" : "ssl_browse"
+  },
+  {
+    "name" : "configuration of running services",
+    "url"  : "/config",
+    "enabled" : "browseconfigs"
   }
 ];
