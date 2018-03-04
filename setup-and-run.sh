@@ -38,6 +38,7 @@ CONNECT_HEAP=${CONNECT_HEAP:-}
 WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
 export RUNTESTS=${RUNTESTS:-1}
+export BROWSECONFIGS=${BROWSECONFIGS:-0}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT"
@@ -213,6 +214,10 @@ export USER
 if [[ ! -z $PASSWORD ]]; then
     echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96mxxxxxxxx'\e[34m\e[92m.\e[34m"
     echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /var/run/caddy/Caddyfile
+fi
+# If BROWSECONFIGS, expose configs under /config
+if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
+    echo "browse /config /var/run" >> /var/run/caddy/Caddyfile
 fi
 
 # Disable Connectors
