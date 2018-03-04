@@ -217,7 +217,9 @@ if [[ ! -z $PASSWORD ]]; then
 fi
 # If BROWSECONFIGS, expose configs under /config
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
-    echo "browse /config /var/run" >> /var/run/caddy/Caddyfile
+    ln -s /var/run /var/www/config
+    echo "browse /config" >> /var/run/caddy/Caddyfile
+    sed -e 's/browseconfigs/1/' -i /var/www/env.js
 fi
 
 # Disable Connectors
