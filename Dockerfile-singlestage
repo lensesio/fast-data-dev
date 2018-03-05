@@ -30,7 +30,7 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /
 
 # Tne next 3 lines are part of the single stage build.
-ARG FDD_LKD_VERSION=1.0.1-rc2
+ARG FDD_LKD_VERSION=1.0.1
 ARG FDD_LKD_URL="https://archive.landoop.com/lkd/releases/LKD-${FDD_LKD_VERSION}.tar.gz"
 RUN wget "$FDD_LKD_URL" -O /lkd.tgz \
     && tar -xzf /lkd.tgz -C /opt \
