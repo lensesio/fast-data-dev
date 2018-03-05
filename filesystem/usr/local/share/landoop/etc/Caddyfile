@@ -9,6 +9,8 @@
   proxy / localhost:$LENSES_PORT
 }
 
+# The reason for two web servers, is that if the user sets a password, lenses will not be protected by auth basic
+# in addition to their own login screen. To merge the two servers, on the lenses proxy directives just add 'except /fdd'
 0.0.0.0:$FDD_PORT {
   tls off
   log stdout
