@@ -110,6 +110,7 @@ export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
 
 # Set memory limits
 # Set connect heap size if needed
+if [[ -n $CONNECT_HEAP ]]; then CONNECT_HEAP="-Xmx$CONNECT_HEAP"; fi
 CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:-$CONNECT_HEAP}
 export CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:--Xmx640M -Xms128M}
 export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}
