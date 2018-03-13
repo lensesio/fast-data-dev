@@ -65,6 +65,7 @@ export KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
 export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS:-1000}
 export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT}
 export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
+export KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS:-}
 
 # Set env vars to configure Schema Registry
 export SCHEMA_REGISTRY_LISTENERS=${SCHEMA_REGISTRY_LISTENERS:-http://0.0.0.0:$REGISTRY_PORT}
@@ -93,6 +94,7 @@ export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_VALUE_
 export CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC:-connect-configs}
 export CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC:-connect-offsets}
 export CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC:-connect-statuses}
+export CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME:-}
 
 # Set env vars for REST Proxy
 export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
@@ -180,10 +182,14 @@ envsubst < /usr/local/share/landoop/etc/Caddyfile               > /var/run/caddy
 envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js > /var/www/env.js
 
 # Set ADV_HOST if needed
-if [[ ! -z ${ADV_HOST} ]]; then
+if [[ -n ${ADV_HOST} ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
-    export KAFKA_CONNECT_ADVERTISED_LISTENERS="PLAINTEXT://${ADV_HOST}:$BROKER_PORT"
-    export CONNECT_REST_ADVERTISED_HOST_NAME=${ADV_HOST}
+    if [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
+        export KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://${ADV_HOST}:${BROKER_PORT}"
+    fi
+    if [[ -z $CONNECT_REST_ADVERTISED_HOST_NAME ]]; then
+        export CONNECT_REST_ADVERTISED_HOST_NAME=${ADV_HOST}
+    fi
     sed -e "s#localhost#${ADV_HOST}#g" -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js
 fi
 
@@ -355,7 +361,7 @@ ssl.truststore.type=JKS
 EOF
             sed -r -e "s|^(listeners=.*)|\1,SSL://:${BROKER_SSL_PORT}|" \
                 -i /var/run/broker/server.properties
-            if [[ ! -z ${ADV_HOST} ]]; then
+            if [[ -n ${ADV_HOST} ]] && [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
                 sed -r \
                     -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
                     -i /var/run/broker/server.properties
