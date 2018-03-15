@@ -513,24 +513,19 @@ TELEMETRY=${TELEMETRY:-1}
 #sed -e "s/LENSES_PORT/$LENSES_PORT/" -i /var/www/index.html
 cat <<EOF > $LENSES_CONF
 lenses.port=$LENSES_PORT
-lenses.zookeeper.hosts="0.0.0.0:$ZK_PORT"
 
+lenses.zookeeper.hosts=[{url:"0.0.0.0:$ZK_PORT", jmx:"0.0.0.0:$ZK_JMX_PORT"}]
 lenses.kafka.brokers="PLAINTEXT://0.0.0.0:$BROKER_PORT"
-lenses.schema.registry.urls="http://0.0.0.0:$REGISTRY_PORT"
+lenses.schema.registry.urls=[{url: "http://0.0.0.0:$REGISTRY_PORT", jmx: "0.0.0.0:$REGISTRY_JMX_PORT"}]
 lenses.connect.clusters=[
   {
     name: "dev",
-    url: "http://0.0.0.0:$CONNECT_PORT",
+    urls: [{url: "http://0.0.0.0:$CONNECT_PORT", jmx: "0.0.0.0:$CONNECT_JMX_PORT"}]
     statuses: "connect-statuses",
     configs: "connect-configs",
     offsets: "connect-offsets"
   }
 ]
-
-lenses.jmx.brokers="0.0.0.0:$BROKER_JMX_PORT"
-lenses.jmx.schema.registry="0.0.0.0:$REGISTRY_JMX_PORT"
-lenses.jmx.connect=[{dev:"0.0.0.0:$CONNECT_JMX_PORT"}]
-lenses.jmx.zookeepers="0.0.0.0:$ZK_JMX_PORT"
 
 lenses.license.file="$LICENSE_PATH"
 lenses.secret.file="$LENSES_SECURITY_CONF"
