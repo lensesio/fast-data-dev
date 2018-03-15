@@ -45,6 +45,8 @@ if [[ ! -f "$CONFIG" ]]; then
     do
         process_variable "$var" "KAFKA_" "$CONFIG"
     done
+    # Clean empty variables
+    sed -e '/^[^=]*=$/d' -i "$CONFIG"
 else
     echo "Broker config found at '$CONFIG'. We won't process variables."
 fi
@@ -59,6 +61,8 @@ if [[ ! -f "$CONFIG" ]]; then
     do
         process_variable "$var" "CONNECT_" "$CONFIG"
     done
+    # Clean empty variables
+    sed -e '/^[^=]*=$/d' -i "$CONFIG"
 else
     echo "Connect worker config found at '$CONFIG'. We won't process variables."
 fi
@@ -73,6 +77,8 @@ if [[ ! -f "$CONFIG" ]]; then
     do
         process_variable "$var" "SCHEMA_REGISTRY_" "$CONFIG"
     done
+    # Clean empty variables
+    sed -e '/^[^=]*=$/d' -i "$CONFIG"
 else
     echo "Schema registry config found at '$CONFIG'. We won't process variables."
 fi
@@ -87,6 +93,8 @@ if [[ ! -f "$CONFIG" ]]; then
     do
         process_variable "$var" "KAFKA_REST_" "$CONFIG"
     done
+    # Clean empty variables
+    sed -e '/^[^=]*=$/d' -i "$CONFIG"
 else
     echo "REST Proxy config found at '$CONFIG'. We won't process variables."
 fi
@@ -101,6 +109,8 @@ if [[ ! -f "$CONFIG" ]]; then
     do
         process_variable "$var" "ZOOKEEPER_" "$CONFIG"
     done
+    # Clean empty variables
+    sed -e '/^[^=]*=$/d' -i "$CONFIG"
 else
     echo "Zookeeper config found at '$CONFIG'. We won't process variables."
 fi
