@@ -7,7 +7,7 @@ source variables.env
 for key in 0 1 2 3 4 5; do
     # Create topic with x partitions and a retention time of 10 years.
     kafka-topics \
-        --zookeeper localhost:2181 \
+        --zookeeper localhost:${ZK_PORT} \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
@@ -21,12 +21,12 @@ done
 for key in 0 1 4 5; do
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
-            --broker-list localhost:9092 \
+            --broker-list localhost:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
-            --property schema.registry.url=http://localhost:8081
+            --property schema.registry.url=http://localhost:${REGISTRY_PORT}
 done
 
 # Insert data without keys
@@ -34,10 +34,10 @@ done
 for key in 2; do
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
-            --broker-list localhost:9092 \
+            --broker-list localhost:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property value.schema="$(cat "${VALUES[key]}")" \
-            --property schema.registry.url=http://localhost:8081
+            --property schema.registry.url=http://localhost:${REGISTRY_PORT}
 done
 
 # Insert json data with text keys converted to json keys
@@ -46,7 +46,7 @@ for key in 3; do
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         kafka-console-producer \
-            --broker-list localhost:9092 \
+            --broker-list localhost:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property "key.separator=#"

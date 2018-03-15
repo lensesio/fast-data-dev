@@ -140,14 +140,14 @@
           <md-card-content>
             <div layout="row" layout-xs="column" layout-wrap>
               <div flex>
-                <p class="bigTotal">{{brokers}}</p>
+                <p class="bigTotal">1</p>
               </div>
             </div>
           </md-card-content>
           <md-card-actions layout="column" layout-align="end center" style="background-color:#fff;color:#333;margin:0px;">
             <div class="summary-title">Lenses</div>
             <div class="summary">management and monitoring</div>
-            <md-button class="md-primary summary" style="margin:5px;" href="//{{address}}:3030">Open Lenses™</md-button>
+            <md-button class="md-primary summary" style="margin:5px;" href="/">Open Lenses™</md-button>
           </md-card-actions>
         </md-card>
       </div>
@@ -280,6 +280,41 @@
         <md-card-content>
             <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;overflow-y:auto;max-height:300px;">
                 <ul style="padding-left:10px;">
+                    <li>
+                        <h4>Fast Data Dev: Total Revamp</h4>
+                        <p>
+                            This is the largest update we've done to fast-data-dev since its inception. We are very excited and also curious to see
+                            how the new features will be used.
+                        </p>
+                        <p>
+                            First of all we updated to Kafka 1.0 but with a twist. We replaced the Confluent OSS distribution
+                            with our very own Kafka distribution. We build everything (Kafka, Connect, Schema Registry, 3rd party connectors) from source
+                            without any changes. We do alter the file hiercharchy and the startup scripts, to make them work better, be more clean and offer
+                            a few new options, like the option to start a vanilla Kafka + Connect without avro support, just like the release you would download
+                            from the Apache Kafka site.
+                        </p>
+                        <p>
+                            This change will help us provide better support, update faster and add new features. Anyone interested in LKD (Landoop’s Kafka
+                            Distribution), can find more information in the documentation. Please remember that <strong>we are commited to Apache Kafka
+                            and we support all vendors</strong> —or no vendors.
+                        </p>
+                        <p>
+                            The internals of fast-data-dev also saw a major refactor. For users the main difference will be that everything starts faster and
+                            more predictable, the RAM requirement is lower (you can get away with just 3GB or less) and now you can fine tune any option for
+                            Kafka, Connect and the rest of the components via environment variables. Due to this more advanced setups are now supported as well.
+                            At last we added new connectors from Couchbase, Debezium and DbVisit and made possible to disable services.
+                        </p>
+                        <p>
+                            With big changes sometimes come <del>big</del> new bugs. If you find one, please
+                            <a style="text-decoration:none;" href="https://github.com/Landoop/fast-data-dev/issues" target="_blank">
+                                report it</a> so we can squash it!
+                        </p>
+                        <p>
+                            For the developers who have forked fast-data-dev this will probably be a breaking change as too many things changed in the image.
+                            On the other hand, the code is much more clean, more robust, easier to read, easier to change and easier to add new features or services.
+                            We do not plan such big changes anytime soon, so once you pick up the new codebase you can be sure it will remain stable.
+                        </p>
+                    </li>
                     <li>
                         <h4>Stream Reactor 0.4.0 and 1.0.0</h4>
                         <p>
@@ -545,22 +580,22 @@
 
     //SUMMARIES
      this.getSummaries = function (){
-    $http.get('/api/schema-registry/subjects/')
+    $http.get('/fdd/api/schema-registry/subjects/')
       .then(
         function successCallback(response) { $scope.schemas = response.data.length },
         function errorCallback(response) { $log.error("Failure with : " + response) });
 
-    $http.get('/api/kafka-rest-proxy/topics/')
+    $http.get('/fdd/api/kafka-rest-proxy/topics/')
       .then(
         function successCallback(response) { $scope.topics = response.data.length },
         function errorCallback(response) { $log.error("Failure with : " + response) });
 
-    $http.get('/api/kafka-connect/connectors')
+    $http.get('/fdd/api/kafka-connect/connectors')
       .then(
         function successCallback(response) { $scope.connectors = response.data.length},
         function errorCallback(response) { $log.error("Failure with : " + response) });
 
-    $http.get('/api/kafka-rest-proxy/brokers')
+    $http.get('/fdd/api/kafka-rest-proxy/brokers')
       .then(
         function successCallback(response) { $scope.brokers = response.data.brokers.length },
         function errorCallback(response) { $log.error("Failure with : " + response) });
@@ -583,7 +618,7 @@
     }
 
    this.loadCoyoteResults = function (){
-      $http.get('/coyote-tests/results').then(function(response){
+      $http.get('/fdd/coyote-tests/results').then(function(response){
               passed = response.data.passed;
               failed = response.data.failed;
               if (passed != 0 || failed != 0) {
