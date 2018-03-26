@@ -283,8 +283,9 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
-RUN duphard -d=0 /opt/landoop \
-    && tar -czf /LKD-${LKD_VERSION}.tar.gz \
+# We run as two separate commands because otherwise the build fails in docker hub (but not locally)
+RUN duphard -d=0 /opt/landoop
+RUN tar -czf /LKD-${LKD_VERSION}.tar.gz \
            --owner=root \
            --group=root \
            -C /opt \
