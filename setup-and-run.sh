@@ -23,7 +23,7 @@ export CONNECT_JMX_PORT=${CONNECT_JMX_PORT:-9584}
 export REST_PORT=${REST_PORT:-0}
 export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
-export LENSES_PORT=${LENSES_PORT:-9091}
+export LENSES_PORT=${LENSES_PORT:-9991}
 export FDD_PORT=${FDD_PORT:-28371}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
@@ -448,11 +448,11 @@ export PRINT_HOST
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
-echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
+echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/developers-guide/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://gitter.im/Landoop/support \e[39m"
-export FDD_DHOST="http://${PRINT_HOST}:${LENSES_PORT}"
+export FDD_DHOST="http://${PRINT_HOST}:${WEB_PORT}"
 
 # Set sample data if needed
 if [[ $RUNNING_SAMPLEDATA =~ $TRUE_REG ]] && [[ $SAMPLEDATA =~ $TRUE_REG ]]; then

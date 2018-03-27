@@ -1,5 +1,5 @@
 \e[36m********************************************************************************
-\e[36mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[36m in \e[96mabout 45 seconds\e[36m. Login with \e[96madmin/admin\e[36m.
+\e[36mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[36m in \e[96mabout 45 seconds\e[36m. Login with \e[96madmin/admin\e[36m.
 \e[36m********************************************************************************
 The services (kafka and lenses) need some time to start-up.
 The broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[36m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[36m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[36m.
