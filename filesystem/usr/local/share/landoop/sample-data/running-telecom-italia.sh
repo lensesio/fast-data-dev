@@ -9,7 +9,7 @@ for key in 4 5; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
-        --zookeeper localhost:2181 \
+        --zookeeper localhost:${ZK_PORT} \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
@@ -25,12 +25,12 @@ done
 for key in 5; do
     /usr/local/bin/normcat -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list localhost:9092 \
+            --broker-list localhost:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
-            --property schema.registry.url=http://localhost:8081
+            --property schema.registry.url=http://localhost:${REGISTRY_PORT}
 done
 
 # Insert data with key
@@ -38,10 +38,10 @@ done
 for key in 4; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list localhost:9092 \
+            --broker-list localhost:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
-            --property schema.registry.url=http://localhost:8081
+            --property schema.registry.url=http://localhost:${REGISTRY_PORT}
 done

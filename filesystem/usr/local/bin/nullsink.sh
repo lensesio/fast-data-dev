@@ -1,5 +1,6 @@
 #!/bin/bash
 
+CONNECT_PORT=${CONNECT_PORT:-8083}
 NULLSINK="${NULLSINK:-1}"
 # Only topics of the same type (AVRO) below.
 TOPICS="nyc_yellow_taxi_trip_data,reddit_posts,sea_vessel_position_reports,telecom_italia_data"
@@ -22,7 +23,7 @@ cat <<EOF >/tmp/connector-nullsink
 EOF
 
 curl -vs --stderr - -X POST -H "Content-Type: application/json" \
-     --data @/tmp/connector-nullsink "http://localhost:8083/connectors"
+     --data @/tmp/connector-nullsink "http://localhost:$CONNECT_PORT/connectors"
 
 rm /tmp/connector-nullsink
 

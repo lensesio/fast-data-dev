@@ -1,19 +1,19 @@
-0.0.0.0:3030
+0.0.0.0:$WEB_PORT
 tls off
 log stdout
 errors stdout
 
 root /var/www
 
-proxy /api/schema-registry 0.0.0.0:8081 {
+proxy /api/schema-registry 0.0.0.0:$REGISTRY_PORT {
     without /api/schema-registry
 }
 
-proxy /api/kafka-rest-proxy 0.0.0.0:8082 {
+proxy /api/kafka-rest-proxy 0.0.0.0:$REST_PORT {
     without /api/kafka-rest-proxy
 }
 
-proxy /api/kafka-connect 0.0.0.0:8083 {
+proxy /api/kafka-connect 0.0.0.0:$CONNECT_PORT {
     without /api/kafka-connect
 }
 

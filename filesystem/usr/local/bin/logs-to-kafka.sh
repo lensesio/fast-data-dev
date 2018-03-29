@@ -1,5 +1,6 @@
 #!/bin/bash
 
+CONNECT_PORT=${CONNECT_PORT:-8083}
 FORWARDLOGS="${FORWARDLOGS:-1}"
 # LOGS=(broker schema-registry rest-proxy connect-distributed zookeeper)
 LOGS=(broker)
@@ -23,8 +24,7 @@ cat <<EOF >/tmp/connector
 EOF
 
     curl -vs --stderr - -X POST -H "Content-Type: application/json" \
-         --data @/tmp/connector "http://localhost:8083/connectors"
+         --data @/tmp/connector "http://localhost:$CONNECT_PORT/connectors"
 done
 
 rm /tmp/connector
-

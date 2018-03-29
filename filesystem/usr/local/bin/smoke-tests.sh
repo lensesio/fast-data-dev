@@ -1,17 +1,5 @@
 #!/usr/bin/env bash
 # If WEB_ONLY mode, this is set to 0 in the setup-and-run.sh if not set explicitly.
-RUNTESTS="${RUNTESTS:-1}"
-
-if [[ "$RUNTESTS" == "0" ]]; then
-    echo "Skipping tests due to \$RUNTESTS = 0."
-    cat <<EOF > /var/www/coyote-tests/results
-{
-  "passed": -1,
-  "failed": 0
-}
-EOF
-    exit 0
-fi
 
 cat <<EOF > /var/www/coyote-tests/results
 {
