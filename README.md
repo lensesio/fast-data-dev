@@ -129,6 +129,7 @@ via environment variables.
  `DISABLE=<CONNECTOR>[,<CON2>]`   | Disable one or more connectors*. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
  `BROWSECONFIGS=1`                | Expose service configuration in the UI. Useful to see how Kafka is setup.
  `DEBUG=1`                        | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
+ `SUPERVISORWEB=1`                | Enable supervisor web interface on port 9001 (adjust via `SUPERVISORWEB_PORT`) in order to control services, run `tail -f`, etc.
 
 *Available connectors are: azure-documentdb, blockchain, bloomberg, cassandra,
 coap, druid, elastic, elastic5, ftp, hazelcast, hbase, influxdb, jms, kudu,
