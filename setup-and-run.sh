@@ -42,6 +42,8 @@ WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
 export RUNTESTS=${RUNTESTS:-0}
 export BROWSECONFIGS=${BROWSECONFIGS:-0}
+export SUPERVISORWEB=${SUPERVISORWEB:-0}
+export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
@@ -233,6 +235,28 @@ if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
     sed -e 's/browseconfigs/1/' -i /var/www/env.js
+fi
+# If SUPERVISORWEB, enable supervisor control and proxy it
+if [[ $SUPERVISORWEB =~ $TRUE_REG ]]; then
+    cat <<EOF > /etc/supervisord.d/99-supervisorctl.conf
+[inet_http_server]
+port=*:$SUPERVISORWEB_PORT
+EOF
+    PORTS="$PORTS $SUPERVISORWEB_PORT"
+    if [[ ! -z $PASSWORD ]]; then
+        echo -e "\e[92Adding login credentials to supervisor '\e[96m${USER}\e[34m\e[92m' '\e[96mxxxxxxxx'\e[34m\e[92m.\e[34m"
+        echo "username=$USER" >> /etc/supervisord.d/99-supervisorctl.conf
+        echo "password=$PASSWORD" >> /etc/supervisord.d/99-supervisorctl.conf
+    fi
+
+    # These does not work, because supervisor server
+    # can only live under webroot.
+#     cat <<EOF >> /var/run/caddy/Caddyfile
+# proxy /control 0.0.0.0:$SUPERVISORWEB_PORT {
+#     without /control
+# }
+# EOF
+#     sed -e 's/supervisorweb/1/' -i  /var/www/env.js
 fi
 
 # Disable Connectors

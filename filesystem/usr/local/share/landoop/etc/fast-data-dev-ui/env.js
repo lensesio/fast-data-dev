@@ -84,11 +84,6 @@ var servicesInfo = [
 
 var exposedDirectories = [
   {
-    "name" : "running services log files",
-    "url" : "/fdd/logs",
-    "enabled" : "1"
-  },
-  {
     "name" : "certificates (truststore and client keystore)",
     "url" : "/fdd/certs",
     "enabled" : "ssl_browse"
@@ -97,5 +92,15 @@ var exposedDirectories = [
     "name" : "configuration of running services",
     "url"  : "/fdd/config",
     "enabled" : "browseconfigs"
+  },
+  {
+    "name" : "control running services",
+    "url" : "/control",
+    "enabled": "supervisorweb"
+  },
+  {
+    "name" : "log files of running services",
+    "url" : "/logs",
+    "enabled" : "1"
   }
 ];
