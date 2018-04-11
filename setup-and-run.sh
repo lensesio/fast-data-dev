@@ -23,7 +23,7 @@ export CONNECT_JMX_PORT=${CONNECT_JMX_PORT:-9584}
 export REST_PORT=${REST_PORT:-0}
 export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
-export LENSES_PORT=${LENSES_PORT:-9091}
+export LENSES_PORT=${LENSES_PORT:-9991}
 export FDD_PORT=${FDD_PORT:-28371}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
@@ -35,12 +35,15 @@ export RUNNING_SAMPLEDATA=${RUNNING_SAMPLEDATA:-1}
 DISABLE=${DISABLE:-}
 CONNECTORS=${CONNECTORS:-}
 export ADV_HOST=${ADV_HOST:-}
-export ADV_HOST_JMX=${ADV_HOST:-localhost}
+export ADV_HOST_JMX=${ADV_HOST_JMX:-${ADV_HOST}}
+export ADV_HOST_JMX=${ADV_HOST_JMX:-localhost}
 CONNECT_HEAP=${CONNECT_HEAP:-}
 WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
 export RUNTESTS=${RUNTESTS:-0}
 export BROWSECONFIGS=${BROWSECONFIGS:-0}
+export SUPERVISORWEB=${SUPERVISORWEB:-0}
+export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
@@ -232,6 +235,28 @@ if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
     sed -e 's/browseconfigs/1/' -i /var/www/env.js
+fi
+# If SUPERVISORWEB, enable supervisor control and proxy it
+if [[ $SUPERVISORWEB =~ $TRUE_REG ]]; then
+    cat <<EOF > /etc/supervisord.d/99-supervisorctl.conf
+[inet_http_server]
+port=*:$SUPERVISORWEB_PORT
+EOF
+    PORTS="$PORTS $SUPERVISORWEB_PORT"
+    if [[ ! -z $PASSWORD ]]; then
+        echo -e "\e[92Adding login credentials to supervisor '\e[96m${USER}\e[34m\e[92m' '\e[96mxxxxxxxx'\e[34m\e[92m.\e[34m"
+        echo "username=$USER" >> /etc/supervisord.d/99-supervisorctl.conf
+        echo "password=$PASSWORD" >> /etc/supervisord.d/99-supervisorctl.conf
+    fi
+
+    # These does not work, because supervisor server
+    # can only live under webroot.
+#     cat <<EOF >> /var/run/caddy/Caddyfile
+# proxy /control 0.0.0.0:$SUPERVISORWEB_PORT {
+#     without /control
+# }
+# EOF
+#     sed -e 's/supervisorweb/1/' -i  /var/www/env.js
 fi
 
 # Disable Connectors
@@ -448,11 +473,11 @@ export PRINT_HOST
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
-echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${LENSES_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
+echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/developers-guide/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://gitter.im/Landoop/support \e[39m"
-export FDD_DHOST="http://${PRINT_HOST}:${LENSES_PORT}"
+export FDD_DHOST="http://${PRINT_HOST}:${WEB_PORT}"
 
 # Set sample data if needed
 if [[ $RUNNING_SAMPLEDATA =~ $TRUE_REG ]] && [[ $SAMPLEDATA =~ $TRUE_REG ]]; then

@@ -4,30 +4,36 @@ function process_variable {
     local config_file="$3"
 
     # Try to detect some envs set by kubernetes and/or docker link and skip them.
-    if [[ "$var" =~ [^=]+TCP_(PORT|ADDR).* ]] \
-           || [[ "$var" =~ [^=]+_[0-9]{1,5}_(TCP|UDP).* ]] \
-           || [[ "$var" =~ [^=]+_SERVICE_PORT.* ]]; then
+    if [[ $var =~ [^=]+TCP_(PORT|ADDR).* ]] \
+           || [[ $var =~ [^=]+_[0-9]{1,5}_(TCP|UDP).* ]] \
+           || [[ $var =~ [^=]+_SERVICE_PORT.* ]]; then
         echo "Skipping variable probably set by container supervisor: $var"
         return
     fi
 
     # If _OPTS, export them
-    if [[ "$var" =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
+    if [[ $var =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
         export "${var}"="${!var}"
         return
     fi
 
+    # A special clause for zookeeper multi-server setups, in order to create myid.
+    if [[ $var == ZOOKEEPER_myid ]]; then
+        echo "${!var}" >> "$ZOOKEEPER_dataDir/myid"
+        return 0
+    fi
+
     # Start to process configuration options
-    # echo "Processing $var for $prefix"
 
     # Remove prefix from var name
     conf="${var#$prefix}"
-    # Convert var name to lowercase
-    if [[ "$prefix" != "ZOOKEEPER_" ]]; then
+    # Convert var name to lowercase except for zookeeper vars.
+    if [[ $prefix != ZOOKEEPER_ ]]; then
         conf="${conf,,}"
     fi
     # Convert underscores in var name to stops
     conf="${conf//_/.}"
+
 
     echo "${conf}=${!var}" >> "$config_file"
     return 0

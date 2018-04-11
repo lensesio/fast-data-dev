@@ -283,8 +283,9 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
-RUN duphard -d=0 /opt/landoop \
-    && tar -czf /LKD-${LKD_VERSION}.tar.gz \
+# We run as two separate commands because otherwise the build fails in docker hub (but not locally)
+RUN duphard -d=0 /opt/landoop
+RUN tar -czf /LKD-${LKD_VERSION}.tar.gz \
            --owner=root \
            --group=root \
            -C /opt \
@@ -361,7 +362,7 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/1.1/lenses-1.1.2-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/1.1/lenses-1.1.3-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && mv /opt/lenses/lenses.conf /opt/lenses/lenses.conf.sample \
