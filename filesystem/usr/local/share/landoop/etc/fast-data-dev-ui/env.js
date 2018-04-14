@@ -100,7 +100,7 @@ var exposedDirectories = [
   },
   {
     "name" : "log files of running services",
-    "url" : "/logs",
+    "url" : "/fdd/logs",
     "enabled" : "1"
   }
 ];
