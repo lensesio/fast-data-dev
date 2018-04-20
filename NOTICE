@@ -1,5 +1,5 @@
 fast-data-dev
-Copyright 2016-2017 Landoop LTD
+Copyright 2016-2018 Landoop LTD
 
 This product includes software developed at
 Landoop LTD (http://www.landoop.com).
@@ -12,9 +12,14 @@ its original license.
 
 The most important software components and their license are:
 
-Caddy                         : Apache 2.0
-Confluent Platform            : Apache 2.0
-Datamountaineer Stream Reactor: Apache 2.0
-Kafka Connect UI              : BSL (http://www.landoop.com/bsl/)
-Kafka Topics UI               : BSL (http://www.landoop.com/bsl/)
-Schema Registry UI            : BSL (http://www.landoop.com/bsl/)
+By Landoop:
+Landoop Stream Reactor        : Apache 2.0
+Landoop Kafka Connect UI      : BSL (http://www.landoop.com/bsl/)
+Landoop Kafka Topics UI       : BSL (http://www.landoop.com/bsl/)
+Landoop Schema Registry UI    : BSL (http://www.landoop.com/bsl/)
+
+Third Party:
+Caddy                                  : Apache 2.0
+Apache Kafka (incl Connect, Zookeeper) : Apache 2.0
+Confluent Schema Registry, REST Proxy  : Apache 2.0
+

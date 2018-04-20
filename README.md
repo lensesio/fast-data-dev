@@ -4,7 +4,7 @@
 
 Landoop’s [Lenses](https://www.landoop.com/kafka-lenses/) docker image with [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation!
 
-Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation ([Confluent OSS](https://www.confluent.io/), with Schema Registry and Kafka Connect), [Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/), Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and data generators to experiment with.
+Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation with Kafka Connect and Confluent Schema Registry, [Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/), Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and data generators to experiment with.
 
 [Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy streaming can get!
 
@@ -50,5 +50,8 @@ Apart from docker, the only requirement is you have at least 4GB of memory avail
 
 It is hard to cover the whole surface of Lenses capabilities in a few lines, to learn more please visit our [quickstart documentation](https://www.landoop.com/docs/lenses/lenses/development-environment/latest/).
 
+In addition, all options of [fast-data-dev](https://github.com/Landoop/fast-data-dev) are available for this image as well.
+
 Hope you will enjoy our product,
+
 The Lenses team.
