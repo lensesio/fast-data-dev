@@ -266,7 +266,7 @@ fi
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
-    sed -e 's/browseconfigs/"enabled" : "1:/' -i /var/www/env.js
+    sed -e 's/browseconfigs/"enabled" : true/' -i /var/www/env.js
 else
     sed -e 's/browseconfigs/"enabled" : false/' -i /var/www/env.js
 fi
@@ -290,7 +290,7 @@ EOF
 #     without /control
 # }
 # EOF
-    sed -e 's/supervisorweb/"enabled" : "1"/' -i  /var/www/env.js
+    sed -e 's/supervisorweb/"enabled" : true/' -i  /var/www/env.js
 else
     sed -e 's/supervisorweb/"enabled" : false/' -i  /var/www/env.js
 fi
@@ -434,7 +434,7 @@ EOF
             popd
         } >/var/log/ssl-setup.log 2>&1
     fi
-    sed -e 's/ssl_browse/"enabled" : "1"/' -i /var/www/env.js
+    sed -e 's/ssl_browse/"enabled" : true/' -i /var/www/env.js
 else
     sed -r -e "s|$BROKER_SSL_PORT||" -i /var/www/env.js
     sed -e 's/ssl_browse/"enabled" : false/' -i /var/www/env.js

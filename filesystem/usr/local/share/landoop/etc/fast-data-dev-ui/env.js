@@ -89,7 +89,7 @@ var exposedDirectories = [
   {
     "name" : "• Logs",
     "url" : "/fdd/logs",
-    "enabled" : "1"
+    "enabled" : true
   }
 ];
 
