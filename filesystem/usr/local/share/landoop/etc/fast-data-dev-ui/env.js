@@ -77,17 +77,17 @@ var exposedDirectories = [
   {
     "name" : "certificates (truststore and client keystore)",
     "url" : "/certs",
-    "enabled" : "ssl_browse"
+    ssl_browse
   },
   {
     "name" : "configuration files of running services",
     "url"  : "/config",
-    "enabled" : "browseconfigs"
+    browseconfigs
   },
   {
     "name" : "control running services",
-    "url" : "/control",
-    "enabled": "supervisorweb"
+    "url" : "http://localhost:$SUPERVISORWEB_PORT",
+    supervisorweb
   },
   {
     "name" : "log files of running services",
