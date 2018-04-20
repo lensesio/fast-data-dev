@@ -81,24 +81,24 @@ function process_lenses_variable {
     # If setting needs to be quoted, write with quotes
     if [[ "$OPTS_NEEDQUOTE" =~ " $var " ]]; then
         echo "${conf}=\"${!var}\"" >> "$config_file"
-        if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
-            echo "${conf}=********"
-            unset "${var}"
-        else
-            echo "${conf}=\"${!var}\""
-        fi
+        # if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
+        #     echo "${conf}=********"
+        #     unset "${var}"
+        # else
+        #     echo "${conf}=\"${!var}\""
+        # fi
         return 0
     fi
 
     # If settings must not have quotes, write without quotes
     if [[ "$OPTS_NEEDNOQUOTE" =~ " $var " ]]; then
         echo "${conf}=${!var}" >> "$config_file"
-        if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
-            echo "${conf}=********"
-            unset "${var}"
-        else
-            echo "${conf}=${!var}"
-        fi
+        # if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
+        #     echo "${conf}=********"
+        #     unset "${var}"
+        # else
+        #     echo "${conf}=${!var}"
+        # fi
         return 0
     fi
 
@@ -110,10 +110,11 @@ function process_lenses_variable {
         echo "${conf}=${!var}" >> "$config_file"
     fi
     if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
-        echo "${conf}=********"
+        # echo "${conf}=********"
         unset "${var}"
     else
-        echo "${conf}=${!var}"
+        # echo "${conf}=${!var}"
+        echo -n
     fi
 }
 

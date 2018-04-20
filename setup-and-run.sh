@@ -136,6 +136,7 @@ export LEN_PASSWORD=${PASSWORD:-admin}
 LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",\"displayname\":\"Lenses Admin\",\"groups\":[\"adminGroup\"]}]"
 export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
 export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
+export LENSES_BOX=${LENSES_BOX:-true}
 
 # Set memory limits
 # Set connect heap size if needed
