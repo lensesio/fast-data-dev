@@ -61,6 +61,6 @@ var exposedDirectories = [
   {
     "name" : "certificates (truststore and client keystore)",
     "url" : "/certs",
-    "enabled" : "ssl_browse"
+    ssl_browse
   }
 ];

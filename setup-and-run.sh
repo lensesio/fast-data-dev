@@ -266,7 +266,9 @@ fi
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
-    sed -e 's/browseconfigs/1/' -i /var/www/env.js
+    sed -e 's/browseconfigs/"enabled" : "1"/' -i /var/www/env.js
+else
+    sed -e 's/browseconfigs/"enabled" : "0"/' -i /var/www/env.js
 fi
 # If SUPERVISORWEB, enable supervisor control and proxy it
 if [[ $SUPERVISORWEB =~ $TRUE_REG ]]; then
@@ -288,7 +290,9 @@ EOF
 #     without /control
 # }
 # EOF
-#     sed -e 's/supervisorweb/1/' -i  /var/www/env.js
+    sed -e 's/supervisorweb/"enabled" : "1"/' -i  /var/www/env.js
+else
+    sed -e 's/supervisorweb/"enabled" : "0"/' -i  /var/www/env.js
 fi
 
 # Disable Connectors
@@ -430,9 +434,10 @@ EOF
             popd
         } >/var/log/ssl-setup.log 2>&1
     fi
-    sed -e 's/ssl_browse/1/' -i /var/www/env.js
+    sed -e 's/ssl_browse/"enabled" : "1"/' -i /var/www/env.js
 else
     sed -r -e "s|$BROKER_SSL_PORT||" -i /var/www/env.js
+    sed -e 's/ssl_browse/"enabled" : "0"/' -i /var/www/env.js
 fi
 
 # Set web-only mode if needed
