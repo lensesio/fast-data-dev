@@ -92,7 +92,7 @@ var exposedDirectories = [
   {
     "name" : "log files of running services",
     "url" : "/logs",
-    "enabled" : "1"
+    "enabled" : true
   }
 ];
 
