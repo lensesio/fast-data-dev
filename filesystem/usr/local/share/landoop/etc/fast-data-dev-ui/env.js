@@ -104,3 +104,5 @@ var exposedDirectories = [
     "enabled" : "1"
   }
 ];
+
+var boxInfoNews = [];
