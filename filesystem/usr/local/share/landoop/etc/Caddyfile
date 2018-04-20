@@ -1,0 +1,24 @@
+0.0.0.0:$WEB_PORT
+tls off
+log stdout
+errors stdout
+
+root /var/www
+
+proxy /api/schema-registry 0.0.0.0:$REGISTRY_PORT {
+    without /api/schema-registry
+}
+
+proxy /api/kafka-rest-proxy 0.0.0.0:$REST_PORT {
+    without /api/kafka-rest-proxy
+}
+
+proxy /api/kafka-connect 0.0.0.0:$CONNECT_PORT {
+    without /api/kafka-connect
+}
+
+browse /certs
+browse /logs
+
+header /coyote-tests/results Cache-Control "no-store"
+header /coyote-tests/index.html Cache-Control "no-store"
