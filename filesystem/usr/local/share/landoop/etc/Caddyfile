@@ -7,6 +7,9 @@
   }
   proxy /fdd localhost:$FDD_PORT
   proxy / localhost:$LENSES_PORT
+  rewrite /box-info.js {
+    to /fdd/env.js
+  }
 }
 
 # The reason for two web servers, is that if the user sets a password, lenses will not be protected by auth basic

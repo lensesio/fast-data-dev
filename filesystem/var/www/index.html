@@ -218,7 +218,7 @@
           </md-card-title>
           <md-card-content>
               <md-list>
-                  <md-list-item ng-repeat="expdir in exposedDirectories | filter: { enabled: '1'}" flex class="md-list-item-short" style="padding: 0">
+                  <md-list-item ng-repeat="expdir in exposedDirectories | filter: { enabled: true}" flex class="md-list-item-short" style="padding: 0">
                       <div flex="" layout="row" layout-xs="column" class="layout-xs-column layout-row flex">
                           <h5>- <a style="text-decoration:none;" href="{{expdir.url}}">{{expdir.name}}</a></h5>
                       </div>

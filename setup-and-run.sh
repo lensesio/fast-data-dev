@@ -24,6 +24,7 @@ export REST_PORT=${REST_PORT:-0}
 export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
 export LENSES_PORT=${LENSES_PORT:-9991}
+export LENSES_JMX_PORT=${LENSES_JMX_PORT:-9586}
 export FDD_PORT=${FDD_PORT:-28371}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
@@ -44,6 +45,8 @@ export RUNTESTS=${RUNTESTS:-0}
 export BROWSECONFIGS=${BROWSECONFIGS:-0}
 export SUPERVISORWEB=${SUPERVISORWEB:-0}
 export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
+export TELEMETRY=${TELEMETRY:-}
+export USER=${USER:-admin}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
@@ -115,6 +118,26 @@ export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/data/zookeeper}
 export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
 export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
 
+# Set env var for Lenses
+#export LENSES_PORT=${LENSES_PORT:-9991}
+LEN_ZOOKEEPER_HOSTS="[{url:\"0.0.0.0:$ZK_PORT\",jmx:\"0.0.0.0:$ZK_JMX_PORT\"}]"
+export LENSES_ZOOKEEPER_HOSTS=${LENSES_ZOOKEEPER_HOSTS:-$LEN_ZOOKEEPER_HOSTS}
+export LENSES_KAFKA_BROKERS=${LENSES_KAFKA_BROKERS:-"PLAINTEXT://0.0.0.0:$BROKER_PORT"}
+LEN_SCHEMA_REGISTRY_URLS="[{url:\"http://0.0.0.0:$REGISTRY_PORT\",jmx:\"0.0.0.0:$REGISTRY_JMX_PORT\"}]"
+export LENSES_SCHEMA_REGISTRY_URLS=${LENSES_SCHEMA_REGISTRY_URLS:-$LEN_SCHEMA_REGISTRY_URLS}
+LEN_CONNECT_CLUSTERS="[{name:\"dev\",urls:[{url:\"http://0.0.0.0:$CONNECT_PORT\",jmx:\"0.0.0.0:$CONNECT_JMX_PORT\"}],statuses:\"connect-statuses\",configs:\"connect-configs\",offsets:\"connect-offsets\"}]"
+export LENSES_CONNECT_CLUSTERS=${LENSES_CONNECT_CLUSTERS:-$LEN_CONNECT_CLUSTERS}
+export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
+export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
+export LENSES_SECURITY_MODE=${LENSES_SECURITY_MODE:-BASIC}
+LEN_SECURITY_GROUPS="[{\"name\":\"adminGroup\",\"roles\":[\"admin\",\"write\",\"read\"]}]"
+export LENSES_SECURITY_GROUPS=${LENSES_SECURITY_GROUPS:-$LEN_SECURITY_GROUPS}
+export LEN_PASSWORD=${PASSWORD:-admin}
+LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",\"displayname\":\"Lenses Admin\",\"groups\":[\"adminGroup\"]}]"
+export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
+export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
+export LENSES_BOX=${LENSES_BOX:-true}
+
 # Set memory limits
 # Set connect heap size if needed
 if [[ -n $CONNECT_HEAP ]]; then CONNECT_HEAP="-Xmx$CONNECT_HEAP"; fi
@@ -124,11 +147,13 @@ export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}
 export ZOOKEEPER_HEAP_OPTS=${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}
 export SCHEMA_REGISTRY_HEAP_OPTS=${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}
 export KAFKA_REST_HEAP_OPTS=${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}
+export LENSES_HEAP_OPTS=${LENSES_HEAP_OPTS:--Xmx1024M -Xmx320M}
+
 
 # Configure JMX if needed or disable it.
 if [[ ! $DISABLE_JMX =~ $TRUE_REG ]]; then
     # If JMX is not disabled, we should check for port availability
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT $LENSES_JMX_PORT"
 else
     # This does not really disable JMX, but each service will start JMX
     # in an ephemeral port, so it won't cause issues to the process.
@@ -137,7 +162,13 @@ else
     export REGISTRY_JMX_PORT=0
     export CONNECT_JMX_PORT=0
     export REST_JMX_PORT=0
+    export LENSES_JMX_PORT=0
 fi
+if [[ $LENSES_JMX_PORT == 0 ]]; then
+    # Lenses do not support setting lenses.jmx.port=0
+    unset LENSES_JMX_PORT
+fi
+
 
 # Create run directories for various services and initialize where applicable with configuration files.
 mkdir -p \
@@ -196,7 +227,7 @@ if [[ -n ${ADV_HOST} ]]; then
     sed -e "s#localhost#${ADV_HOST}#g" -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js
 fi
 
-# setup Kafka (and components)
+# setup Kafka (and components) and Lenses
 source /usr/local/share/landoop/config_kafka.sh
 
 # setup supervisord
@@ -211,6 +242,7 @@ if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; 
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
 if [[ $REST_PORT == 0 ]];     then rm /etc/supervisord.d/*rest-proxy.conf; fi
 if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*rest-proxy.conf; fi
+if [[ $LENSES_PORT == 0 ]];   then rm /etc/supervisord.d/*lenses.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
 if [[ $RUNTESTS =~ $FALSE_REG ]]; then
     rm /etc/supervisord.d/*smoke-tests.conf
@@ -234,7 +266,9 @@ fi
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
-    sed -e 's/browseconfigs/1/' -i /var/www/env.js
+    sed -e 's/browseconfigs/"enabled" : true/' -i /var/www/env.js
+else
+    sed -e 's/browseconfigs/"enabled" : false/' -i /var/www/env.js
 fi
 # If SUPERVISORWEB, enable supervisor control and proxy it
 if [[ $SUPERVISORWEB =~ $TRUE_REG ]]; then
@@ -256,7 +290,9 @@ EOF
 #     without /control
 # }
 # EOF
-#     sed -e 's/supervisorweb/1/' -i  /var/www/env.js
+    sed -e 's/supervisorweb/"enabled" : true/' -i  /var/www/env.js
+else
+    sed -e 's/supervisorweb/"enabled" : false/' -i  /var/www/env.js
 fi
 
 # Disable Connectors
@@ -398,9 +434,10 @@ EOF
             popd
         } >/var/log/ssl-setup.log 2>&1
     fi
-    sed -e 's/ssl_browse/1/' -i /var/www/env.js
+    sed -e 's/ssl_browse/"enabled" : true/' -i /var/www/env.js
 else
     sed -r -e "s|$BROKER_SSL_PORT||" -i /var/www/env.js
+    sed -e 's/ssl_browse/"enabled" : false/' -i /var/www/env.js
 fi
 
 # Set web-only mode if needed
@@ -475,7 +512,7 @@ echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
-echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/developers-guide/ \e[39m"
+echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/dev/lenses-box/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://gitter.im/Landoop/support \e[39m"
 export FDD_DHOST="http://${PRINT_HOST}:${WEB_PORT}"
 
@@ -499,28 +536,25 @@ fi
 LICENSE_URL=${LICENSE_URL:-}
 EULA=${EULA:-$LICENSE_URL}
 LICENSE=${LICENSE:-}
-LICENSE_PATH=/var/run/lenses/license.conf
-LENSES_CONF=/var/run/lenses/lenses.conf
-LENSES_SECURITY_CONF=/var/run/lenses/security.conf
 # Configure lenses
 if [[ -f /license.json ]]; then
-    cp /license.json "$LICENSE_PATH"
-elif [[ ! -z $LICENSE ]] && [[ ! -f $LICENSE_PATH ]]; then
-    echo "$LICENSE" >> "$LICENSE_PATH"
-elif [[ ! -z $EULA ]] && [[ ! -f $LICENSE_PATH ]]; then
+    cp /license.json "$LENSES_LICENSE_FILE"
+elif [[ ! -z $LICENSE ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
+    echo "$LICENSE" >> "$LENSES_LICENSE_FILE"
+elif [[ ! -z $EULA ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
     if [[ $EULA =~ CHECK_YOUR_EMAIL_FOR_KEY ]]; then
         echo
         echo "Oops! It seems you just ran the sample command provided in the website."
         echo "Please check your email to find the actual URL of your license. :)"
         exit 1
     fi
-    wget -q "$EULA" -O "$LICENSE_PATH"
+    wget -q "$EULA" -O "$LENSES_LICENSE_FILE"
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
         exit 1
     fi
-elif [[ -f $LICENSE_PATH ]]; then
+elif [[ -f $LENSES_LICENSE_FILE ]]; then
     echo
 else
     echo -e "\e[91mNo license was provided. Lenses will not work."
@@ -528,45 +562,10 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
-PASSWORD=${PASSWORD:-admin}
-chown nobody:nobody "$LICENSE_PATH"
-mkdir -p /var/run//lenses/logs
+chown nobody:nobody "$LENSES_LICENSE_FILE"
+mkdir -p /var/run/lenses/logs
 chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
-TELEMETRY=${TELEMETRY:-1}
-# Disabled due to k8s and rancher bugs. :(
-#sed -e "s/LENSES_PORT/$LENSES_PORT/" -i /var/www/index.html
-cat <<EOF > $LENSES_CONF
-lenses.port=$LENSES_PORT
-lenses.zookeeper.hosts="0.0.0.0:$ZK_PORT"
-
-lenses.kafka.brokers="PLAINTEXT://0.0.0.0:$BROKER_PORT"
-lenses.schema.registry.urls="http://0.0.0.0:$REGISTRY_PORT"
-lenses.connect.clusters=[
-  {
-    name: "dev",
-    url: "http://0.0.0.0:$CONNECT_PORT",
-    statuses: "connect-statuses",
-    configs: "connect-configs",
-    offsets: "connect-offsets"
-  }
-]
-
-lenses.jmx.brokers="0.0.0.0:$BROKER_JMX_PORT"
-lenses.jmx.schema.registry="0.0.0.0:$REGISTRY_JMX_PORT"
-lenses.jmx.connect=[{dev:"0.0.0.0:$CONNECT_JMX_PORT"}]
-lenses.jmx.zookeepers="0.0.0.0:$ZK_JMX_PORT"
-
-lenses.license.file="$LICENSE_PATH"
-lenses.secret.file="$LENSES_SECURITY_CONF"
-EOF
-cat <<EOF > "$LENSES_SECURITY_CONF"
-lenses.security.mode=BASIC
-lenses.security.users=[{"username": "${USER}", "password": "${PASSWORD}", "displayname": "Lenses Admin", "roles": ["admin", "write", "read"]}]
-EOF
-if [[ ! $TELEMETRY =~ $TRUE_REG ]]; then
-    echo "lenses.telemetry.enable=false" >> "$LENSES_CONF"
-fi
 chown nobody:nobody /var/run/lenses/*
 mkdir /var/www-lenses
 ln -s /var/www /var/www-lenses/fdd
