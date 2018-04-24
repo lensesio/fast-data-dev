@@ -75,6 +75,13 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
     && rm /lenses.tgz
 
+# Add Lenses CLI
+ARG LC_VERSION="2.0"
+ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+RUN wget "$LC_URL" -O /lenses-cli.tgz \
+    && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
+    && rm -f /lenses-cli.tgz
+
 # Add cc_payments generator
 RUN wget https://archive.landoop.com/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
     && mkdir -p /opt/generator \
@@ -121,10 +128,11 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"       | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}"    | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"        | tee -a /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"      | tee -a /build.info \
-    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && sed -e 's/^/FDD_/' /opt/landoop/build.info | tee -a /build.info
+    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && echo "FDD_LENSES_CLI_VERSION=${LC_VERSION}" | tee -a /build.info \
+    && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
