@@ -25,7 +25,6 @@ ARG LKD_VERSION=1.0.1
 
 # Add Apache Kafka (includes Connect and Zookeeper)
 ARG KAFKA_VERSION=1.0.1
-ARG KAFKA_VERSION_4SR=1.0.0
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
 ARG KAFKA_URL="https://archive.landoop.com/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz"
 
@@ -60,6 +59,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION=1.0.0
+ARG KAFKA_VERSION_4SR=1.0.0
 ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
