@@ -567,6 +567,7 @@ mkdir -p /var/run/lenses/logs
 chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
+rm -rf /var/www-lenses
 mkdir /var/www-lenses
 ln -s /var/www /var/www-lenses/fdd
 echo "}" >> /var/run/caddy/Caddyfile
