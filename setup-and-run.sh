@@ -264,6 +264,7 @@ if [[ ! -z $PASSWORD ]]; then
 fi
 # If BROWSECONFIGS, expose configs under /config
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
+    rm -f /var/www/config
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
     sed -e 's/browseconfigs/"enabled" : true/' -i /var/www/env.js
@@ -295,6 +296,8 @@ else
     sed -e 's/supervisorweb/"enabled" : false/' -i  /var/www/env.js
 fi
 
+# Cleanup previous starts
+rm -f /var/run/connect/connectors/{stream-reactor,third-party}/*
 # Disable Connectors
 OLD_IFS=$IFS
 IFS=,

@@ -25,7 +25,6 @@ ARG LKD_VERSION=1.0.1
 
 # Add Apache Kafka (includes Connect and Zookeeper)
 ARG KAFKA_VERSION=1.0.1
-ARG KAFKA_VERSION_4SR=1.0.0
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
 ARG KAFKA_URL="https://archive.landoop.com/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz"
 
@@ -35,13 +34,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry and REST Proxy
-ARG REGISTRY_VERSION=4.0.0-lkd-r0
+ARG REGISTRY_VERSION=4.0.1-lkd-r0
 ARG REGISTRY_URL="https://archive.landoop.com/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
     && rm -rf /opt/registry.tar.gz
 
-ARG REST_VERSION=4.0.0-lkd-r0
+ARG REST_VERSION=4.0.1-lkd-r0
 ARG REST_URL="https://archive.landoop.com/lkd/packages/rest-proxy/rest-proxy-${REST_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
     && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
@@ -60,6 +59,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION=1.0.0
+ARG KAFKA_VERSION_4SR=1.0.0
 ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
@@ -110,7 +110,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
 ## Kafka Connect JDBC
-ARG KAFKA_CONNECT_JDBC_VERSION=4.0.0-lkd-r0
+ARG KAFKA_CONNECT_JDBC_VERSION=4.0.1-lkd-r0
 ARG KAFKA_CONNECT_JDBC_URL="https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-jdbc/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
          -O /opt/kafka-connect-jdbc.tar.gz \
@@ -120,7 +120,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
     && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 ## Kafka Connect ELASTICSEARCH
-ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=4.0.0-lkd-r0
+ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=4.0.1-lkd-r0
 ARG KAFKA_CONNECT_ELASTICSEARCH_URL="https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-elasticsearch/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
          -O /opt/kafka-connect-elasticsearch.tar.gz \
@@ -130,7 +130,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
 
 ## Kafka Connect HDFS
-ARG KAFKA_CONNECT_HDFS_VERSION=4.0.0-lkd-r0
+ARG KAFKA_CONNECT_HDFS_VERSION=4.0.1-lkd-r0
 ARG KAFKA_CONNECT_HDFS_URL="https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
          -O /opt/kafka-connect-hdfs.tar.gz \
@@ -140,7 +140,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
     && rm -rf /opt/kafka-connect-hdfs.tar.gz
 
 # Kafka Connect S3
-ARG KAFKA_CONNECT_S3_VERSION=4.0.0-lkd-r0
+ARG KAFKA_CONNECT_S3_VERSION=4.0.1-lkd-r0
 ARG KAFKA_CONNECT_S3_URL="https://archive.landoop.com/lkd/packages/connectors/third-party/kafka-connect-s3/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
          -O /opt/kafka-connect-s3.tar.gz \
