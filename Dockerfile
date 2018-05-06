@@ -200,7 +200,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
 ############
 
 # Add Coyote
-ARG COYOTE_VERSION=1.2
+ARG COYOTE_VERSION=1.3
 ARG COYOTE_URL="https://github.com/Landoop/coyote/releases/download/v${COYOTE_VERSION}/coyote-${COYOTE_VERSION}"
 RUN mkdir -p /opt/landoop/tools/bin/win \
              /opt/landoop/tools/bin/mac \
