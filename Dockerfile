@@ -319,6 +319,7 @@ RUN apk add --no-cache \
         openjdk8-jre-base \
         openssl \
         sqlite \
+        su-exec \
         supervisor \
         tar \
         wget \
@@ -386,8 +387,11 @@ RUN ln -s /var/log /var/www/logs
 # Add executables, settings and configuration
 ADD setup-and-run.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup-and-run.sh \
-    && ln -s /usr/local/share/landoop/etc/bashrc /root/.bashrc
+    && ln -s /usr/local/share/landoop/etc/bashrc /root/.bashrc \
+    && ln -s /usr/local/share/landoop/etc/bashrc /.bashrc
 
+RUN mkdir /data \
+    && chmod 777 /run /var/www /data /etc/supervisord.d /var/log /var/www/coyote-tests/*
 VOLUME ["/data"]
 
 ARG BUILD_BRANCH

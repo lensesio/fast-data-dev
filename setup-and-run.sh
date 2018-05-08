@@ -490,4 +490,13 @@ else
     export FORWARDLOGS=0
 fi
 
-exec /usr/bin/supervisord -c /etc/supervisord.conf
+C_UID="$(id -u)"
+#C_GID="$(id -g)"
+C_SUCMD="exec"
+C_SUID=""
+if [[ "$C_UID" == 0 ]]; then
+    echo "Running as root. Will drop to nobody:nogroup (65534:65534)"
+    C_SUCMD=/sbin/su-exec
+    C_SUID="nobody:nogroup"
+fi
+$C_SUCMD $C_SUID /usr/bin/supervisord -c /etc/supervisord.conf
