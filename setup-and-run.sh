@@ -146,9 +146,7 @@ mkdir -p \
       /var/run/connect/connectors/{stream-reactor,third-party} \
       /var/run/rest-proxy \
       /var/run/coyote \
-      /var/run/caddy \
-      /data/{zookeeper,kafka}
-chmod 777 /data/{zookeeper,kafka}
+      /var/run/caddy
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \

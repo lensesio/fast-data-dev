@@ -390,8 +390,8 @@ RUN chmod +x /usr/local/bin/setup-and-run.sh \
     && ln -s /usr/local/share/landoop/etc/bashrc /root/.bashrc \
     && ln -s /usr/local/share/landoop/etc/bashrc /.bashrc
 
-RUN mkdir /data \
-    && chmod 777 /run /var/www /data /etc/supervisord.d /var/log /var/www/coyote-tests/*
+RUN mkdir -p /data/{zookeeper,kafka} \
+    && chmod 777 /run /var/www /data /data/{zookeeper,kafka} /etc/supervisord.d /var/log /var/www/coyote-tests/*
 VOLUME ["/data"]
 
 ARG BUILD_BRANCH
