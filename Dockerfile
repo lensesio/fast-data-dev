@@ -25,10 +25,9 @@ ARG LKD_VERSION=${LKD_VERSION:-1.1.0}
 ############
 
 # Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION="${KAFKA_VERSION:-1.1.0}"
-ARG KAFKA_VERSION_4SR="1.0.0"
-ARG KAFKA_LVERSION="${KAFKA_LVERSION:-${KAFKA_VERSION}-L0}"
-ARG KAFKA_URL="${KAFKA_URL:-${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz}"
+ARG KAFKA_VERSION=1.1.0
+ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
+ARG KAFKA_URL="https://archive.landoop.com/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz"
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && tar --no-same-owner -xzf /opt/kafka.tar.gz -C /opt \
@@ -59,52 +58,50 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 # Add connectors/
 #################
 
-# # Add Stream Reactor and needed components
-# ARG STREAM_REACTOR_VERSION=1.0.0
-# ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
-# ARG ELASTICSEARCH_2X_VERSION=2.4.6
-# ARG ACTIVEMQ_VERSION=5.12.3
-# ARG CALCITE_LINQ4J_VERSION=1.12.0
+# Add Stream Reactor and needed components
+ARG STREAM_REACTOR_VERSION=1.1.0
+ARG KAFKA_VERSION_4SR=1.1.0
+ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
+ARG ELASTICSEARCH_2X_VERSION=2.4.6
+ARG ACTIVEMQ_VERSION=5.12.3
+ARG CALCITE_LINQ4J_VERSION=1.12.0
 
-# RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
-#     && mkdir -p /opt/landoop/connectors/stream-reactor \
-#     && tar -xf /stream-reactor.tar.gz \
-#            --no-same-owner \
-#            --strip-components=1 \
-#            -C /opt/landoop/connectors/stream-reactor \
-#     && rm /stream-reactor.tar.gz \
-#     && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ELASTICSEARCH_2X_VERSION}/elasticsearch-${ELASTICSEARCH_2X_VERSION}.tar.gz \
-#             -O /elasticsearch.tar.gz \
-#     && mkdir /elasticsearch \
-#     && tar -xf /elasticsearch.tar.gz \
-#            --no-same-owner \
-#            --strip-components=1 \
-#            -C /elasticsearch \
-#     && mv /elasticsearch/lib/*.jar /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/ \
-#     && rm -rf /elasticsearch* \
-#     && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
-#             -P /opt/landoop/connectors/stream-reactor/kafka-connect-jms \
-#     && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
-#             -O /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
-#     && for path in /opt/landoop/connectors/stream-reactor/kafka-connect-*; do \
-#           cp /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar $path/; \
-#        done \
-#     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
-#     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-#     && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+20 " | awk '{print $2}' ); do \
-#          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
-#          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
-#        done \
-#     && for file in $(find /opt/landoop/kafka/share/java/{kafka,landoop-common} -maxdepth 1 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+2 " | awk '{print $2}' ); do \
-#          echo "Removing duplicate /opt/landoop/kafka/share/java/landoop-common/$file."; \
-#          rm -f /opt/landoop/kafka/share/java/landoop-common/$file; \
-#        done \
-#     && rm -f /opt/landoop/connectors/stream-reactor/*/*{javadoc,scaladoc,sources}.jar \
-#     && echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
-#             >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
-RUN echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
-       >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
-    && mkdir -p /opt/landoop/connectors/stream-reactor
+RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
+    && mkdir -p /opt/landoop/connectors/stream-reactor \
+    && tar -xf /stream-reactor.tar.gz \
+           --no-same-owner \
+           --strip-components=1 \
+           -C /opt/landoop/connectors/stream-reactor \
+    && rm /stream-reactor.tar.gz \
+    && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ELASTICSEARCH_2X_VERSION}/elasticsearch-${ELASTICSEARCH_2X_VERSION}.tar.gz \
+            -O /elasticsearch.tar.gz \
+    && mkdir /elasticsearch \
+    && tar -xf /elasticsearch.tar.gz \
+           --no-same-owner \
+           --strip-components=1 \
+           -C /elasticsearch \
+    && mv /elasticsearch/lib/*.jar /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/ \
+    && rm -rf /elasticsearch* \
+    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
+            -P /opt/landoop/connectors/stream-reactor/kafka-connect-jms \
+    && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
+            -O /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
+    && for path in /opt/landoop/connectors/stream-reactor/kafka-connect-*; do \
+          cp /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar $path/; \
+       done \
+    && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
+    && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+20 " | awk '{print $2}' ); do \
+         cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
+         rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
+       done \
+    && for file in $(find /opt/landoop/kafka/share/java/{kafka,landoop-common} -maxdepth 1 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+2 " | awk '{print $2}' ); do \
+         echo "Removing duplicate /opt/landoop/kafka/share/java/landoop-common/$file."; \
+         rm -f /opt/landoop/kafka/share/java/landoop-common/$file; \
+       done \
+    && rm -f /opt/landoop/connectors/stream-reactor/*/*{javadoc,scaladoc,sources}.jar \
+    && echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
+            >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 # Add Third Party Connectors
 
@@ -199,7 +196,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
 ############
 
 # Add Coyote
-ARG COYOTE_VERSION=1.2
+ARG COYOTE_VERSION=1.4
 ARG COYOTE_URL="https://github.com/Landoop/coyote/releases/download/v${COYOTE_VERSION}/coyote-${COYOTE_VERSION}"
 RUN mkdir -p /opt/landoop/tools/bin/win \
              /opt/landoop/tools/bin/mac \
@@ -366,11 +363,18 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.0/lenses-2.0.3-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.0/lenses-2.0.9-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
     && rm /lenses.tgz
+
+# Add Lenses CLI
+ARG LC_VERSION="2.0.3"
+ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+RUN wget "$LC_URL" -O /lenses-cli.tgz \
+    && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
+    && rm -f /lenses-cli.tgz
 
 # Add cc_payments generator
 RUN wget https://archive.landoop.com/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
@@ -414,14 +418,15 @@ ARG BUILD_BRANCH
 ARG BUILD_COMMIT
 ARG BUILD_TIME
 ARG DOCKER_REPO=local
-RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"      | tee /build.info \
-    && echo "BUILD_COMMIT=${BUILD_COMMIT}"   | tee -a /build.info \
-    && echo "BUILD_TIME=${BUILD_TIME}"       | tee -a /build.info \
-    && echo "DOCKER_REPO=${DOCKER_REPO}"     | tee -a /build.info \
-    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export //' | tee -a /build.info \
-    && sed -e 's/^/FDD_/' /opt/landoop/build.info | tee -a /build.info
+RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
+    && echo "BUILD_COMMIT=${BUILD_COMMIT}" | tee -a /build.info \
+    && echo "BUILD_TIME=${BUILD_TIME}"     | tee -a /build.info \
+    && echo "DOCKER_REPO=${DOCKER_REPO}"   | tee -a /build.info \
+    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && echo "FDD_LENSES_CLI_VERSION=${LC_VERSION}" | tee -a /build.info \
+    && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

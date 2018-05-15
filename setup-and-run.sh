@@ -42,7 +42,7 @@ CONNECT_HEAP=${CONNECT_HEAP:-}
 WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
 export RUNTESTS=${RUNTESTS:-0}
-export BROWSECONFIGS=${BROWSECONFIGS:-0}
+export BROWSECONFIGS=${BROWSECONFIGS:-1}
 export SUPERVISORWEB=${SUPERVISORWEB:-0}
 export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
 export TELEMETRY=${TELEMETRY:-}
@@ -264,6 +264,7 @@ if [[ ! -z $PASSWORD ]]; then
 fi
 # If BROWSECONFIGS, expose configs under /config
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
+    rm -f /var/www/config
     ln -s /var/run /var/www/config
     echo "browse /fdd/config" >> /var/run/caddy/Caddyfile
     sed -e 's/browseconfigs/"enabled" : true/' -i /var/www/env.js
@@ -295,6 +296,8 @@ else
     sed -e 's/supervisorweb/"enabled" : false/' -i  /var/www/env.js
 fi
 
+# Cleanup previous starts
+rm -f /var/run/connect/connectors/{stream-reactor,third-party}/*
 # Disable Connectors
 OLD_IFS=$IFS
 IFS=,
@@ -509,7 +512,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
+echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $FDD_LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/dev/lenses-box/ \e[39m"
@@ -567,6 +570,7 @@ mkdir -p /var/run/lenses/logs
 chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
+rm -rf /var/www-lenses
 mkdir /var/www-lenses
 ln -s /var/www /var/www-lenses/fdd
 echo "}" >> /var/run/caddy/Caddyfile

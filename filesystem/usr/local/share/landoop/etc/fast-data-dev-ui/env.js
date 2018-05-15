@@ -1,6 +1,6 @@
 var runningServices = [
   {
-    "name" : "Landoop Lenses $LENSES_VERSION",
+    "name" : "Landoop Lenses $FDD_LENSES_VERSION",
     "description": "Enterprise grade product that provides faster streaming application deliveries and data flow management that natively integrates."
   },
   {
