@@ -369,7 +369,7 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && rm /lenses.tgz
 
 # Add Lenses CLI
-ARG LC_VERSION="2.0.3"
+ARG LC_VERSION="2.0.6"
 ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
