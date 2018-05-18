@@ -211,7 +211,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_lenses_variable "$var" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Lenses conf config found at '$CONFIG'. We won't process variables."
 fi
@@ -225,7 +225,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_lenses_variable "$var" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Lenses security conf config found at '$CONFIG'. We won't process variables."
 fi
