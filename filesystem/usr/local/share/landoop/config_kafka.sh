@@ -6,7 +6,7 @@ function process_variable {
     # Try to detect some envs set by kubernetes and/or docker link and skip them.
     if [[ $var =~ [^=]+TCP_(PORT|ADDR).* ]] \
            || [[ $var =~ [^=]+_[0-9]{1,5}_(TCP|UDP).* ]] \
-           || [[ $var =~ [^=]+_SERVICE_PORT.* ]]; then
+           || [[ $var =~ [^=]+_SERVICE_(PORT|HOST).* ]]; then
         echo "Skipping variable probably set by container supervisor: $var"
         return
     fi
@@ -124,6 +124,7 @@ if [[ ! -f "$CONFIG" ]]; then
     printenv \
         | grep -E "^KAFKA_" \
         | grep -vE "^KAFKA_(REST|CONNECT)_" \
+        | grep -vE "KAFKA_PORT" \
         | sed -e 's/=.*//' \
         | while read var
     do
