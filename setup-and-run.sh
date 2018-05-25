@@ -337,7 +337,7 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
     else
         echo -e "\e[92mCreating CA and key-cert pairs.\e[34m"
         {
-            mkdir /tmp/certs
+            mkdir -p /tmp/certs
             pushd /tmp/certs
             # Create Landoop Fast Data Dev CA
             quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
