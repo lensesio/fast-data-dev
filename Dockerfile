@@ -91,7 +91,7 @@ RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+20 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
@@ -196,7 +196,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
 ############
 
 # Add Coyote
-ARG COYOTE_VERSION=1.4
+ARG COYOTE_VERSION=1.5
 ARG COYOTE_URL="https://github.com/Landoop/coyote/releases/download/v${COYOTE_VERSION}/coyote-${COYOTE_VERSION}"
 RUN mkdir -p /opt/landoop/tools/bin/win \
              /opt/landoop/tools/bin/mac \
@@ -363,14 +363,14 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.0/lenses-2.0.9-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.0/lenses-2.0.10-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
     && rm /lenses.tgz
 
 # Add Lenses CLI
-ARG LC_VERSION="2.0.3"
+ARG LC_VERSION="2.0.9"
 ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \

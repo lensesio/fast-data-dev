@@ -6,7 +6,7 @@ function process_variable {
     # Try to detect some envs set by kubernetes and/or docker link and skip them.
     if [[ $var =~ [^=]+TCP_(PORT|ADDR).* ]] \
            || [[ $var =~ [^=]+_[0-9]{1,5}_(TCP|UDP).* ]] \
-           || [[ $var =~ [^=]+_SERVICE_PORT.* ]]; then
+           || [[ $var =~ [^=]+_SERVICE_(PORT|HOST).* ]]; then
         echo "Skipping variable probably set by container supervisor: $var"
         return
     fi
@@ -124,13 +124,14 @@ if [[ ! -f "$CONFIG" ]]; then
     printenv \
         | grep -E "^KAFKA_" \
         | grep -vE "^KAFKA_(REST|CONNECT)_" \
+        | grep -vE "KAFKA_PORT" \
         | sed -e 's/=.*//' \
         | while read var
     do
         process_variable "$var" "KAFKA_" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Broker config found at '$CONFIG'. We won't process variables."
 fi
@@ -146,7 +147,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_variable "$var" "CONNECT_" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Connect worker config found at '$CONFIG'. We won't process variables."
 fi
@@ -162,7 +163,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_variable "$var" "SCHEMA_REGISTRY_" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Schema registry config found at '$CONFIG'. We won't process variables."
 fi
@@ -178,7 +179,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_variable "$var" "KAFKA_REST_" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "REST Proxy config found at '$CONFIG'. We won't process variables."
 fi
@@ -194,7 +195,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_variable "$var" "ZOOKEEPER_" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Zookeeper config found at '$CONFIG'. We won't process variables."
 fi
@@ -211,7 +212,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_lenses_variable "$var" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Lenses conf config found at '$CONFIG'. We won't process variables."
 fi
@@ -225,7 +226,7 @@ if [[ ! -f "$CONFIG" ]]; then
         process_lenses_variable "$var" "$CONFIG"
     done
     # Clean empty variables
-    sed -e '/^[^=]*=$/d' -i "$CONFIG"
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
 else
     echo "Lenses security conf config found at '$CONFIG'. We won't process variables."
 fi
