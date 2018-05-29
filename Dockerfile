@@ -15,10 +15,10 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /
 
 # Login args for development archives
-ARG DEVARCH_USER=${DEVARCH_USER:-}
-ARG DEVARCH_PASS=${DEVARCH_PASS:-}
-ARG ARCHIVE_SERVER=${ARCHIVE_SERVER:-https://archive.landoop.com}
-ARG LKD_VERSION=${LKD_VERSION:-1.1.0}
+ARG DEVARCH_USER
+ARG DEVARCH_PASS
+ARG ARCHIVE_SERVER=https://archive.landoop.com
+ARG LKD_VERSION=1.1.0
 
 ############
 # Add kafka/
@@ -66,7 +66,7 @@ ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
 ARG CALCITE_LINQ4J_VERSION=1.12.0
 
-RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
+RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
     && mkdir -p /opt/landoop/connectors/stream-reactor \
     && tar -xf /stream-reactor.tar.gz \
            --no-same-owner \
@@ -91,7 +91,7 @@ RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -v scala-logging | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
