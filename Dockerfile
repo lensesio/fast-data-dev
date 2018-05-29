@@ -90,7 +90,7 @@ RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+20 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
