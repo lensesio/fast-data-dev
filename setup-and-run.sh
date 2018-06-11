@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-set -e
-set -u
+set -o errexit
+set -o nounset
 set -o pipefail
 
 TRUE_REG='^([tT][rR][uU][eE]|[yY]|[yY][eE][sS]|1)$'
