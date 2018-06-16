@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-set -e
-set -u
+set -o errexit
+set -o nounset
 set -o pipefail
 
 TRUE_REG='^([tT][rR][uU][eE]|[yY]|[yY][eE][sS]|1)$'
@@ -47,6 +47,7 @@ export SUPERVISORWEB=${SUPERVISORWEB:-0}
 export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
 export TELEMETRY=${TELEMETRY:-}
 export USER=${USER:-admin}
+export DEBUG_AUTH=${DEBUG_AUTH:-0}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
@@ -383,7 +384,7 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
             if [[ ! -z $SSL_EXTRA_HOSTS ]]; then SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"; fi
 
             # Create Key-Certificate pairs for Kafka and user
-            for cert in kafka client; do
+            for cert in kafka client1 client2; do
                 quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
 
                 openssl pkcs12 -export \
@@ -411,32 +412,48 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
                     -file lfddca.crt.pem \
                     -storepass fastdata
 
-            cat <<EOF >>/var/run/broker/server.properties
-ssl.client.auth=required
-ssl.key.password=fastdata
-ssl.keystore.location=$PWD/kafka.jks
-ssl.keystore.password=fastdata
-ssl.truststore.location=$PWD/truststore.jks
-ssl.truststore.password=fastdata
-ssl.protocol=TLS
-ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
-ssl.keystore.type=JKS
-ssl.truststore.type=JKS
-EOF
-            sed -r -e "s|^(listeners=.*)|\1,SSL://:${BROKER_SSL_PORT}|" \
-                -i /var/run/broker/server.properties
-            if [[ -n ${ADV_HOST} ]] && [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
-                sed -r \
-                    -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
-                    -i /var/run/broker/server.properties
-            fi
-
             mkdir -p /var/www/certs/
             cp client.jks truststore.jks /var/www/certs/
 
             popd
         } >/var/log/ssl-setup.log 2>&1
     fi
+    # Setup the broker with SSL
+    cat <<EOF >>/var/run/broker/server.properties
+ssl.client.auth=required
+ssl.key.password=fastdata
+ssl.keystore.location=/tmp/certs/kafka.jks
+ssl.keystore.password=fastdata
+ssl.truststore.location=/tmp/certs/truststore.jks
+ssl.truststore.password=fastdata
+ssl.protocol=TLS
+ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
+ssl.keystore.type=JKS
+ssl.truststore.type=JKS
+EOF
+    sed -r -e "s|^(listeners=.*)|\1,SSL://:${BROKER_SSL_PORT}|" \
+        -i /var/run/broker/server.properties
+    if [[ -n ${ADV_HOST} ]] && [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
+        sed -r \
+            -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
+            -i /var/run/broker/server.properties
+    fi
+
+    # Log authorization requests
+    if [[ $DEBUG_AUTH =~ $TRUE_REG ]]; then
+        touch /var/log/kafka-authorizer.log
+        chmod 666 /var/log/kafka-authorizer.log
+        cat <<EOF >> /var/run/broker/log4j.properties
+log4j.appender.authorizerAppender=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.authorizerAppender.DatePattern='.'yyyy-MM-dd-HH
+log4j.appender.authorizerAppender.File=/var/log/kafka-authorizer.log
+log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
+log4j.logger.kafka.authorizer.logger=INFO, authorizerAppender
+log4j.additivity.kafka.authorizer.logger=false
+EOF
+    fi
+
     sed -e 's/ssl_browse/"enabled" : true/' -i /var/www/env.js
 else
     sed -r -e "s|$BROKER_SSL_PORT||" -i /var/www/env.js

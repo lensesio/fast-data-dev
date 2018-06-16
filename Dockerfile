@@ -169,11 +169,11 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate 
             -O /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.7.2
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.7.4
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.7.2
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.7.4
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.7.2
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.7.4
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
@@ -212,7 +212,7 @@ ARG KAFKA_TOPICS_UI_VERSION=0.9.3
 ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v${KAFKA_TOPICS_UI_VERSION}/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
 ARG SCHEMA_REGISTRY_UI_VERSION=0.9.4
 ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
-ARG KAFKA_CONNECT_UI_VERSION=0.9.4
+ARG KAFKA_CONNECT_UI_VERSION=0.9.5
 ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
 RUN mkdir -p /opt/landoop/tools/share/kafka-topics-ui/ \
              /opt/landoop/tools/share/schema-registry-ui/ \
@@ -388,6 +388,15 @@ RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
 
 # Create system symlinks to Kafka binaries
 RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+
+# Add kafka ssl principal builder
+RUN wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
+         -P /opt/landoop/kafka/share/java/kafka \
+    && mkdir -p /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
+    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/LICENSE \
+         -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
+    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/README.md \
+         -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder
 
 # Setup Kafka Topics UI, Schema Registry UI, Kafka Connect UI
 RUN mkdir -p \
