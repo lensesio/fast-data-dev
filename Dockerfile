@@ -371,6 +371,15 @@ RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
 # Create system symlinks to Kafka binaries
 RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
+# Add kafka ssl principal builder
+RUN wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
+         -P /opt/landoop/kafka/share/java/kafka \
+    && mkdir -p /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
+    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/LICENSE \
+         -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
+    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/README.md \
+         -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder
+
 # Setup Kafka Topics UI, Schema Registry UI, Kafka Connect UI
 RUN mkdir -p \
       /var/www/kafka-topics-ui \
