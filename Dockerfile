@@ -79,6 +79,7 @@ RUN wget "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
            --no-same-owner \
            --strip-components=1 \
            -C /elasticsearch \
+    && rm -f /elasticsearch/lib/apache-log4j-extras* \
     && mv /elasticsearch/lib/*.jar /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/ \
     && rm -rf /elasticsearch* \
     && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
