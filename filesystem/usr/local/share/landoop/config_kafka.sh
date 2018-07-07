@@ -11,9 +11,9 @@ function process_variable {
         return
     fi
 
-    # If _OPTS, export them
+    # If _OPTS they are already exported, so continue
     if [[ $var =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
-        export "${var}"="${!var}"
+        # export "${var}"="${!var}"
         return
     fi
 
@@ -44,7 +44,7 @@ function process_variable {
 # We just add the configuration envs from setup.sh inside this.
 function process_lenses_variable {
     #### not originally part of the function
-    local OPTS_JVM="LENSES_OPTS LENSES_HEAP_OPTS LENSES_JMX_OPTS LENSES_LOG4J_OPTS LENSES_PERFORMANCE_OPTS"
+    local OPTS_JVM="LENSES_OPTS LENSES_HEAP_OPTS LENSES_JMX_OPTS LENSES_LOG4J_OPTS LENSES_PERFORMANCE_OPTS LENSES_SERDE_CLASSPATH_OPTS"
     local OPTS_NEEDQUOTE="LENSES_LICENSE_FILE LENSES_KAFKA_BROKERS"
     local OPTS_NEEDQUOTE="$OPTS_NEEDQUOTE LENSES_GRAFANA LENSES_JMX_BROKERS LENSES_JMX_SCHEMA_REGISTRY LENSES_JMX_ZOOKEEPERS"
     local OPTS_NEEDQUOTE="$OPTS_NEEDQUOTE LENSES_ACCESS_CONTROL_ALLOW_METHODS LENSES_ACCESS_CONTROL_ALLOW_ORIGIN"
@@ -77,6 +77,12 @@ function process_lenses_variable {
     conf="${var,,}"
     # Convert underscores in var name to stops
     conf="${conf//_/.}"
+
+    # If _OPTS, they are already exported, so continue
+    if [[ "OPTS_JVM" =~ " $var " ]]; then
+        # export "${var}"="${!var}"
+        return 0
+    fi
 
     # If setting needs to be quoted, write with quotes
     if [[ "$OPTS_NEEDQUOTE" =~ " $var " ]]; then
