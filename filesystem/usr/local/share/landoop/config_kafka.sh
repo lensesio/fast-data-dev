@@ -11,9 +11,9 @@ function process_variable {
         return
     fi
 
-    # If _OPTS, export them
+    # If _OPTS they are already exported, so continue
     if [[ $var =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
-        export "${var}"="${!var}"
+        # export "${var}"="${!var}"
         return
     fi
 
