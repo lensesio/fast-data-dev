@@ -363,7 +363,7 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.0/lenses-2.0.13-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.1/lenses-2.1.0-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
@@ -372,8 +372,8 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
 # Add Lenses CLI
 ARG CAD_UN
 ARG CAD_PW
-ARG LC_VERSION="2.0.13"
-ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+ARG LC_VERSION="2.0.99"
+ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.1/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
     && rm -f /lenses-cli.tgz
