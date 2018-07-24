@@ -347,7 +347,7 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
             if [[ ! -z $SSL_EXTRA_HOSTS ]]; then SSL_HOSTS="$SSL_HOSTS,$SSL_EXTRA_HOSTS"; fi
 
             # Create Key-Certificate pairs for Kafka and user
-            for cert in kafka client1 client2; do
+            for cert in kafka client clientA clientB; do
                 quickcert -cacert lfddca.crt.pem -cakey lfddca.key.pem -out $cert. -CN "$cert" -hosts "$SSL_HOSTS" -duration 3650
 
                 openssl pkcs12 -export \
@@ -376,7 +376,7 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
                     -storepass fastdata
 
             mkdir -p /var/www/certs/
-            cp client.jks truststore.jks /var/www/certs/
+            cp client.jks clientA.jks clientB.jks truststore.jks /var/www/certs/
 
             popd
         } >/var/log/ssl-setup.log 2>&1
