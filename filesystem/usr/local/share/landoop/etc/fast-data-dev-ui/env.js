@@ -72,22 +72,22 @@ var servicesInfo = [
 
 var exposedDirectories = [
   {
-    "name" : "• SSL certificates",
+    "name" : "SSL certificates",
     "url" : "/fdd/certs",
     ssl_browse
   },
   {
-    "name" : "• Configuration",
+    "name" : "Configuration",
     "url"  : "/fdd/config",
     browseconfigs
   },
   {
-    "name" : "• Supervisor",
+    "name" : "Supervisor",
     "url" : "http://localhost:$SUPERVISORWEB_PORT",
     supervisorweb
   },
   {
-    "name" : "• Logs",
+    "name" : "Logs",
     "url" : "/fdd/logs",
     "enabled" : true
   }
