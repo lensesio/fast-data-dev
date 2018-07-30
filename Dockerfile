@@ -240,6 +240,10 @@ RUN mkdir -p /opt/landoop/tools/share/kafka-autocomplete \
     && wget "$KAFKA_AUTOCOMPLETE_URL" \
             -O /opt/landoop/tools/share/bash-completion/completions/kafka
 
+# Enable jline for Zookeeper
+RUN TJLINE="$(find /opt/landoop/kafka -name "jline-0*.jar" | head -n1)" \
+    && if [[ -n $TJLINE ]]; then sed "s|^exec.*|export CLASSPATH=\"\$CLASSPATH:$TJLINE\"\n&|" -i /opt/landoop/kafka/bin/zookeeper-shell; fi
+
 # Add normcat
 ARG NORMCAT_VERSION=1.1.1
 ARG NORMCAT_URL="https://github.com/andmarios/normcat/releases/download/${NORMCAT_VERSION}/normcat-${NORMCAT_VERSION}"
