@@ -6,19 +6,20 @@ alias ls='ls --color=auto'
 # set env variables and set defaults
 WEB_PORT=${WEB_PORT:-3030}
 ZK_PORT=${ZK_PORT:-2181}
-DEBUG=${DEBUG:-0}
+USER=${USER:-admin}
+LEN_PASSWORD=${PASSWORD:-admin}
 
 # check the status of zookeeper to provided $ZK_PORT
 ZK_STATUS="$(echo ruok | nc localhost $ZK_PORT | grep imok)"
 
 # Preconfigure lenses-cli
-for ((i=0;i<60;i++)); do
-    sleep 1
-    if [[  -n "$ZK_STATUS" ]]; then
-        if [[ ! -f $HOME/.lenses/lenses-cli.yml ]] && [[ -n $USER ]] && [[ -n $PASSWORD ]]; then
-            echo -e "lenses-cli configured"
-            lenses-cli configure --debug=$DEBUG --user=$USER  --pass=$PASSWORD --host=http://127.0.0.1:${WEB_PORT}
+if echo ruok | nc localhost $ZK_PORT | grep -sq imok; then
+        if [[ ! -f $HOME/.lenses/lenses-cli.yml ]]; then
+            echo -e "First login. Configuring lenses-cli."
+            lenses-cli configure \
+                       --user="$USER" \
+                       --pass="$LEN_PASSWORD" \
+                       --default-location \
+                       --host=http://127.0.0.1:${WEB_PORT}
         fi
-        break
-    fi
-done
+fi
