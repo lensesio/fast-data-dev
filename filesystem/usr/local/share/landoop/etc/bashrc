@@ -9,9 +9,6 @@ ZK_PORT=${ZK_PORT:-2181}
 USER=${USER:-admin}
 LEN_PASSWORD=${PASSWORD:-admin}
 
-# check the status of zookeeper to provided $ZK_PORT
-ZK_STATUS="$(echo ruok | nc localhost $ZK_PORT | grep imok)"
-
 # Preconfigure lenses-cli
 if echo ruok | nc localhost $ZK_PORT | grep -sq imok; then
         if [[ ! -f $HOME/.lenses/lenses-cli.yml ]]; then
