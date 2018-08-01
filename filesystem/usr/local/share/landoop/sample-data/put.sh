@@ -4,7 +4,7 @@
 source variables.env
 
 # Create Topics
-for key in 0 1 2 3 4 5; do
+for key in 0 1 2 3 4 5 6; do
     # Create topic with x partitions and a retention time of 10 years.
     kafka-topics \
         --zookeeper localhost:${ZK_PORT} \
@@ -50,4 +50,13 @@ for key in 3; do
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property "key.separator=#"
+done
+
+# Insert non-avro data without keys
+# shellcheck disable=SC2043
+for key in 6; do
+    /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
+        kafka-console-producer \
+            --broker-list localhost:${BROKER_PORT} \
+            --topic "${TOPICS[key]}"
 done
