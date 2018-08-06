@@ -27,8 +27,6 @@ for ((i=0;i<30;i++)); do
     sleep 5
     lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://127.0.0.1:$LENSES_PORT topics | grep -sq "${TOPICS[key]}" && { sleep 5; break; };
 done
-# Sleep for Lenses to read the topic
-sleep 15
 # Set Lenses to recognize topic as CSV
 lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://127.0.0.1:$LENSES_PORT \
            topics metadata set --name="financial_tweets" --key-type="BYTES" --value-type="CSV"
