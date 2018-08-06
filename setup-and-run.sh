@@ -583,7 +583,7 @@ elif [[ ! -z $EULA ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
         exit 1
     fi
-    set -o errexit
+    if [[ $STRICT_SCRIPT =~ $TRUE_REG ]]; then set -o errexit; fi
 elif [[ -f $LENSES_LICENSE_FILE ]]; then
     echo
 else
