@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-
 TRUE_REG='^([tT][rR][uU][eE]|[yY]|[yY][eE][sS]|1)$'
 FALSE_REG='^([fF][aA][lL][sS][eE]|[nN]|[nN][oO]|0)$'
 
 DEBUG_SCRIPT=${DEBUG_SCRIPT:-false}
-if [[ $DEBUG_SCRIPT =~ $TRUE_REG ]]; then set -x; fi
+if [[ $DEBUG_SCRIPT =~ $TRUE_REG ]]; then
+    set -o xtrace
+    printenv
+fi
+
+STRICT_SCRIPT=${STRICT_SCRIPT:-true}
+if [[ $STRICT_SCRIPT =~ $TRUE_REG ]]; then
+    set -o errexit
+    set -o nounset
+    set -o pipefail
+fi
 
 # Default values
 export ZK_PORT=${ZK_PORT:-2181}
@@ -464,7 +470,7 @@ fi
 # Check for Available RAM
 set +o errexit
 RAKB="$(grep MemA /proc/meminfo | sed -r -e 's/.* ([0-9]+) kB/\1/')"
-set -o errexit
+if [[ $STRICT_SCRIPT =~ $TRUE_REG ]]; then set -o errexit; fi
 if [[ -z "$RAKB" ]]; then
         echo -e "\e[91mCould not detect available RAM, probably due to very old Linux Kernel."
         echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m4096 MiB\e[91m RAM available for fast-data-dev.\e[39m"
