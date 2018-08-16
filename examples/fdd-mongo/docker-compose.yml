@@ -1,25 +1,18 @@
 version: '2'
 services:
   lenses-dev:
-    image: landoop/kafka-lenses-dev
+    image: landoop/kafka-lenses-dev:latest
     ports:
       - "3030:3030"
-      - "9092:9092"
-      - "2181:2181" 
-      - "8081:8081" 
-      - "9581:9581"
-      - "9582:9582" 
-      - "9584:9584"
-      - "9585:9585"
     depends_on:
       - mongo
     environment:
+      - ADV_HOST=lenses-dev
       - CONNECTORS=mongodb
       - DISABLE=azure-documentdb, blockchain, bloomberg, cassandra, coap, druid, elastic, elastic5, ftp, hazelcast, hbase, influxdb, jms, kudu, mqtt, pulsar, redis, rethink, voltdb, couchbase, dbvisitreplicate, debezium-mongodb, debezium-mysql, debezium-postgres, elasticsearch, hdfs, jdbc, s3, twitter
+      - FORWARDLOGS=0
+      - RUNNING_SAMPLEDATA=1
       - RUNTESTS=0
-      - SAMPLEDATA=0
 
   mongo:
     image: mongo
-    ports:
-      - "27017:27017"
