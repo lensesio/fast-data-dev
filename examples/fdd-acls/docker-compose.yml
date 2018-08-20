@@ -4,16 +4,11 @@ services:
     image: landoop/kafka-lenses-dev
     ports:
       - "3030:3030"
-      - "9093:9093"
+      - "2181:2181"
       - "9092:9092"
-      - "2181:2181" 
-      - "8081:8081" 
-      - "9581:9581"
-      - "9582:9582" 
-      - "9584:9584"
-      - "9585:9585"
+      - "9093:9093"
+      - "8081:8081"
     environment:
-      - RUNTESTS=0
       - SAMPLEDATA=0
       - ENABLE_SSL=1
       - KAFKA_AUTHORIZER_CLASS_NAME=kafka.security.auth.SimpleAclAuthorizer
@@ -33,3 +28,4 @@ services:
       - LENSES_KAFKA_SETTINGS_PRODUCER_SSL_KEYSTORE_LOCATION=/tmp/certs/kafka.jks
       - LENSES_KAFKA_SETTINGS_PRODUCER_SSL_KEYSTORE_PASSWORD=fastdata
       - LENSES_KAFKA_SETTINGS_PRODUCER_SSL_KEY_PASSWORD=fastdata
+      - EULA=https://dl.lenses.stream/d/?id=<YOUR-LICENSE-KEY>
