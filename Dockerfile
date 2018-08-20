@@ -92,7 +92,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -v scala-logging | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common" | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
