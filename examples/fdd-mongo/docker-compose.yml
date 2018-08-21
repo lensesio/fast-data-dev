@@ -1,0 +1,23 @@
+version: '2'
+services:
+  lenses-dev:
+    image: landoop/kafka-lenses-dev:latest
+    ports:
+      - 3030:3030
+    depends_on:
+      - mongo
+    environment:
+      - CONNECTORS=mongodb
+      - FORWARDLOGS=0
+      - SAMPLEDATA=1
+      - EULA=https://dl.lenses.stream/d/?id=<YOUR-LICENSE-KEY>
+
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+
+  mongo:
+    image: mongo
