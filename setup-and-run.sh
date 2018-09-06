@@ -577,7 +577,8 @@ elif [[ ! -z $EULA ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
         exit 1
     fi
     set +o errexit
-    wget -q "$EULA" -O "$LENSES_LICENSE_FILE"
+    wget --user-agent="Lenses Box (Lenses $FDD_LENSES_VERSION; Kafka $FDD_KAFKA_VERSION; Commit: ${BUILD_COMMIT::8})" \
+         -q "$EULA" -O "$LENSES_LICENSE_FILE"
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
