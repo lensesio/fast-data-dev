@@ -218,7 +218,7 @@ ARG KAFKA_TOPICS_UI_VERSION=0.9.4
 ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v${KAFKA_TOPICS_UI_VERSION}/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
 ARG SCHEMA_REGISTRY_UI_VERSION=0.9.5
 ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
-ARG KAFKA_CONNECT_UI_VERSION=0.9.5
+ARG KAFKA_CONNECT_UI_VERSION=0.9.6
 ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
 RUN mkdir -p /opt/landoop/tools/share/kafka-topics-ui/ \
              /opt/landoop/tools/share/schema-registry-ui/ \
@@ -374,7 +374,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.1/lenses-2.1.5-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.1/lenses-2.1.6-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
