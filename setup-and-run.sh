@@ -595,8 +595,8 @@ else
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
 chown nobody:nobody "$LENSES_LICENSE_FILE"
-mkdir -p /var/run/lenses/logs
-chmod 777 /var/run/lenses/logs
+mkdir -p /var/run/lenses/{logs,storage}
+#chmod 777 /var/run/lenses/{logs,storage}
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
 rm -rf /var/www-lenses
