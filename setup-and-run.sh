@@ -144,6 +144,7 @@ LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",
 export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
 export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
+export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -187,9 +188,9 @@ mkdir -p \
       /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka} \
+      /data/{zookeeper,kafka,lsql-state-dir} \
       /var/run/lenses
-chmod 777 /data/{zookeeper,kafka}
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
