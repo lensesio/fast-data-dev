@@ -1,0 +1,9 @@
+The wait scripts are used by various services, in order to make sure we chain
+start them.  For example Schema Registry should start only when the Broker comes
+online. The Broker should start only when Zookeeper is operational. Connect
+should start after both Schema Registry and the Broker are operational, so we
+can just wait for Schema Registry.
+
+It is easy to add custom wait scripts or tweak the current ones if needed by
+setting the appropriate variables for each service. This functionality is
+provided for advanced setups, like creating clusters.
