@@ -54,6 +54,11 @@ export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
 export TELEMETRY=${TELEMETRY:-}
 export USER=${USER:-admin}
 export DEBUG_AUTH=${DEBUG_AUTH:-0}
+export WAIT_SCRIPT_BROKER=${WAIT_SCRIPT_BROKER:-/usr/local/share/landoop/wait-scripts/wait-for-zookeeper.sh}
+export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/landoop/wait-scripts/wait-for-kafka.sh}
+export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_LENSES=${WAIT_SCRIPT_LENSES:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
@@ -144,6 +149,7 @@ LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",
 export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
 export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
+export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -187,9 +193,9 @@ mkdir -p \
       /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka} \
+      /data/{zookeeper,kafka,lsql-state-dir} \
       /var/run/lenses
-chmod 777 /data/{zookeeper,kafka}
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
