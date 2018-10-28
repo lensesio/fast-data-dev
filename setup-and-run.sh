@@ -150,6 +150,7 @@ export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
 export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
 export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
+export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -193,7 +194,7 @@ mkdir -p \
       /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka,lsql-state-dir} \
+      /data/{zookeeper,kafka,lsql-state-dir,lenses} \
       /var/run/lenses
 chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
 
