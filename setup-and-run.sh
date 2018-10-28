@@ -142,7 +142,7 @@ export LENSES_CONNECT_CLUSTERS=${LENSES_CONNECT_CLUSTERS:-$LEN_CONNECT_CLUSTERS}
 export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
 export LENSES_SECURITY_MODE=${LENSES_SECURITY_MODE:-BASIC}
-LEN_SECURITY_GROUPS="[{\"name\":\"adminGroup\",\"roles\":[\"admin\",\"write\",\"read\"]}]"
+LEN_SECURITY_GROUPS="[{\"name\":\"adminGroup\",\"roles\":[\"admin\",\"write\",\"PIIWrite\",\"read\"]}]"
 export LENSES_SECURITY_GROUPS=${LENSES_SECURITY_GROUPS:-$LEN_SECURITY_GROUPS}
 export LEN_PASSWORD=${PASSWORD:-admin}
 LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",\"displayname\":\"Lenses Admin\",\"groups\":[\"adminGroup\"]}]"
@@ -150,6 +150,7 @@ export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
 export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
 export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
+export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -193,7 +194,7 @@ mkdir -p \
       /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka,lsql-state-dir} \
+      /data/{zookeeper,kafka,lsql-state-dir,lenses} \
       /var/run/lenses
 chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
 
@@ -600,8 +601,8 @@ else
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
 chown nobody:nobody "$LENSES_LICENSE_FILE"
-mkdir -p /var/run/lenses/logs
-chmod 777 /var/run/lenses/logs
+mkdir -p /var/run/lenses/{logs,storage}
+#chmod 777 /var/run/lenses/{logs,storage}
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
 rm -rf /var/www-lenses
