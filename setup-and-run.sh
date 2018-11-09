@@ -192,7 +192,7 @@ mkdir -p \
       /var/run/caddy \
       /data/{zookeeper,kafka,lsql-state-dir,lenses} \
       /var/run/lenses
-chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses}
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
