@@ -181,7 +181,10 @@ ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.7.4
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.7.4
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
-RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
+ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
+ARG KAFKA_CONNECT_SPLUNK="https://github.com/splunk/kafka-connect-splunk/releases/download/v$KAFKA_CONNECT_SPLUNK_VERSION/splunk-kafka-connect-v$KAFKA_CONNECT_SPLUNK_VERSION.jar"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,splunk} \
+    && wget "$KAFKA_CONNECT_SPLUNK" -O /opt/landoop/connectors/third-party/kafka-connect-splunk \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
     && tar -xf /debezium-mongodb.tgz \
            --owner=root --group=root --strip-components=1 \
