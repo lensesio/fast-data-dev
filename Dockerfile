@@ -184,7 +184,7 @@ ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?
 ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
 ARG KAFKA_CONNECT_SPLUNK="https://github.com/splunk/kafka-connect-splunk/releases/download/v$KAFKA_CONNECT_SPLUNK_VERSION/splunk-kafka-connect-v$KAFKA_CONNECT_SPLUNK_VERSION.jar"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,splunk} \
-    && wget "$KAFKA_CONNECT_SPLUNK" -O /opt/landoop/connectors/third-party/kafka-connect-splunk\splunk-kafka-connect-v$KAFKA_CONNECT_SPLUNK_VERSION.jar \
+    && wget "$KAFKA_CONNECT_SPLUNK" -O /opt/landoop/connectors/third-party/kafka-connect-splunk/splunk-kafka-connect-v$KAFKA_CONNECT_SPLUNK_VERSION.jar \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
     && tar -xf /debezium-mongodb.tgz \
            --owner=root --group=root --strip-components=1 \
