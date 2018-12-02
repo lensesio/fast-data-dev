@@ -326,15 +326,13 @@ RUN apk add --no-cache \
         gzip \
         jq \
         libstdc++ \
+        man \
         openjdk8-jre-base \
         openssl \
         sqlite \
         supervisor \
         tar \
         wget \
-        man \
-        man-pages \
-        util-linux \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /opt \
     && mkdir /extra-connect-jars /connectors \
@@ -454,15 +452,9 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info
 
 # Add man pages & README.txt
-ADD ./doc/share/lenses /usr/local/share/lenses
-RUN apk add man-pages \
-      && for file in $(ls /usr/local/share/lenses/); do \
-      case ${file##*.} in \
-      '1'|'5') ln -sf "/usr/local/share/lenses/${file}" \
-      "/usr/share/man/man${file##*.}/${file}";; \
-      'txt') ln -sf "/usr/local/share/lenses/${file}" \
-      "/root/${file}"; ln -sf "/usr/local/share/lenses/${file}" \
-      "/${file}";; esac; done
+ADD ./filesystem/usr/local/man /usr/local/share/
+RUN ln -sf "/usr/local/share/man" \
+    "/usr/share/man"
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
