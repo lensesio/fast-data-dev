@@ -453,6 +453,7 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
 
 # Add man pages & README.txt
 ADD ./filesystem/usr/local/man /usr/local/share/
+ADD ./filesystem/usr/local/README.txt /README.txt
 RUN ln -sf "/usr/local/share/man" \
     "/usr/share/man"
 
