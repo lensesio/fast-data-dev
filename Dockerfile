@@ -454,8 +454,6 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
 # Add man pages & README.txt
 ADD ./filesystem/usr/local/man /usr/local/share/
 ADD ./filesystem/usr/local/README.txt /README.txt
-RUN ln -sf "/usr/local/share/man" \
-    "/usr/share/man"
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

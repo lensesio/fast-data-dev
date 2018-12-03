@@ -55,7 +55,7 @@ Kafka Broker                : 9092        Default JMX: 9581
 ## Publishing ports to host
 ##
 In order to access the above services externally, you must first publish those ports to host,
-  Docler example:
+  Docker example:
     -p 3030:3030      # Webserver
     -p 9092:9092      # Kafka Broker
     ...
@@ -104,7 +104,6 @@ To change log verbosity, modify
   /run/lenses/logback.xml and wait about 30 sec for changes to take effect
 You can also use the pre-configured logback-debug.xml for debug purposes
   cp /opt/lenses/logback-debug.xml /run/lenses/logback.xml
-
 
 ##########################
 #  Viewing logs locally  #
