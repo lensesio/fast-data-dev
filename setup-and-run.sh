@@ -105,10 +105,6 @@ export CONNECT_ACCESS_CONTROL_ALLOW_METHODS=${CONNECT_ACCESS_CONTROL_ALLOW_METHO
 export CONNECT_ACCESS_CONTROL_ALLOW_ORIGIN=${CONNECT_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
 export CONNECT_PLUGIN_PATH=${CONNECT_PLUGIN_PATH:-/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors}
 export CONNECT_REST_PORT=${CONNECT_REST_PORT:-$CONNECT_PORT}
-export CONNECT_INTERNAL_KEY_CONVERTER=${CONNECT_INTERNAL_KEY_CONVERTER:-org.apache.kafka.connect.json.JsonConverter}
-export CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE:-false}
-export CONNECT_INTERNAL_VALUE_CONVERTER=${CONNECT_INTERNAL_VALUE_CONVERTER:-org.apache.kafka.connect.json.JsonConverter}
-export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE:-false}
 export CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC:-connect-configs}
 export CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC:-connect-offsets}
 export CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC:-connect-statuses}
@@ -142,7 +138,7 @@ export LENSES_CONNECT_CLUSTERS=${LENSES_CONNECT_CLUSTERS:-$LEN_CONNECT_CLUSTERS}
 export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
 export LENSES_SECURITY_MODE=${LENSES_SECURITY_MODE:-BASIC}
-LEN_SECURITY_GROUPS="[{\"name\":\"adminGroup\",\"roles\":[\"admin\",\"write\",\"read\"]}]"
+LEN_SECURITY_GROUPS='[{"name":"adminGroup","roles":["Admin", "DataPolicyWrite", "TableStorageWrite", "AlertsWrite"]}]'
 export LENSES_SECURITY_GROUPS=${LENSES_SECURITY_GROUPS:-$LEN_SECURITY_GROUPS}
 export LEN_PASSWORD=${PASSWORD:-admin}
 LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",\"displayname\":\"Lenses Admin\",\"groups\":[\"adminGroup\"]}]"
@@ -150,6 +146,7 @@ export LENSES_SECURITY_USERS=${LENSES_SECURITY_USERS:-$LEN_SECURITY_USERS}
 export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
 export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
+export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -193,9 +190,9 @@ mkdir -p \
       /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka,lsql-state-dir} \
+      /data/{zookeeper,kafka,lsql-state-dir,lenses} \
       /var/run/lenses
-chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses}
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
@@ -548,8 +545,9 @@ echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $FDD_LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
-echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/dev/lenses-box/ \e[39m"
+echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://docs.lenses.io/dev/lenses-box/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://gitter.im/Landoop/support \e[39m"
+echo -e "\e[92mYou can view the logs for all running services at \e[96mhttp://${PRINT_HOST}:${WEB_PORT}/fdd/logs \e[39m"
 export FDD_DHOST="http://${PRINT_HOST}:${WEB_PORT}"
 
 # Set sample data if needed
@@ -602,8 +600,8 @@ else
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
 chown nobody:nobody "$LENSES_LICENSE_FILE"
-mkdir -p /var/run/lenses/logs
-chmod 777 /var/run/lenses/logs
+mkdir -p /var/run/lenses/{logs,storage}
+#chmod 777 /var/run/lenses/{logs,storage}
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
 rm -rf /var/www-lenses

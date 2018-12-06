@@ -18,16 +18,16 @@ WORKDIR /
 ARG DEVARCH_USER
 ARG DEVARCH_PASS
 ARG ARCHIVE_SERVER=https://archive.landoop.com
-ARG LKD_VERSION=1.1.1
+ARG LKD_VERSION=2.0.1
 
 ############
 # Add kafka/
 ############
 
 # Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION=1.1.1
+ARG KAFKA_VERSION=2.0.1
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
-ARG KAFKA_URL="${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.11-${KAFKA_LVERSION}-lkd.tar.gz"
+ARG KAFKA_URL="${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.12-${KAFKA_LVERSION}-lkd.tar.gz"
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && tar --no-same-owner -xzf /opt/kafka.tar.gz -C /opt \
@@ -35,13 +35,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry and REST Proxy
-ARG REGISTRY_VERSION=4.1.2-lkd-r0
+ARG REGISTRY_VERSION=5.0.1-lkd-r0
 ARG REGISTRY_URL="${ARCHIVE_SERVER}/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
     && rm -rf /opt/registry.tar.gz
 
-ARG REST_VERSION=4.1.2-lkd-r0
+ARG REST_VERSION=5.0.1-lkd-r0
 ARG REST_URL="${ARCHIVE_SERVER}/lkd/packages/rest-proxy/rest-proxy-${REST_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
     && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
@@ -116,7 +116,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
 ## Kafka Connect JDBC
-ARG KAFKA_CONNECT_JDBC_VERSION=4.1.2-lkd-r0
+ARG KAFKA_CONNECT_JDBC_VERSION=5.0.1-lkd-r0
 ARG KAFKA_CONNECT_JDBC_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-jdbc/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
          -O /opt/kafka-connect-jdbc.tar.gz \
@@ -126,7 +126,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
     && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 ## Kafka Connect ELASTICSEARCH
-ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=4.1.2-lkd-r0
+ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=5.0.1-lkd-r0
 ARG KAFKA_CONNECT_ELASTICSEARCH_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-elasticsearch/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
          -O /opt/kafka-connect-elasticsearch.tar.gz \
@@ -136,7 +136,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
 
 ## Kafka Connect HDFS
-ARG KAFKA_CONNECT_HDFS_VERSION=4.1.2-lkd-r0
+ARG KAFKA_CONNECT_HDFS_VERSION=5.0.1-lkd-r0
 ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
          -O /opt/kafka-connect-hdfs.tar.gz \
@@ -146,7 +146,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
     && rm -rf /opt/kafka-connect-hdfs.tar.gz
 
 # Kafka Connect S3
-ARG KAFKA_CONNECT_S3_VERSION=4.1.2-lkd-r0
+ARG KAFKA_CONNECT_S3_VERSION=5.0.1-lkd-r0
 ARG KAFKA_CONNECT_S3_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-s3/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
          -O /opt/kafka-connect-s3.tar.gz \
@@ -374,7 +374,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.1/lenses-2.1.11-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.2/lenses-2.2.0-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
@@ -383,8 +383,8 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
 # Add Lenses CLI
 ARG CAD_UN
 ARG CAD_PW
-ARG LC_VERSION="2.1.9"
-ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.1/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+ARG LC_VERSION="2.2.0"
+ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.2/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
     && rm -f /lenses-cli.tgz
