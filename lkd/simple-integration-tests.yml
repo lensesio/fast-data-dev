@@ -66,9 +66,9 @@
     - name: Delete Avro Consumer (rest proxy, schema registry)
       command: curl -vs --stderr - -X DELETE "http://localhost:8082/consumers/coyote-avro/instances/a-consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
-    - name: Delete Consumer Group Info
-      command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote-avro
-      stdout_not_has: [ 'Error', 'failed' ]
+    # - name: Delete Consumer Group Info
+    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://localhost:9092 --delete --group coyote-avro
+    #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 5
       nolog: true
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-avro --delete
@@ -96,9 +96,9 @@
     - name: Delete JSON Consumer (rest proxy)
       command: curl -vs --stderr - -X DELETE "http://localhost:8082/consumers/coyote-json/instances/a-consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
-    - name: Delete Consumer Group Info
-      command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote-json
-      stdout_not_has: [ 'Error', 'failed' ]
+    # - name: Delete Consumer Group Info
+    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://localhost:9092 --delete --group coyote-json
+    #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 2
       nolog: true
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-json --delete
@@ -126,9 +126,9 @@
     - name: Delete Binary Consumer (rest proxy)
       command: curl -vs --stderr - -XDELETE "http://localhost:8082/consumers/coyote-binary/instances/a-consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
-    - name: Delete Consumer Group Info
-      command: kafka-consumer-groups  --zookeeper localhost:2181 --delete --group coyote-binary
-      stdout_not_has: [ 'Error', 'failed' ]
+    # - name: Delete Consumer Group Info
+    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://localhost:9092 --delete --group coyote-binary
+    #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 5
       nolog: true
     - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-binary --delete
@@ -200,8 +200,7 @@
     - name: "Run Console Consumer to fix Kafka's transient state (basic kafka)"
       command: |
         timeout 10
-        kafka-console-consumer --new-consumer
-                               --bootstrap-server localhost:9092
+        kafka-console-consumer --bootstrap-server localhost:9092
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
                                --timeout-ms 5000
@@ -209,8 +208,7 @@
     - name: Run Console Consumer (basic kafka)
       command: |
         timeout 10
-        kafka-console-consumer --new-consumer
-                               --bootstrap-server localhost:9092
+        kafka-console-consumer --bootstrap-server localhost:9092
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
                                --timeout-ms 5000
@@ -256,7 +254,6 @@
         internal.value.converter.schemas.enable=false
         offset.storage.file.filename=coyote_connect.offset
         offset.flush.interval.ms=5000
-        zookeeper=localhost:2181
         rest.port=38783
         port=38783
         plugin.path=/opt/landoop/connectors/third-party
@@ -268,8 +265,7 @@
     - name: Run Console Consumer (basic kafka)
       command: |
         timeout 10
-        kafka-console-consumer --new-consumer
-                               --bootstrap-server localhost:9092
+        kafka-console-consumer --bootstrap-server localhost:9092
                                --topic coyote-ca-accounts
                                --from-beginning
                                --timeout-ms 10000
