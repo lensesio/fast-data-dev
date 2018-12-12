@@ -69,7 +69,7 @@ source build.info
 export $(cut -d= -f1 /build.info)
 
 # Set env vars to configure Kafka
-export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-0}
+export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-101}
 export KAFKA_NUM_NETWORK_THREADS=${KAFKA_NUM_NETWORK_THREADS:-2}
 export KAFKA_NUM_IO_THREADS=${KAFKA_NUM_IO_THREADS:-4}
 export KAFKA_LOG_DIRS=${KAFKA_LOG_DIRS:-/data/kafka/logdir}
