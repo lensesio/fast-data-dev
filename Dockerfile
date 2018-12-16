@@ -334,7 +334,7 @@ RUN apk add --no-cache \
         wget \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /opt \
-    && mkdir /extra-connect-jars /connectors \
+    && mkdir /extra-connect-jars /connectors /plugins \
     && mkdir /etc/supervisord.d /etc/supervisord.templates.d
 
 SHELL ["/bin/bash", "-c"]

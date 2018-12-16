@@ -147,6 +147,7 @@ export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
 export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
 export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
+export LENSES_PLUGINS_CLASSPATH_OPTS=${LENSES_PLUGINS_CLASSPATH_OPTS:-/plugins}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -600,8 +601,8 @@ else
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
 chown nobody:nobody "$LENSES_LICENSE_FILE"
-mkdir -p /var/run/lenses/{logs,storage}
-#chmod 777 /var/run/lenses/{logs,storage}
+mkdir -p /var/run/lenses/logs
+#chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
 rm -rf /var/www-lenses
