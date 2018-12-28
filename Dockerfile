@@ -59,8 +59,8 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=1.1.0
-ARG KAFKA_VERSION_4SR=1.1.0
+ARG STREAM_REACTOR_VERSION=1.2.0
+ARG KAFKA_VERSION_4SR=2.0.0
 ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
@@ -92,7 +92,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+22 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
