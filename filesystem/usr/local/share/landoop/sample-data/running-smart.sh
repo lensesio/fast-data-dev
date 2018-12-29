@@ -3,6 +3,8 @@
 # shellcheck source=variables.env
 source variables.env
 
+GENERATOR_BROKER=${GENERATOR_BROKER:-localhost}
+
 # Create Topics
 # shellcheck disable=SC2043
 for key in 3; do
@@ -22,10 +24,12 @@ done
 # Insert data with text key converted to json key
 # shellcheck disable=SC2043
 for key in 3; do
+    unset KAFKA_OPTS
+    unset KAFKA_JMX_OPTS
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
-            --broker-list localhost:${BROKER_PORT} \
+            --broker-list ${GENERATOR_BROKER}:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property "key.separator=#"
