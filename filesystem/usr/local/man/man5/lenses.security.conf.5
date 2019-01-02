@@ -1,0 +1,385 @@
+.TH "LENSES.SECURITY.CONF" "5"
+.SH NAME
+Lenses Security Configuration file \- Options & Descriptions
+.fi
+
+.SH "Security Configuration"
+.nf
+Lenses allows you to easily secure access to the Lenses API and UI. You can password protect the UI and API as well as allow service accounts.
+More advanced features include LDAP and Kerberos authentication, role and group based access control, topic whitelisting/blacklisting.
+This section describes how to configure the security setup.
+
+Lenses security options start with lenses.security.*** and should be stored in a separate file, named security.conf.
+You can set the path to the security configuration file in the main configuration file lenses.conf via the key lenses.secret.file.
+This way security.conf can be managed only by the administration team and have more tight access control than the rest of the configuration.
+
+Lenses has support for the following login modes: BASIC, LDAP, KERBEROS and CUSTOM HTTP. The security mode is configured through the lenses.security.mode option.
+The \fIman 5 lenses.security.conf: permission matrix\fR contains additional details on roles and access levels.
+
+Online Documentation: \fIhttps://docs.lenses.io/install_setup/configuration/security.html\fR
+
+.SH "BASIC"
+.nf
+
+If BASIC mode is set, then user accounts and groups are stored in the configuration file itself. Users are assigned one or more groups and this determines which roles they are granted.
+Users and groups are set via the lenses.security.users and lenses.security.groups options respectively. For example:
+
+The admin role inherits automatically the read and write privileges. The write role inherits read privilege.
+
+Security modes require lenses.security.groups to be specified. In addition to specifying the roles for each group, you can optionally specify which topics can be accessed through a whitelist/blacklist approach.
+In the example above, the writeGroup will get to access all topics apart from the ones starting with payment. The readGroup has been set using the whitelisting approach, and will only allow access to topics with
+names starting with users. The entries for the topic.whitelist and topic.blacklist are expected to be regular expressions.
+
+The \fIman 5 lenses.security.conf: permission matrix\fR contains additional details on roles and access levels.
+
+See \fIman 5 lenses.security.conf: examples basic auth\fR for examples
+
+.SH LDAP
+.nf
+
+It is common for enterprises to use an LDAP server for user management and Lenses can integrate with your LDAP environment for user authentication and group assignment.
+
+If you want to use LDAP support then the lenses.security.mode option must be set to LDAP and the ldap configuration section must be completed to provide the settings.
+
+Each individual LDAP setup will assign membership to groups using a different hierarchy, therefore there is a plugin to allow custom implementations for retrieving the user group list.
+
+The project template for a custom implementation can be found on \fIhttps://github.com/Landoop/lenses-ldap-plugin-template\fR. With the implementation ready,
+all that is required is to drop the jar file into Lenses lib folder and set the configuration entry lenses.security.ldap.plugin to point to the implementation full classpath.
+
+Lenses provides out-of-the-box a default implementation via \fIcom.landoop.lenses.security.ldap.LdapMemberOfUserGroupPlugin\fR class. Here is the template for the LDAP configuration section:
+
+"Options List Reference"
+
+.TP
+\fIlenses.security.ldap.url:\fR
+
+Description : The LDAP server url. For example: ldap://mycompany.com:10389
+Optional    : no
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.ldap.base:\fR
+
+Description : Your LDAP base. For example: dc=jboss,dc=org
+Optional    : no
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.ldap.user:\fR
+
+Description : Your LDAP user. For example: uid=admin,ou=system
+Optional    : no
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.ldap.password:\fR
+
+Description : Your LDAP user password.
+Optional    : no
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.ldap.filter:\fR
+
+Description : The LDAP search filter - must result in a unique result.
+              See default value. <user> is required since is replaced at runtime with the current user id.
+Optional    : yes
+Type        : string
+Default     : (&(objectClass=person)(sAMAccountName=<user>))
+
+.TP
+\fIlenses.security.ldap.plugin.class:\fR
+
+Description : Contains the full classpath for the LDAP roles retriever implementation
+Optional    : yes
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.ldap.plugin.memberof.key:\fR
+
+Description : Your LDAP member of key entry. This is the key for which a role is attached to the user entry.
+              For example, memberOf: cn=AdminR,ou=Groups,dc=jboss,dc=org - links the AdminR role to the current user entry.
+Optional    : yes
+Type        : string
+Default     : memberOf
+
+.TP
+\fIlenses.security.ldap.plugin.person.name.key:\fR
+
+Description : Your LDAP person entry attribute containing the user full name.
+              The default value if the configuration is not provided is sn.
+Optional    : yes
+Type        : string
+Default     : sn
+
+.TP
+\fIlenses.security.ldap.plugin.group.extract.regex:\fR
+
+Description : The regular expression syntax to extra the role for each memberof entry.
+              The default value matches the earlier example for memberof.
+Optional    : yes
+Type        : string
+Default     : (?i)CN=(\\w+),ou=Groups.*
+
+.PP
+The configuration entries \fIlenses.security.ldap.plugin.memberof.key, lenses.security.ldap.plugin.person.name.key\fR and \fIlenses.security.ldap.plugin.group.extract.regex\fR
+are specific to the implementation Lenses provides out of the box. Any custom implementation may require different entries under \fIlenses.security.ldap.plugin\fR
+
+See \fIman 5 lenses.security.conf: examples ldap\fR for examples
+
+.SH "KERBEROS"
+.nf
+
+If you want to enable Kerberos support then the lenses.security.mode option must be set to KERBEROS and the kerberos configuration section must be completed to provide the specific kerberos settings.
+The following table enumerates the kerberos config settings.
+
+
+"Options List Reference"
+
+.TP
+\fIlenses.security.kerberos.service.principal:\fR
+
+Description : The Lenses service principal. For example, HTTP/hostname
+Optional    : no
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.kerberos.keytab:\fR
+
+Description : The path to the location of the service keytab
+Optional    : no
+Type        : string
+Default     : N/A
+
+.TP
+\fIlenses.security.kerberos.debug:\fR
+
+Description : The path to the location of the service keytab
+Optional    : no
+Type        : boolean
+Default     : true
+
+.PP
+One of the limitations of Kerberos is that it is purely an authentication system for user principals without support for group membership.
+Therefore, in order to combine authentication with authorization it is necessary to map users to groups in a similar manner to the BASIC mode.
+
+See \fIman 5 lenses.security.conf: examples kerberos\fR for examples
+
+.SH "CUSTOM HTTP"
+.nf
+
+In this mode, it’s possible to separate the authentication layer from Lenses into your own authentication solution.
+As an example, it would be possible to use JSON Web Tokens (JWT) injected via a proxy.
+
+When setting CUSTOM_HTTP, a user-implemented class should be provided, that will be used to extract (and ideally verify) authentication and authorization information from the client HTTP headers.
+
+See \fIman 5 lenses.security.conf: examples custom http\fR for examples
+
+.SH "SERVICE ACCOUNTS"
+.nf
+
+Service accounts allow easier integration with Lenses API. A typical use case is enabling your CI/CD tools to interact with Lenses.
+Via the lenses.security.service.accounts specific users and their authorization token can be defined. Here is how two service accounts can be created:
+
+See \fIman 5 lenses.security.conf: examples service accounts\fR for examples
+
+.SH "SECURITY PERMISSIONS TABLE"
+.nf
+
+The supported permissions which can be applied to a group are listed below.
+
+"Options List Reference"
+
+.TP
+\fIGeneral Permissions:\fR
+
+  admin
+
+    Description : Extends the actions that can be performed in lenses
+    Priority    : admin implies write and read also
+
+  write
+
+    Description : Required in order to create and modify, topics, processors, connectors, ...
+    Priority    : write implies read also
+
+  read
+
+    Description : Required in order to view data
+    Priority    : read does not imply a permission however nodata is second to read
+
+  nodata
+
+    Description : This permission removes the ability to view data
+    Priority    : -
+
+.TP
+\fIPolicy Permissions:\fR
+
+  DataPolicyWrite
+
+    Description : Allows to add, delete & modify polices
+    Priority    : -
+
+  DataPolicyRead
+
+    Description : Allows to view polices
+    Priority    : -
+
+  DataPolicyDisabled
+
+    Description : Avoids applying the data policy rules when running the SQL queries
+    Priority    : -
+
+.TP
+\fIAlert Permissions:\fR
+
+  AlertsWrite
+
+    Description : Allows to add, delete and modify alerts
+    Priority    : -
+
+  AlertsRead
+
+    Description : Allows to view the alerts that have been set
+    Priority    : -
+
+.TP
+\fITable Storage Permissions:\fR
+
+  TableStorageWrite
+
+    Description : Allows setting the Kafka topics Key and Value storage format
+    Priority    : -
+
+  TableStorageRead
+
+    Description : Allows reading the Kafka topics Key and Value storage format
+    Priority    : -
+
+.SH "EXAMPLES"
+.nf
+
+.TP
+\fIBASIC AUTH:\fR
+
+---------------------------------------------------------------------------------------------------------------------
+  lenses.security.mode=BASIC
+
+  lenses.security.groups=[
+       {"name": "adminGroup", "roles": ["admin", "write", "read"]},
+       {"name": "writeGroup", "roles": ["read", "write"], topic: { blacklist: ["payment.*"] },
+       {"name": "readGroup",  "roles": ["read"], topic: { whitelist: [ "users.*" ] },
+       {"name": "nodataGroup",  "roles": ["nodata"]}
+  ]
+
+  lenses.security.users=[
+    {"username": "admin", "password": "admin999", "displayname": "Lenses Admin", "groups": ["adminGroup"]},
+    {"username": "write", "password": "write1", "displayname": "Write User", "groups": ["writeGroup"]},
+    {"username": "read", "password": "read1", "displayname": "Read Only", "groups": ["readGroup"]},
+    {"username": "nodata", "password": "nodata1", "displayname": "No Data", "groups": ["nodataGroup"]}
+  ]
+---------------------------------------------------------------------------------------------------------------------
+
+.TP
+\fILDAP:\fR
+
+---------------------------------------------------------------------------------------------------------------------
+  lenses.security.groups=[
+       {"name": "adminGroup", "roles": ["admin", "write", "read"]},
+       {"name": "writeGroup", "roles": ["read", "write"], topic: { blacklist: ["payment.*"] },
+       {"name": "readGroup",  "roles": ["read"], topic: { whitelist: [ "users.*" ] },
+       {"name": "nodataGroup",  "roles": ["nodata"]}
+       ...
+       ...
+       ...
+  ]
+
+  lenses.security.mode=LDAP
+  lenses.security.ldap.url="ldaps://mycompany.com:636"
+  lenses.security.ldap.base="OU=Users,DC=mycompany,DC=com"
+  lenses.security.ldap.user="$LDAP_USER"
+  lenses.security.ldap.password="$LDAP_USER_PASSWORD"
+  lenses.security.ldap.filter="(&(objectClass=person)(sAMAccountName=<user>))"
+
+  //LDAP roles retriever settings
+  lenses.security.ldap.plugin.class="com.landoop.lenses.security.ldap.LdapMemberOfUserGroupPlugin"
+  lenses.security.ldap.plugin.group.extract.regex="(?i)CN=(\\w+),ou=ServiceGroups.*"
+  lenses.security.ldap.plugin.memberof.key="memberOf"
+  lenses.security.ldap.plugin.person.name.key = "sn"
+---------------------------------------------------------------------------------------------------------------------
+
+.TP
+\fIKERBEROS:\fR
+
+---------------------------------------------------------------------------------------------------------------------
+  lenses.security.groups=[
+       {"name": "adminGroup", "roles": ["admin", "write", "read"]},
+       {"name": "userGroup", "roles": ["read", "write"], topic: { blacklist: ["payment.*"] },
+  ]
+
+  lenses.security.mappings = [
+    { "username": "sam@LANDOOP.COM", "groups": ["adminGroup", "userGroup"] },
+    { "username": "tom@LANDOOP.COM", "groups": ["userGroup"] }
+  ]
+
+  lenses.security.mode=KERBEROS
+  lenses.security.kerberos.service.principal="HTTP/lenses.host"
+  lenses.security.kerberos.keytab=/tmp/lenses.keytab
+  lenses.security.kerberos.debug=true
+---------------------------------------------------------------------------------------------------------------------
+
+.TP
+\fICUSTOM HTTP:\fR
+
+---------------------------------------------------------------------------------------------------------------------
+  lenses.security.mode=CUSTOM_HTTP
+  lenses.security.plugin=$my.custom.plugin.class.path
+
+  lenses.security.groups=[
+      {"name": "adminGroup", "roles": ["admin", "write", "read"]},
+      {"name": "writeGroup", "roles": ["read", "write"], topic: { blacklist: ["payment.*"] },
+      {"name": "readGroup",  "roles": ["read"], topic: { whitelist: [ "users.*" ] },
+      {"name": "nodataGroup",  "roles": ["nodata"]}
+  ]
+---------------------------------------------------------------------------------------------------------------------
+
+.TP
+\fISERVICE ACCOUNTS:\fR
+
+---------------------------------------------------------------------------------------------------------------------
+  lenses.security.groups=[
+        {"name": "group1", "roles": ["admin", "write", "read"]},
+        {"name": "group2", "roles": ["read", "write"], topic: { blacklist: ["payment.*"] },
+        {"name": "group3",  "roles": ["read"], topic: { whitelist: [ "users.*" ] },
+  ]
+
+  lenses.security.service.accounts=[
+    {
+      "username": "jenkins",
+      "token": "1231543kn!!1",
+      "groups": ["group1", "group2"]
+    },
+    {
+      "username": "goCli",
+      "token": "12345678",
+      "groups": ["group3"]
+    }
+  ]
+---------------------------------------------------------------------------------------------------------------------
+
+.PP
+For more information please visit: https://docs.lenses.io/install_setup/configuration/security.html
+
+.fi
+
+.SH "SEE ALSO"
+.nf
+lenses (1), lenses.conf (5), lenses.security.conf (5), lkd (1), lkd (5), lenses-cli (1)
+.fi

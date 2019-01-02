@@ -1,0 +1,823 @@
+.TH "LENSES.CONF" "5"
+.SH NAME
+Lenses Configuration file \- Options & Descriptions
+.fi
+
+.SH "Options List Reference"
+.TP
+\fIlenses.ip:\fR
+.nf
+
+Description : Bind HTTP at the given endpoint. Used in conjunction with lenses.port
+Required    : no
+Type        : string
+Default     : 0.0.0.0
+
+.TP
+\fIlenses.port:\fR
+.nf
+
+Description : The HTTP port the HTTP server listens for connections: serves UI, Rest and WS APIs
+Required    : no
+Type        : int
+Default     : 9991
+
+.TP
+\fIlenses.jmx.port:\fR
+.nf
+
+Description : The port to bind an JMX agent to enable JVM monitoring
+Required    : no
+Type        : int
+Default     : 9992
+
+
+.TP
+\fIlenses.license.file:\fR
+.nf
+
+Description : The full path to the license file
+Required    : yes
+Type        : string
+Default     : license.json
+
+.TP
+\fIlenses.secret.file:\fR
+.nf
+
+Description : The full path to security.conf containing security credentials (see man 5 lenses.security.conf)
+Required    : yes
+Type        : string
+Default     : security.conf
+
+.TP
+\fIlenses.storage.directory:\fR
+.nf
+
+Description : The full path to the directory where Lenses stores some of its state
+Required    : no
+Type        : string
+Default     : null
+
+.TP
+\fIlenses.topics.audits:\fR
+.nf
+
+Description : Topic to store system auditing information. Keep track of WHO did WHAT and WHEN.
+              When a topic, config, connector is Created/Updated or Deleted an audit message is stored.
+              We advise not to change the defaults neither to delete the topic*
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_audits
+
+.TP
+\fIlenses.topics.metrics:\fR
+.nf
+
+Description : Topic to store stream processor metrics. When your state-less stream processors are running in Kubernetes or Kafka Connect,
+              this topic collects health checks and performance metrics.
+              We advise not to change the defaults neither to delete the topic*.
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_metrics
+
+.TP
+\fIlenses.topics.cluster:\fR
+.nf
+
+Description : Topic to store broker details. Infrastructure information is used to determine config changes,
+              failures and new nodes added or removed in a cluster.
+              We advise not to change the defaults neither to delete the topic*
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_cluster
+
+.TP
+\fIlenses.topics.profile:\fR
+.nf
+
+Description : Topic to store user preferences. Bookmark your most used topics, connectors or SQL processors.
+              We advise not to change the defaults neither to delete the topic*
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_profiles
+
+.TP
+\fIlenses.topics.processors:\fR
+.nf
+
+Description : Topic to store the SQL processors details.
+              We advise not to change the defaults neither to delete the topic*
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_processors
+
+.TP
+\fIlenses.topics.alerts.storage:\fR
+.nf
+
+Description : Topic to store the alerts raised.
+              We advise not to change the defaults neither to delete the topic*
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_alerts
+
+.TP
+\fIlenses.topics.alerts.settings:\fR
+.nf
+
+Description : Topic to store the alerts configurations.
+              We advise not to change the defaults neither to delete the topic*.
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_alerts_settings
+
+.TP
+\fIlenses.topics.lsql.storage:\fR
+.nf
+
+Description : Topic to store all data access SQL queries. Know WHO access WHAT data and WHEN.
+              We advise not to change the defaults neither to delete the topic*
+Required    : yes
+Type        : string
+Default     : _kafka_lenses_lsql_storage
+
+.TP
+\fIlenses.topics.external.topology:\fR
+.nf
+
+Description : Topic where external application publish their topology.
+Required    : yes
+Type        : string
+Default     : __topology
+
+.TP
+\fIlenses.topics.external.metrics:\fR
+.nf
+
+Description : Topic where external application publish their topology metrics.
+Required    : yes
+Type        : string
+Default     : __topology__metrics
+
+.TP
+\fIlenses.kafka.brokers:\fR
+.nf
+
+Description : A list of host/port pairs to use for establishing the initial connection to the Kafka cluster.
+              Add just a few broker addresses here and Lenses will bootstrap and discover the full cluster membership (which may change dynamically).
+              This list should be in the form:
+                "host1:port1,host2:port2,host3:port3"
+Required    : yes
+Type        : string
+Default     : PLAINTEXT://localhost:9092
+
+.TP
+\fIlenses.jmx.broker.port:\fR
+.nf
+
+Description : Required when lenses.zookeeper.hosts has not been set or can not be set. This is usually the case with cloud deployments.
+              The value is the port to open a JMX connection to the broker. Typically all your brokers will use the same port for the JMX endpoint.
+              This will enable the best user experience on Lenses.
+Required    : no
+Type        : string
+Default     : null
+
+.TP
+\fIlenses.jmx.brokers:\fR
+.nf
+
+Description : Used when lenses.zookeeper.hosts has not been set or can not be set, and not all brokers share the same JMX port.
+              If they do use lenses.jmx.broker.port configuration. The value is a list of broker-Id/JMX-port pairs to use for establishing
+              the JMX connection to the broker. This will enable the best user experience on Lenses.
+                [{ id:"broker1 id", port:"broker1 JMX port" },
+                { id:"broker2 id", port:"broker2 JMX port" },...]
+Required    : yes
+Type        : string
+Default     : []
+
+.TP
+\fIlenses.zookeeper.hosts:\fR
+.nf
+
+Description : Provide all the available Zookeeper nodes details. For every ZooKeeper node specify the connection url (host:port)
+              and if JMX is enabled the JMX (host:port). The configuration should be:
+                [{url:"hostname1:port1", jmx:"hostname1:port2"}]
+Required    : yes
+Type        : string
+Default     : [{url: “localhost:2181” , jmx: “localhost:11991” }]
+
+.TP
+\fIlenses.zookeeper.chroot:\fR
+.nf
+
+Description : You can add your znode (chroot) path if you are using it. Please do not add leading or trailing slashes.
+              For example if you use the zookeeper chroot /kafka for your Kafka cluster, set this value to kafka
+Required    : no
+Type        : string
+Default     :
+
+.TP
+\fIlenses.zookeeper.security.enabled:\fR
+.nf
+
+Description : Enables secured connection to your Zookeeper. The default value is false.
+Required    : no
+Type        : boolean
+Default     : false
+
+.TP
+\fIlenses.schema.registry.urls:\fR
+.nf
+
+Description : Provide all available Schema Registry node details or list the load balancer address if one is used.
+              For every instance specify the connection url and if JMX is enabled the JMX (host:port)
+Required    : yes
+Type        : string
+Default     : [{url:”http://localhost:8081”, jmx:”localhost:10081”}]
+
+.TP
+\fIlenses.schema.registry.kerberos:\fR
+.nf
+
+Description : Set to true if the schema registry is deployed with kerberos authentication
+Required    : no
+Type        : boolean
+Default     : false
+
+.TP
+\fIlenses.schema.registry.keytab:\fR
+.nf
+
+Description : The location of the keytab if connecting to a kerberized schema registry
+Required    : no
+Type        : string
+Default     : null
+
+.TP
+\fIlenses.schema.registry.principal:\fR
+.nf
+
+Description : The service principal of the above keytab
+Required    : no
+Type        : string
+Default     : null
+
+.TP
+\fIlenses.connect.clusters:\fR
+.nf
+
+Description : Provide all available Kafka Connect clusters. For each cluster give a name, list the 3 backing topics
+              and provide workers connection details (host:port) and JMX endpoints if enabled
+              and on Kafka 1.0.0 or later (see man 1 lenses BROKER JMX)
+Required    : no
+Type        : array
+Default     : [{name: “dev”, urls: [{url:”http://localhost:8083”, jmx:”localhost:11100”}], statuses: “connect-statuses”,
+              configs: “connect-configs”, offsets: “connect-offsets” }]
+
+.TP
+\fIlenses.alert.manager.endpoints:\fR
+.nf
+
+Description : Comma separated Alert Manager endpoints. If provided, Lenses will push raised alerts to the downstream notification gateway.
+              The configuration should be:
+                "http://host1:port1"
+Required    : no
+Type        : string
+Default     :
+
+.TP
+\fIlenses.alert.manager.source:\fR
+.nf
+
+Description : How to identify the source of an Alert in Alert Manager. Default is Lenses but you might want to override to UAT for example
+Required    : no
+Type        : string
+Default     : Lenses
+
+.TP
+\fIlenses.alert.manager.generator.url:\fR
+.nf
+
+Description : A unique URL identifying the creator of this alert. Default is http://lenses but you might want to override to http://<my_instance_url> for example
+Required    : no
+Type        : string
+Default     : http://lenses
+
+.TP
+\fIlenses.grafana:\fR
+.nf
+
+Description : If using Grafana, provide the Url location. The configuration should be "http://grafana-host:port"
+Required    : no
+Type        : string
+Default     :
+
+.TP
+\fIlenses.sql.max.bytes:\fR
+.nf
+
+Description : Used when reading data from a Kafka topic. This is the maximum data size in bytes to return from a LSQL query.
+              If the query is bringing more data than this limit any records received after the limit are discarded.
+              This can be overwritten in the LSQL query.
+Required    : yes
+Type        : long
+Default     : 20971520 (20MB)
+
+.TP
+\fIlenses.sql.max.time:\fR
+.nf
+
+Description : Used when reading data from a Kafka topic. This is the time in milliseconds the query will be allowed to run.
+              If the time is exhausted it returns the records found so far. This can be overwritten in the LSQL query.
+Required    : yes
+Type        : int
+Default     : 3600000 (1h)
+
+.TP
+\fIlenses.sql.sample.default:\fR
+.nf
+
+Description : Number of messages to take in every sampling attempt
+Required    : no
+Type        : int
+Default     : 2
+
+.TP
+\fIlenses.sql.sample.window:\fR
+.nf
+
+Description : How frequently to sample a topic for new messages when tailing it
+Required    : no
+Type        : int
+Default     : 200
+
+.TP
+\fIlenses.metrics.workers:\fR
+.nf
+
+Description : Number of workers to distribute the load of querying JMX endpoints and collecting metrics
+Required    : no
+Type        : int
+Default     : 16
+
+.TP
+\fIlenses.offset.workers:\fR
+.nf
+
+Description : Number of workers to distribute the load of querying topic offsets
+Required    : no
+Type        : int
+Default     : 5
+
+.TP
+\fIlenses.sql.execution.mode:\fR
+.nf
+
+Description : The SQL execution mode, IN_PROC or CONNECT or KUBERNETES
+Required    : no
+Type        : string
+Default     : IN_PROC
+
+.TP
+\fIlenses.sql.state.dir:\fR
+.nf
+
+Description : Directory location to store the state of KStreams. If using CONNECT mode, this folder must already exist on each Kafka Connect worker
+Required    : no
+Type        : string
+Default     : logs/lenses-sql-kstream-state
+
+.TP
+\fIlenses.sql.monitor.frequency:\fR
+.nf
+
+Description : How frequently SQL processors emmit healthcheck and performance metrics to lenses.topics.metrics
+Required    : no
+Type        : int
+Default     : 10000
+
+.TP
+\fIlenses.kubernetes.processor.image.name:\fR
+.nf
+
+Description : The docker/container repository url and name of the Lenses SQL runner
+Required    : no
+Type        : string
+Default     : eu.gcr.io/lenses-container-registry/lenses-sql-processor
+
+.TP
+\fIlenses.kubernetes.processor.image.tag:\fR
+.nf
+
+Description : The Lenses SQL runner image tag
+Required    : no
+Type        : string
+Default     : 2.1
+
+.TP
+\fIlenses.kubernetes.config.file:\fR
+.nf
+
+Description : The location of the kubectl config file
+Required    : no
+Type        : string
+Default     : /home/lenses/.kube/config
+
+.TP
+\fIlenses.kubernetes.service.account:\fR
+.nf
+
+Description : The service account to deploy with. This account should be able to pull images from lenses.kubernetes.image.name
+Required    : no
+Type        : string
+Default     : default
+
+.TP
+\fIlenses.kubernetes.pull.policy:\fR
+.nf
+
+Description : The pull policy for Kubernetes containers: IfNotPresent or Always
+Required    : no
+Type        : string
+Default     : IfNotPresent
+
+.TP
+\fIlenses.kubernetes.runner.mem.limit:\fR
+.nf
+
+Description : The memory limit applied to the Container
+Required    : no
+Type        : string
+Default     : 768Mi
+
+.TP
+\fIlenses.kubernetes.runner.mem.request:\fR
+.nf
+
+Description : The memory requested for the Container
+Required    : no
+Type        : string
+Default     : 512Mi
+
+.TP
+\fIlenses.kubernetes.runner.java.opts:\fR
+.nf
+
+Description : Advanced JVM and GC memory tunning parameters
+Required    : no
+Type        : string
+Default     : -Xms256m -Xmx512m
+              -XX:MaxPermSize=128m -XX:MaxNewSize=128m
+              -XX:+UseG1GC -XX:MaxGCPauseMillis=20
+              -XX:InitiatingHeapOccupancyPercent=35
+              -XX:+DisableExplicitGC -Djava.awt.headless=true
+
+
+.TP
+\fIlenses.interval.summary:\fR
+.nf
+
+Description : The interval (in msec) to check for new topics, or topic config changes
+Required    : no
+Type        : long
+Default     : 10000
+
+.TP
+\fIlenses.interval.consumers:\fR
+.nf
+
+Description : The interval (in msec) to read all consumer info
+Required    : no
+Type        : int
+Default     : 10000
+
+.TP
+\fIlenses.interval.partitions.messages:\fR
+.nf
+
+Description : The interval (in msec) to refresh partitions info
+Required    : no
+Type        : long
+Default     : 10000
+
+.TP
+\fIlenses.interval.type.detection:\fR
+.nf
+
+Description : The interval (in msec) to check the topic payload type
+Required    : no
+Type        : long
+Default     : 30000
+
+.TP
+\fIlenses.interval.user.session.ms:\fR
+.nf
+
+Description : The duration (in msec) that a client session stays alive for.
+Required    : no
+Type        : long
+Default     : 14400000 (4h)
+
+.TP
+\fIlenses.interval.user.session.refresh:\fR
+.nf
+
+Description : The interval (in msec) to check whether a client session is idle and should be terminated.
+Required    : no
+Type        : long
+Default     : 60000
+
+.TP
+\fIlenses.interval.schema.registry.healthcheck:\fR
+.nf
+
+Description : The interval (in msec) to check the status of schema registry instances.
+Required    : no
+Type        : long
+Default     : 30000
+
+.TP
+\fIlenses.interval.topology.topics.metrics:\fR
+.nf
+
+Description : The interval (in msec) to refresh the topology status page.
+Required    : no
+Type        : long
+Default     : 30000
+
+.TP
+\fIlenses.interval.alert.manager.healthcheck:\fR
+.nf
+
+Description : The interval (in msec) to check the status of the Alert manager instances.
+Required    : no
+Type        : long
+Default     : 5000
+
+.TP
+\fIlenses.interval.alert.manager.publish:\fR
+.nf
+
+Description : The interval (in msec) on which unresolved alerts are published to alert manager.
+Required    : no
+Type        : long
+Default     : 30000
+
+.TP
+\fIlenses.interval.topology.custom.app.metrics.discard.ms:\fR
+.nf
+
+Description : The interval (in msec) when an already published metrics entry is consider stale. Once this happens the record is discarded.
+Required    : no
+Type        : long
+Default     : 120000
+
+.TP
+\fIlenses.interval.jmx.refresh.zk:\fR
+.nf
+
+Description : The interval (in msec) to get Zookeeper JMX.
+Required    : yes
+Type        : long
+Default     : 5000
+
+.TP
+\fIlenses.interval.jmx.refresh.sr:\fR
+.nf
+
+Description : The interval (in msec) to get Schema Registry JMX.
+Required    : yes
+Type        : long
+Default     : 5000
+
+.TP
+\fIlenses.interval.jmx.refresh.broker:\fR
+.nf
+
+Description : The interval (in msec) to get Broker JMX.
+Required    : yes
+Type        : long
+Default     : 5000
+
+.TP
+\fIlenses.interval.jmx.refresh.alert.manager:\fR
+.nf
+
+Description : The interval (in msec) to get Alert Manager JMX
+Required    : yes
+Type        : long
+Default     :
+
+.TP
+\fIlenses.interval.jmx.refresh.connect:\fR
+.nf
+
+Description : The interval (in msec) to get Connect JMX
+Required    : yes
+Type        : long
+Default     :
+
+.TP
+\fIlenses.interval.jmx.refresh.brokers.in.zk:\fR
+.nf
+
+Description : The interval (in msec) to refresh the brokers from Zookeeper.
+Required    : yes
+Type        : long
+Default     : 5000
+
+.TP
+\fIlenses.kafka.ws.poll.ms:\fR
+.nf
+
+Description : Max time (in msec) a consumer polls for data on each request, on WS API request.
+Required    : no
+Type        : int
+Default     : 1000
+
+.TP
+\fIlenses.kafka.ws.buffer.size:\fR
+.nf
+
+Description : Max buffer size for WS consumer
+Required    : no
+Type        : int
+Default     : 10000
+
+.TP
+\fIlenses.kafka.ws.max.poll.records:\fR
+.nf
+
+Description : Specify the maximum number of records returned in a single call to poll().
+              It will impact how many records will be pushed at once to the WS client.
+Required    : no
+Type        : int
+Default     : 1000
+
+.TP
+\fIlenses.kafka.ws.heartbeat.ms:\fR
+.nf
+
+Description : The interval (in msec) to send messages to the client to keep the TCP connection open.
+Required    : no
+Type        : int
+Default     : 30000
+
+.TP
+\fIlenses.access.control.allow.methods:\fR
+.nf
+
+Description : Restrict the HTTP verbs allowed to initiate a cross-origin HTTP request
+Required    : no
+Type        : string
+Default     : GET,POST,PUT,DELETE,OPTIONS
+
+.TP
+\fIlenses.access.control.allow.origin:\fR
+.nf
+
+Description : Restrict to specific hosts cross-origin HTTP requests.
+Required    : no
+Type        : string
+Default     :
+
+.TP
+\fIlenses.schema.registry.topics:\fR
+.nf
+
+Description : The backing topic where schemas are stored.
+Required    : no
+Type        : string
+Default     : _schemas
+
+.TP
+\fIlenses.schema.registry.delete:\fR
+.nf
+
+Description : Allows subjects to be deleted in the Schema Registry. Default is disabled.
+              Requires schema-registry version 3.3.0 or later
+Required    : no
+Type        : boolean
+Default     : false
+
+.TP
+\fIlenses.allow.weak.ssl:\fR
+.nf
+
+Description : Allow connecting with https:// services even when self-signed certificates are used
+Required    : no
+Type        : boolean
+Default     : false
+
+.TP
+\fIlenses.telemetry.enable:\fR
+.nf
+
+Description : Enable or disable telemetry data collection
+Required    : no
+Type        : boolean
+Default     : true
+
+.TP
+\fIlenses.curator.retries:\fR
+.nf
+
+Description : The number of attempts to read the broker metadata from Zookeeper.
+Required    : no
+Type        : int
+Default     : 3
+
+.TP
+\fIlenses.curator.initial.sleep.time.ms:\fR
+.nf
+
+Description : The initial amount of time to wait between retries to ZK.
+Required    : no
+Type        : int
+Default     : 2000
+
+.TP
+\fIlenses.zookeeper.max.session.ms:\fR
+.nf
+
+Description : The max time (in msec) to wait for the Zookeeper server to reply for a request.
+              The implementation requires that the timeout be a minimum of 2 times the tickTime (as set in the server configuration).
+Required    : no
+Type        : int
+Default     : 10000
+
+.TP
+\fIlenses.zookeeper.max.connection.ms:\fR
+.nf
+
+Description : The duration (in msec) to wait for the Zookeeper client to establish a new connection.
+Required    : no
+Type        : int
+Default     : 10000
+
+.TP
+\fIlenses.akka.request.timeout.ms:\fR
+.nf
+
+Description : The maximum time (in msec) to wait for an Akka Actor to reply.
+Required    : no
+Type        : int
+Default     : 10000
+
+.TP
+\fIlenses.kafka.control.topics:\fR
+.nf
+
+Description : List of Kafka topics to be marked as system topics
+Required    : no
+Type        : string
+Default     : [“connect-configs”, “connect-offsets”, “connect-status”,
+              “connect-statuses”, “_schemas”, “__consumer_offsets”,
+              “_kafka_lenses_”, “lsql_”, “__transaction_state”,
+              “__topology”, “__topology__metrics”]
+
+.TP
+\fIlenses.alert.buffer.size:\fR
+.nf
+
+Description : The number of most recently raised alerts to keep in the cache.
+Required    : no
+Type        : int
+Default     : 100
+
+.TP
+\fIlenses.kafka.settings.consumer:\fR
+.nf
+
+Description : Allow additional Kafka consumer settings to be specified.
+              When Lenses creates an instance of KafkaConsumer class it will use these properties during initialization.
+Required    : no
+Type        : string
+Default     : {reconnect.backoff.ms = 1000, retry.backoff.ms = 1000}
+
+.TP
+\fIlenses.kafka.settings.producer:\fR
+.nf
+
+Description : Allow additional Kafka producer settings to be specified. When Lenses creates an instance of KafkaProducer
+              class it will use these properties during initialization.
+Required    : no
+Type        : string
+Default     : {reconnect.backoff.ms = 1000, retry.backoff.ms = 1000}
+
+.TP
+\fIlenses.kafka.settings.kstream:\fR
+.nf
+
+Description : Allow additional Kafka KStreams settings to be specified
+Required    : no
+Type        : string
+Default     : {reconnect.backoff.ms = 1000, retry.backoff.ms = 1000}
+
+.fi
+
+.SH "SEE ALSO"
+.nf
+lenses (1), lenses.conf (5), lenses.security.conf (5), lkd (1), lkd (5), lenses-cli (1)
+.fi

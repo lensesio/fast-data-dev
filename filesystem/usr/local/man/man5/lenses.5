@@ -1,0 +1,153 @@
+.TH "LENSES" "5"
+.SH NAME
+Lenses \- Build your Data Highway
+.SH "DESCRIPTION"
+.nf
+\fBLenses\fR, a simple & secure way to operate data in-motion. Lenses is a data platform giving you visibility and full control over your real-time data.
+It allows you to manage enterprise-scale data-operations and enables data stewards, analysts or scientists, and application developers alike to engage with
+any company data appropriate to their role, using their preferred technology stack. Lenses accomplishes this while obeying security and regulatory-based access limitations.
+
+Online Documentation: \fIhttps://docs.lenses.io/install_setup/index.html\fR
+
+.fi
+
+.SH "SPECIAL FILES"
+.TP
+.nf
+\fIlenses.conf:\fR
+This is the main configuration file of Lenses. Currently almost all the configuration required to setup lenses is done in this file.
+Within this file, one can configure under which address and port lenses should be served, where the secret file is located (see \fISPECIAL FILES: security.conf\fR),
+which are the Kafka cluster endpoints, where is the license located, and other optional options.
+
+For additional information please see, \fIlenses.conf.sample\fR under /opt/lenses for and extensive list examples and descriptions, and also
+\fIman 5 lenses.conf\fR for a list of supported options with their descriptions.
+.nf
+.fi
+
+.TP
+.nf
+\fIsecurity.conf:\fR
+In this file you can configure the security authentication method that lenses will use to authenticate all logins. In addition to the authenticated method, the
+security groups, security users and service accounts. The security groups is a mandatory field which must always be present, while the security users is mandatory
+only for the basic auth case or maybe any other custom_http authentication mechanism which one could implement. The service accounts are very optional and are aiming
+to easy the setup for automated tasks.
+
+The authentication mechanism currently supported are:
+  Basic Auth
+  LDAP Auth
+  Kerberos Auth
+  Custom HTTP auth
+  Service Accounts
+
+See, \fIsecurity.conf.sample\fR under \fI/opt/lenses\fR for examples based on each auth and \fIman 5 lenses.security.conf\fR for a list of supported options with description.
+.nf
+.fi
+
+.TP
+.nf
+\fIlenses (executable under lenses/bin):\fR
+Simply put, this file is responsible for starting Lenses. You will probably need to edit this script only if you are doing some kind of system development or if you are attempting
+to configure lenses with a very exotic infrastructure.
+
+For additional information check \fIman 1 lenses\fR.
+.nf
+.fi
+
+.TP
+.nf
+\fIlicense.conf:\fR
+Lenses license file. This file is obtained by contacting Landoop sales and its location is configured from \fIlenses.conf\fR via the \fIlenses.license.file\fR option.
+.nf
+.fi
+
+.TP
+.nf
+\fIlogback.xml:\fR
+This file tells lenses how to export logs, and with what verbosity. Any changes to the file are picked up automatically by lenses(when running) after a short time.
+Under normal circumstances you won't need to make any changes in this file.
+
+.nf
+.fi
+
+.SH "STRUCTURE OVERVIEW"
+.TP
+\fBThe Lenses Directories\fR
+.nf
+lenses
+├── bin
+├── jre8u131
+├── lib
+├── licenses
+├── plugins
+└── serde
+.fi
+
+.TP
+.nf
+\fIThe bin Directory:\fR
+The \fBbin\fR hosts all scripts responsible for starting lenses. On Linux systems, given that lenses has been configured,
+in order to start Lenses (see SPECIAL FILES: lenses.conf), you need to run \fI\./path/lenses/bin/lenses\fR
+.fi
+.nf
+
+.TP
+.nf
+\fIThe lib Directory:\fR
+Here lie all the executable jar files which consist lenses. The CLASSPATH variable always points to this location when starting lenses starts.
+If you move this directory elsewhere, then you must also update the CLASSPATH variable in \fB\./path/lenses/bin/lenses\fR to the new location.
+.fi
+.nf
+
+.TP
+.nf
+\fIThe plugins Directory:\fR
+Lenses can load new classes on startup and while running (hot-reloading). Lenses takes advantage of this directory
+along with its subdirectories in order to detect and load new external classes. It is always recommended that all
+lenses related extensions to be installed under this directory, except for the cases where installation instruction suggest elsewhere.
+
+  \fISerde\fR:
+    Custom serialization and deserialization classes so you can use all Lenses functionality with your own data formats (such as protobuf)
+
+  \fILDAP Group Filter\fR:
+    Custom plugin to query your LDAP implementation for groups your users belong to if you do not use AD or the memberOf overlay of OpenLDAP
+
+  \fIUDF for the SQL Table-based Engine\fR:
+    User Defined Functions (UDF) can extend the Lenses SQL Table Engine with new functions
+
+  \fICustom HTTP authentication\fR:
+    A class that can extract —and verify possibly— user information sent via headers, so your users can authenticate to Lenses via an authentication proxy / Single Sign-On solution
+
+For example, if you have build your own custom_http auth class and you wish to enable it, then apart from doing the appropriate configurations
+under security.conf (see \fIsecurity.conf.sample\fR under \fI/opt/lenses\fR and \fIman 5 lenses.security.conf\fR), you will also have to install your
+custom http class under .../lenses/plugins/
+.fi
+.nf
+
+.TP
+.nf
+\fIThe jre8u131 Directory:\fR
+This directory all hosts jre files and libraries required to execute lenses. Under jre8u131/bin,
+you can find the tools usually shipped when installing a java runtime environment into your system.
+.fi
+.nf
+
+.SH "SUPPORTED ARCHITECTURES"
+.nf
+.B x86_64
+.B x86
+.fi
+.TP
+.B Architectures to be included in the future
+.nf
+.B aarch64
+
+.fi
+.SH NOTES
+.nf
+Special notes & related bug reporting mails should be included here.
+.fi
+
+.SH "SEE ALSO"
+.nf
+lenses (1), lenses.conf (5), lenses.security.conf (5), lkd (1), lkd (5), lenses-cli (1)
+.fi

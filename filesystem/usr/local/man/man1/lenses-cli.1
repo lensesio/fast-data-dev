@@ -1,0 +1,619 @@
+.TH "lenses-cli" "1"
+
+.SH NAME
+Lenses-cli \- Lenses Command Line Interface
+.SH SYNOPSIS
+.B lenses-cli
+\fICOMMAND\fR [\fBOPTIONS\fR] \fB[Flags]\fR \fB[[GlobalFlags]]\fR
+.SH "DESCRIPTION"
+.nf
+\fBLenses\fR offers a powerful CLI (command-line tool) built in Go that utilizes the REST
+and WebSocket APIs of Lenses, to communicate with Apache Kafka and exposes a straightforward way to perform
+common data engineering and site reliability engineering tasks, such as:
+
+\fBOnline Documentation:\fR \fIhttps://docs.lenses.io/dev/lenses-cli/index.html\fR
+.fi
+
+.SH CONFIGURATION
+.nf
+\fB ___       _______   __    _   _______   _______   _______
+|   |     |       | |  |  | | |       | |       | |       |
+|   |     |    ___| |   |_| | |  _____| |    ___| |  _____|
+|   |     |   |___  |       | | |_____  |   |___  | |_____
+|   |___  |    ___| |  _    | |_____  | |    ___| |_____  |
+|       | |   |___  | | |   |  _____| | |   |___   _____| |
+|_______| |_______| |_|  |__| |_______| |_______| |_______|\fR
+
+The result will be saved to the current user’s home directory/.lenses/lenses-cli.yml.
+Depending on the configuration, it looks like this:
+
+\fB--------------------------------------------------------------------------------
+CurrentContext: master
+Contexts:
+  master:
+    Host: http://lenseshost:9991
+    Basic:
+      Username: user
+      Password: password_encoded
+  myKerberos:
+    Host: https://lenseshost:9991:443
+    Insecure: true
+    Debug: true
+    Kerberos:
+      ConfFile: /etc/krb5.conf
+      WithPassword:
+        Username: user
+        Password: password_encoded
+        Realm: mydomain.realm\fR
+--------------------------------------------------------------------------------\fR
+
+.SH AVAILABLE COMMANDS
+
+.TP
+\fIacl\fR    Work with an Apache Kafka Access Control List
+
+Options:
+  \fIset\fR     Sets, create or update, an Apache Kafka Access Control List
+  \fIdelete\fR  Delete an Apache Kafka Access Control List
+
+Usage:
+  \fIlenses-cli acl [command]\fR
+
+Flags:
+  \fI\-h\,\-\-help\fR             Help for acl
+
+.TP
+\fIacls\fR    Print the list of the available Apache Kafka Access Control Lists
+
+Usage:
+  \fIlenses-cli acls [flags]\fR
+
+Flags:
+  \fI\-h\,\-\-help\fR             Help for acls
+  \fI\-\-no\-pretty\fR          Disable the pretty format for JSON output of commands (default false).
+  \fI\-q, --query string\fR   A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIalert\fR    Print the registered alerts
+
+Options:
+  \fIregister\fR              Register an alert
+  \fIsetting\fR               Print or enable a specific alert setting based on ID
+  \fIsettings\fR              Print all alert settings
+
+Usage:
+  \fIlenses-cli alert [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for alert
+
+.TP
+\fIalerts\fR    Print the registered alerts
+
+Options:
+  \fIregister\fR              Register an alert
+  \fIsetting\fR               Print or enable a specific alert setting based on ID
+  \fIsettings\fR              Print all alert settings
+
+Usage:
+  \fIlenses-cli alerts [flags]\fR
+
+Flags:
+  \fI\-h\,\-\-help\fR             Help for alerts
+  \fI\-\-no\-pretty\fR          Disable the pretty format for JSON output of commands (default false).
+  \fI\-q\,\-\-query string\fR     A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIaudits\fR    List the last buffered audit entries
+
+Usage:
+  \fIlenses-cli audits [flags]\fR
+
+Flags:
+  \fI\-h\,\-\-help\fR             Help for audits
+  \fI\-\-live\fR               Live
+  \fI\-\-no\-pretty\fR          Disable the pretty format for JSON output of commands (default false).
+  \fI\-q\,\-\-query string\fR     A jmespath query expression. This allows for querying the JSON output of commands
+  \fI\-\-with\-content\fR       Add a table column to display the raw json content of the event action
+
+.TP
+\fIconfigs\fR    Print the whole lenses box configs
+
+Aliases:
+  configs, config
+
+Usage:
+  \fIlenses-cli configs [flags]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR            Help for config
+  \fI\-\-no\-pretty\fR          Disable the pretty format for JSON output of commands (default false).
+  \fI\-q\,\-\-query string\fR     A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIconfigure\fR    Setup your environment for extensive CLI use. Create and save the required CLI configuration and client credentials
+
+Usage:
+  \fIlenses-cli configure [flags]\fR
+
+Flags:
+  \fI\-\-default\-location\fR   Will not ask for the location to save on, the result will be saved to the $HOME/.lenses/lenses-cli.yml
+  \fI\-h,\-\-help\fR            Help for configure
+  \fI\-\-no\-banner\fR          Disables the banner output
+  \fI\-\-reset\fR              Reset the current configuration
+
+.TP
+\fIconnector\fR    Get information about a particular connector based on its name
+
+Options:
+  \fIconfig\fR               Get connector config
+  \fIcreate\fR               Create a new connector
+  \fIdelete\fR               Delete a running connector
+  \fIpause\fR                Pause a connector
+  \fIrestart\fR              Restart a connector
+  \fIresume\fR               Resume a paused connector
+  \fIstatus\fR               Get connector status
+  \fItask\fR                 Work with a particular connector task, see connector task --help for details
+  \fItasks\fR                List of connector tasks
+  \fIupdate\fR               Update a connector's configuration
+
+Usage:
+  \fIlenses-cli connector [flags]\fR
+  \fIlenses-cli connector [command]\fR
+
+Flags:
+  \fI\-\-clusterName string\fR  Will not ask for the location to save on, the result will be saved to the $HOME/.lenses/lenses-cli.yml
+  \fI\-h,\-\-help\fR             Help for connector
+  \fI\-\-name string\fR         Disables the banner output
+  \fI\-\-no\-pretty\fR           Reset the current connector
+  \fI\-q\,\-\-query string\fR      A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIconnectors\fR    List of active connectors' names
+
+Options:
+  \fIclusters\fR               List of available connectors' clusters
+  \fIplugins\fR                List of available connectors' plugins
+
+Aliases:
+  connectors, connect
+
+Usage:
+  \fIlenses-cli connector [flags]\fR
+  \fIlenses-cli connector [command]\fR
+
+Flags:
+  \fI\-\-clusterName string\fR  Will not ask for the location to save on, the result will be saved to the $HOME/.lenses/lenses-cli.yml
+  \fI\-h,\-\-help\fR             Help for connector
+  \fI\-\-names\fR               -
+  \fI\-\-no\-pretty\fR           Reset the current connector
+  \fI\-q\,\-\-query string\fR      A jmespath query expression. This allows for querying the JSON output of commands
+  \fI\-\-supported\fR           To list all the supported Kafka Connectors instead of the currently deployed
+  \fI\-\-unwrap\fR              -
+
+.TP
+\fIcontext\fR    Print the current context or modify or delete a configuration context using the update and delete subcommands
+
+Options:
+  \fIdelete\fR               Delete a configuration context
+  \fIset\fR                  Edit an existing or add a configuration context, similar to 'configure --context=context_name --reset'
+                       but without banner and this one saves the configuration to the default location
+
+Usage:
+  \fIlenses-cli context [flags]\fR
+  \fIlenses-cli context [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for context
+  \fI\-\-silent\fR              Run in silent mode. No printing info messages for CRUD except errors, defaults to false
+
+.TP
+\fIcontexts\fR    Print and validate (through calls to the servers) all the available contexts from the configuration file
+
+Usage:
+  \fIlenses-cli contexts [flags]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for contexts
+  \fI\-\-silent\fR              Run in silent mode. No printing info messages for CRUD except errors, defaults to false
+
+.TP
+\fIlicense\fR   Print the license information for the connected lenses box
+
+Usage:
+  \fIlenses-cli license [flags]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for license
+  \fI\-\-no\-pretty\fR           Reset the current connector
+  \fI\-q\,\-\-query string\fR      A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIsql\fR   Live sql provides "real-time" sql queries with your lenses box
+
+Usage:
+  \fIlenses-cli live sql [query] [flags]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for live
+
+.TP
+\fIlogs\fR   List the info or metrics logs
+
+Options:
+  \fIinfo\fR                  List the latest (512) INFO logs
+  \fImetrics\fR               List the latest (512) METRICS logs
+
+Usage:
+  \fIlenses-cli logs [flags]\fR
+  \fIlenses-cli logs [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR            Help for logs
+  \fI\-\-no\-text\fR            No-text will print as objects (json if --machine-friendly or table otherwise), defaults to false
+
+.TP
+\fImode\fR   Print the configuration's execution mode
+
+Usage:
+  \fIlenses-cli mode\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for modes
+
+.TP
+\fIprocessor\fR   Work with a particular processor based on the processor id; pause, resume, update runners, delete or create a new processor
+
+Options:
+  \fIcreate\fR                Create a processor
+  \fIdelete\fR                Delete a processor
+  \fIpause\fR                 Pause a processor
+  \fIresume\fR                Resume a processor
+  \fIupdate\fR                Update processor runners
+
+Usage:
+  \fIlenses-cli processor [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for processor
+
+.TP
+\fIprocessors\fR  List of all available processors
+
+Options:
+  \fIlogs\fR                  Retrieve LSQL Processor logs. Available only in KUBERNETES execution mode
+
+Usage:
+  \fIlenses-cli processors [flags]\fR
+  \fIlenses-cli processors [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for processors
+  \fI\-\-name string\fR         Select by processor name, available only in CONNECT and KUBERNETES mode
+  \fI\-\-namespace string\fR    Select by namespace, available only in KUBERNETES mode
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-q\,\-\-query string\fR      A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIquota\fR  Work with particular a quota, create a new quota or update and delete an existing one
+
+Options:
+  \fIclients\fR               Work with clients quotas
+  \fIusers\fR                 Work with users quotas
+
+Usage:
+  \fIlenses-cli quota [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for quota
+
+.TP
+\fIquotas\fR  List of all available quotas
+
+Usage:
+  \fIlenses-cli quotas [flags]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for quotas
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-q\,\-\-query string\fR      A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIschema\fR  Work with a particular schema based on its name, get a schema based on the ID or register a new one
+
+Options:
+  \fIcompatibility\fR         Print or change the compatibility level of a schema
+  \fIdelete\fR                Delete a schema
+  \fIdelete-version\fR        Delete a specific version of the schema registered under this name.
+                        This command only deletes the version and the schema id remains intact making it still
+                        possible to decode data using the schema id.
+                        Returns the version of the deleted schema
+  \fIregister\fR              Register a new schema under a particular name and print the new schema identifier
+  \fIversions\fR              List all versions of a particular schema
+
+Usage:
+  \fIlenses-cli schema [flags]\fR
+  \fIlenses-cli schema [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for schema
+  \fI\-\-id int\fR              Lookup by schema id
+  \fI\-\-name string\fR         Lookup by schema name
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-\-version string\fR      Latest or numeric value lookup schema based on a specific  version (default "latest")
+
+.TP
+\fIschemas\fR  List all available schemas
+
+Options:
+  \fIcompatibility\fR         Get the global compatibility level
+
+Usage:
+  \fIlenses-cli schemas [flags]\fR
+  \fIlenses-cli schemas [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for schemas
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-\-query string\fR        A jmespath query expression. This allows for querying the JSON output of commands
+  \fI\-\-unwrap\fR              Prints only the names as a list of strings separated by line endings
+
+.TP
+\fIsql\fR  Execute or Validate Only Lenses query (LSQL) on the fly
+
+Options:
+  \fIcancel\fR                Cancels a running query by its ID. It returns true whether it was cancelled otherwise false or error
+  \fIrunning\fR               Print the current running queries, if any
+
+Usage:
+  \fIlenses-cli sql [--validate?] [query] [flags]\fR
+  \fIlenses-cli sql [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for sql
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-\-offset\fR              The stop output will contain the 'offsets' information as well
+  \fI\-\-stats duration\fR      \-\-stats=2s if passed the client will accept stats records every 'stats' duration,
+                        therefore they will be visible to the output
+
+  \fI\-\-validate\fR            Runs query validation only
+
+.TP
+\fItopic\fR  Work with a particular topic based on the topic name, retrieve it or create a new one
+
+Options:
+  \fIcreate\fR                Create a new topic
+  \fIdelete\fR                Delete a topic
+  \fIupdate\fR                Update a topic's configs (as an array of config key-value map)
+
+Usage:
+  \fIlenses-cli topic [flags]\fR
+  \fIlenses-cli topic [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for topic
+  \fI\-\-name string\fR         \-\-name=topic
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-\-query string\fR        A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fItopics\fR  List all available topics
+
+Options:
+  \fIkeys\fR                  List all available config keys for topics
+  \fImetadata\fR              List all available topics metadata
+
+Usage:
+  \fIlenses-cli topics [flags]\fR
+  \fIlenses-cli topics [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for topics
+  \fI\-\-name string\fR         \-\-name=topic1
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-\-query string\fR        A jmespath query expression. This allows for querying the JSON output of commands
+  \fI\-\-unwrap\fR              Prints only the names as a list of strings separated by line endings
+
+.TP
+\fIuser\fR  List information about the authenticated logged user such as the given roles given by the lenses administrator or work with the user's profile
+
+Options:
+  \fIprofile\fR               List the user-specific favourites, if any
+
+Usage:
+  \fIlenses-cli user [flags]\fR
+  \fIlenses-cli user [command]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for user
+  \fI\-\-no\-pretty\fR           Disable the pretty format for JSON output of commands (default false).
+  \fI\-\-query string\fR        A jmespath query expression. This allows for querying the JSON output of commands
+
+.TP
+\fIversion\fR  Print the current version of lenses-cli
+
+Usage:
+  \fIlenses-cli version [flags]\fR
+
+Flags:
+  \fI\-h,\-\-help\fR             Help for version
+
+.SH GLOBAL FLAGS
+.TP
+\fI\-\-config string\fR                Load or save the host, user, pass and debug fields from or to a configuration
+                        file (yaml or json)
+
+.TP
+\fI\-\-context string\fR               Load specific environment, embedded configuration based on the configuration's 'Contexts'
+
+.TP
+\fI\-\-debug\fR                        Print some information that are necessary for debugging
+
+.TP
+\fI\-\-header\-bgcolor string\fR        \-\-header\-bgcolor=white
+
+.TP
+\fI\-\-header\-fgcolor string\fR        \-\-header\-fgcolor=black
+
+.TP
+\fI\-\-host string\fR                  \-\-host=https\://example\.com
+
+.TP
+\fI\-\-insecure \fR                    \-\-insecure=true
+
+.TP
+\fI\-\-kerberos\-ccache string\fR       \-\-kerberos\-ccache=/tmp/krb5\-ccache\.txt
+
+.TP
+\fI\-\-kerberos\-conf string\fR         \-\-kerberos\-conf=krb5\.conf
+
+.TP
+\fI\-\-kerberos\-keytab string\fR       \-\-kerberos\-keytab=/tmp/krb5\-my\-keytab\.txt
+
+.TP
+\fI\-\-kerberos\-realm string\fR        \-\-kerberos\-realm=kerberos\.realm
+
+.TP
+\fI\-\-machine\-friendly\fR             \-\-machine\-friendly to output JSON results and hide all the info messages
+
+.TP
+\fI\-\-pass string\fR                  \-\-pass=MyPassword
+
+.TP
+\fI\-\-timeout string\fR               \-\-timeout\=30s timeout for the connection establishment
+
+.TP
+\fI\-\-token string\fR                 \-\-token=DSAUH321S\%423\#32\$321ZXN
+
+.TP
+\fI\-\-user string\fR                  \-\-user=MyUser
+
+.SH EXAMPLES
+
+.TP
+\fIPassing credentials through flags\fR
+
+You can always individually configure and log in on the fly for a single command. This is very helpful when you use multi accounts.
+
+  \fBlenses-cli --host="http://lenseshost:9991" --user="user" --pass="password" $command\fR
+
+All kerberos authentication methods are supported (password, keytab or from ccache).
+
+  \fBlenses-cli --host="https://lenseshost:9991" --insecure --timeout=30s --kerberos-conf="/etc/krb5.conf" \\
+  --kerberos-realm="domain.realm" --kerberos-keytab="/tmp/krb5.keytab" --kerberos-ccache="/tmp/krb5-ccache.txt" \\
+  --user="kerberosUsername" --password="kerberosPassword" $command\fR
+
+.TP
+\fIConfiguration Contexts\fR
+
+Create a new configuration for an environment
+  \fBlenses-cli configure --context=newContextName\fR
+
+Reset an existing Context
+  \fBlenses-cli configure --context=existingContext --reset\fR
+
+Switch between Contexts
+  \fBlenses-cli --context=contextName $command\fR
+
+View and verify the current Context
+  \fBlenses-cli context\fR
+
+View all available Contexts
+  \fBlenses-cli contexts\fR
+
+.TP
+\fIAccess Control Lists\fR
+
+View ACLs
+
+  \fBlenses-cli acls --machine-friendly\fR
+
+Set/Update ACLs
+
+  \fBlenses-cli acl set \\
+      --resourceType="Topic" \\
+      --resourceName="transactions" \\
+      --principal="principalType:principalName" \\
+      --permissionType="Allow" \\
+      --acl-host="*" \\
+      --operation="Read"\fR
+
+Delete ACLs
+
+  \fBlenses-cli acl delete \\
+      --resourceType="Topic" \\
+      --resourceName="transactions" \\
+      --principal="principalType:principalName" \\
+      --permissionType="Allow" \\
+      --acl-host="*" \\
+      --operation="Read"\fR
+
+.TP
+\fIaudits\fR
+
+Example:
+  audits [--live] [--with-content]
+
+.TP
+\fIconnector\fR
+
+Example:
+  connector --clusterName="cluster_name" --name="connector_name"
+
+.TP
+\fIconnectors\fR
+
+Example:
+  connectors [--supported] or connectors --clusterName="cluster_name" or --clusterName="*"
+
+.TP
+\fIlive\fR
+
+Example:
+  live sql "SELECT * FROM cc_payments WHERE _vtype='AVRO' AND _ktype='STRING' AND _sample=2 AND _sampleWindow=200" "query2" "query3"
+
+.TP
+\fIlogs\fR
+
+Example:
+  logs info
+
+.TP
+\fIprocessor\fR
+
+Example:
+  processor pause --id="existing_processor_id" or processor create --name="processor_name"
+  --sql="" --runners=1 --clusterName="" --namespace="" pipeline=""
+
+.TP
+\fIquota\fR
+
+Example:
+  quota users set [--quota-user=""] [--quota-client=""]
+  --quota-config="{\"producer_byte_rate\": \"100000\",\"consumer_byte_rate\": \"200000\",\"request_percentage\": \"75\"}"
+
+.TP
+\fIschema\fR
+
+Example:
+  schema --id=1 or schema --name="name" [flags] or schema register --name="name" --avro="..."
+
+.TP
+\fIsql\fR
+
+Example:
+  sql --offsets --stats=2s "SELECT * FROM reddit_posts LIMIT 50"
+
+.TP
+\fItopic\fR
+
+Example:
+  topic --name="existing_topic_name" or topic create --name="topic1" --replication=1 --partitions=1
+  --configs="{\"key\": \"value\"}"
+
+.fi
+
+.SH "SEE ALSO"
+.nf
+lenses (1), lenses.conf (5), lenses.security.conf (5), lkd (1), lkd (5), lenses-cli (1)
+.fi

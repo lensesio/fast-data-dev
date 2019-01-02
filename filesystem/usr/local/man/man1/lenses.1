@@ -1,0 +1,124 @@
+.TH "LENSES" "1"
+.SH NAME
+lenses \- Build your Data Highway
+.SH SYNOPSIS
+.B lenses
+\fBlenses.con\fR
+.SH "DESCRIPTION"
+.nf
+\fBExecutable\fR script for starting lenses.
+
+Online Documentation: \fIhttps://docs.lenses.io/install_setup/deployment-options/manual-deployment.html#manual-deployment\fR
+
+.fi
+.SH OPTIONAL ARGUMENTS
+.TP
+\fIlenses.conf\fR
+.nf
+If you have saved lenses.conf under on of the following locations, then you can skip this option.
+
+I    \fI./lenses.conf\fR (current directory)
+II   \fI/etc/lenses/lenses.conf\fR
+III  \fI/etc/lenses.conf\fR
+IV   \fI/LENSES_HOME/lenses.conf (default home=/opt/lenses/)\fR
+
+The locations above have priority from \fII\fR highest to \fIIV\fR lowest
+.fi
+
+.SH JAVA OPTIONS
+.TP
+Lenses runs on an embedded Java Virtual Machine (JVM). You can tune it like any JVM-based application, and we made sure to follow the same convention that you see throughout the Kafka ecosystem.
+This means you get five environment variables you may use, \fILENSES_OPTS, LENSES_HEAP_OPTS, LENSES_JMX_OPTS, LENSES_LOG4J_OPTS\fR and \fILENSES_PERFORMANCE_OPTS\fR.
+
+Let’s see them in detail:
+.nf
+
+\fILENSES_OPTS\fR
+  This variable should be used for generic settings, such as the Kerberos configuration (e.g SASL/GSSAPI auth to the Brokers).
+  Please note that in this option in our docker image we add a java agent (in addition to your settings), to export Lenses metrics into Prometheus format.
+
+\fILENSES_HEAP_OPTS\fR
+  Here you can set options about the JVM heap. The default setting is -Xmx3g -Xms512m which sets the heap size between 512MB and 3GB. It will serve you well even for larger clusters.
+  It is possible to set the upper limit (3GB) lower if needed. For our Lenses Box as an example, we set it at just 1.2GB. If you are using many LSQL processors in IN_PROC mode,
+  or your cluster has more than 3000 partitions, you should increase it.
+
+\fILENSES_JMX_OPTS\fR
+  This variable can be used to tweak the JMX options that the JVM offers, such as if the JMX will allow remote access. Have a look at the Metrics Section for more information.
+
+\fILENSES_LOG4J_OPTS\fR
+  This variable can be used to tweak Lenses logging. Please note that Lenses uses the Logback library for logging. For more information about this, check the Logging section.
+
+\fILENSES_PERFORMANCE_OPTS\fR
+  Here you can tune the JVM. Our default settings should serve you well:
+    -server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+DisableExplicitGC -Djava.awt.headless=true
+
+.if
+
+.SH INSTALLATION
+.TP
+Some best practice advice can be offered for installation on a server:
+.nf
+
+1    Install under /opt
+
+2    Make sure the directory is owned by the root user
+
+3    Create a user specially for Lenses
+
+4    The configuration file may be placed under /opt/lenses/lenses.conf, /etc/lenses/lenses.conf or passed in at the command line when staring Lenses.
+
+        \fI./bin/lenses myconf.conf\fR
+
+5    The security configuration file contains information about the users and groups. Please make sure it is only readable by the Lenses user:
+
+        \fIchmod 0600 /path/to/security.conf\fR
+        \fIchown [lenses-user]:root /path/to/security.conf\fR
+
+6    Please adjust the logs configuration to a path for which the running Lenses process has write access to or, to stdout/stderr in case the log management should happen by the process supervisor.
+     See the logging configuration section for more information.
+.if
+
+.SH MISC.
+.TP
+\fISYSTEMD SERVICE\fR
+
+If your server is on a current Linux distribution and it uses the systemd service manager, the script below can be used to start and stop Lenses with the management and supervision facilities of systemd.
+
+  [Unit]
+  Description=Run Landoop Lenses Service
+
+  [Service]
+  Restart=always
+  User=[LENSES-USER]
+  Group=[LENSES-GROUP]
+  LimitNOFILE=4096
+  WorkingDirectory=/opt/lenses
+  #Environment=LENSES_LOG4J_OPTS="-Dlogback.configurationFile=file:/etc/lenses/logback..xml"
+  ExecStart=/opt/lenses/bin/lenses /etc/lenses/lenses.conf
+
+  [Install]
+  WantedBy=multi-user.target
+.nf
+
+.TP
+\fIPROXY\fR
+.nf
+
+Lenses does not support SSL termination but rather relies on a proxy set in front of it (such as Apache, nginx and Caddy) to provide SSL to clients.
+Attention should be given to set the proxy to support websocket connections under the path /api/kafka/ws.
+
+Sample configuration for caddy:
+
+  proxy /api/kafka/ws http://lenses.url:9991 {
+      websocket
+  }
+  proxy /api/ws http://lenses.url:9991 {
+      websocket
+  }
+  proxy / http://lenses.url:9991
+
+.if
+
+.SH "SEE ALSO"
+.nf
+lenses (1), lenses.conf (5), lenses.security.conf (5), lkd (1), lkd (5), lenses-cli (1)
