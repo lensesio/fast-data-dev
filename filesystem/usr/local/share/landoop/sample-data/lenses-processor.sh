@@ -11,7 +11,7 @@ PROC_SQL="SET autocreate=true;
 INSERT INTO fast_vessel_processor
     SELECT MMSI, Speed, Longitude AS Long, Latitude AS Lat, \`Timestamp\`
     FROM ${SRC_TP}
-    WHERE Speed > 10 AND _ktype=AVRO AND _vtype=AVRO;"
+    WHERE Speed > 10;"
 
 if [[ "${LENSES_PORT}" == "0" ]]; then
     echo "Lenses is disabled. Skipping processor."
