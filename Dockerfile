@@ -196,6 +196,13 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
            -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-postgres \
     && rm -rf /debezium-{mongodb,mysql,postgres}.tgz
 
+# Kafka Connect Splunk
+ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
+ARG KAFKA_CONNECT_SPLUNK_URL="https://github.com/splunk/kafka-connect-splunk/releases/download/v${KAFKA_CONNECT_SPLUNK_VERSION}/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
+    && wget "$KAFKA_CONNECT_SPLUNK_URL" \
+       -O /opt/landoop/connectors/third-party/kafka-connect-splunk/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar
+
 ############
 # Add tools/
 ############
@@ -284,6 +291,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_SPLUNK_VERSION=${KAFKA_CONNECT_SPLUNK_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/landoop/build.info \
     && echo "SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/landoop/build.info \
