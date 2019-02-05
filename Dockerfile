@@ -175,11 +175,11 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate 
             -O /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.7.4
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.8.3.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.7.4
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.8.3.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.7.4
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.8.3.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
@@ -195,6 +195,13 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
            --owner=root --group=root --strip-components=1 \
            -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-postgres \
     && rm -rf /debezium-{mongodb,mysql,postgres}.tgz
+
+# Kafka Connect Splunk
+ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
+ARG KAFKA_CONNECT_SPLUNK_URL="https://github.com/splunk/kafka-connect-splunk/releases/download/v${KAFKA_CONNECT_SPLUNK_VERSION}/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
+    && wget "$KAFKA_CONNECT_SPLUNK_URL" \
+       -O /opt/landoop/connectors/third-party/kafka-connect-splunk/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar
 
 ############
 # Add tools/
@@ -284,6 +291,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_SPLUNK_VERSION=${KAFKA_CONNECT_SPLUNK_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/landoop/build.info \
     && echo "SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/landoop/build.info \

@@ -84,12 +84,16 @@ export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DE
 export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT}
 export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
 export KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS:-}
+export BROKER_JMX_OPTS=${BROKER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$BROKER_JMX_PORT}
+export BROKER_LOG4J_OPTS=${BROKER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/broker/log4j.properties}
 
 # Set env vars to configure Schema Registry
 export SCHEMA_REGISTRY_LISTENERS=${SCHEMA_REGISTRY_LISTENERS:-http://0.0.0.0:$REGISTRY_PORT}
 export SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS:-PLAINTEXT://:$BROKER_PORT}
 export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
 export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
+export SCHEMA_REGISTRY_JMX_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REGISTRY_JMX_PORT}
+export SCHEMA_REGISTRY_LOG4J_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dlog4j.configuration=file:/var/run/schema-registry/log4j.properties}
 
 # Set env vars for Kafka Connect Distributed
 export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
@@ -109,6 +113,8 @@ export CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC:-connect-conf
 export CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC:-connect-offsets}
 export CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC:-connect-statuses}
 export CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME:-}
+export CONNECT_JMX_OPTS=${CONNECT_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$CONNECT_JMX_PORT}
+export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/connect/connect-log4j.properties}
 
 # Set env vars for REST Proxy
 export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
@@ -120,11 +126,17 @@ export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://l
 export KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS=${KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS:-20000}
 export KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS=${KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS:-18000}
 export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
+export KAFKAREST_JMX_OPTS=${KAFKA_REST_JMX_OPTS:-}
+export KAFKAREST_JMX_OPTS=${KAFKAREST_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REST_JMX_PORT}
+export KAFKAREST_LOG4J_OPTS=${KAFKA_REST_LOG4J_OPTS:-}
+export KAFKAREST_LOG4J_OPTS=${KAFKAREST_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/rest-proxy/log4j.properties}
 
 # Set env vars for ZOOKEEPER
 export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/data/zookeeper}
 export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
 export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
+export ZOOKEEPER_LOG4J_OPTS=${ZOOKEEPER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/zookeeper/log4j.properties}
+export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$ZK_JMX_PORT}
 
 # Set env var for Lenses
 #export LENSES_PORT=${LENSES_PORT:-9991}

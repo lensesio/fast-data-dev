@@ -23,6 +23,7 @@ done
 for key in 0 1 4 5; do
     unset SCHEMA_REGISTRY_OPTS
     unset SCHEMA_REGISTRY_JMX_OPTS
+    unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
             --broker-list ${GENERATOR_BROKER}:${BROKER_PORT} \
@@ -38,6 +39,7 @@ done
 for key in 2; do
     unset SCHEMA_REGISTRY_OPTS
     unset SCHEMA_REGISTRY_JMX_OPTS
+    unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
             --broker-list ${GENERATOR_BROKER}:${BROKER_PORT} \
@@ -51,6 +53,7 @@ done
 for key in 3; do
     unset KAFKA_OPTS
     unset KAFKA_JMX_OPTS
+    unset KAFKA_LOG4J_OPTS
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         kafka-console-producer \
