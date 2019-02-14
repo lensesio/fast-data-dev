@@ -340,6 +340,7 @@ RUN apk add --no-cache \
         sqlite \
         supervisor \
         tar \
+        tzdata \
         wget \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /opt \
