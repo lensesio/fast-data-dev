@@ -92,7 +92,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common" | sort | uniq -c | grep -E "^\s+21 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+22 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
@@ -175,11 +175,11 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate 
             -O /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.7.4
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.8.3.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.7.4
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.8.3.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.7.4
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.8.3.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
@@ -195,6 +195,13 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
            --owner=root --group=root --strip-components=1 \
            -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-postgres \
     && rm -rf /debezium-{mongodb,mysql,postgres}.tgz
+
+# Kafka Connect Splunk
+ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
+ARG KAFKA_CONNECT_SPLUNK_URL="https://github.com/splunk/kafka-connect-splunk/releases/download/v${KAFKA_CONNECT_SPLUNK_VERSION}/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
+    && wget "$KAFKA_CONNECT_SPLUNK_URL" \
+       -O /opt/landoop/connectors/third-party/kafka-connect-splunk/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar
 
 ############
 # Add tools/
@@ -285,6 +292,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_SPLUNK_VERSION=${KAFKA_CONNECT_SPLUNK_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
     && echo "KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/landoop/build.info \
     && echo "SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
@@ -331,10 +340,11 @@ RUN apk add --no-cache \
         sqlite \
         supervisor \
         tar \
+        tzdata \
         wget \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /opt \
-    && mkdir /extra-connect-jars /connectors \
+    && mkdir /extra-connect-jars /connectors /plugins \
     && mkdir /etc/supervisord.d /etc/supervisord.templates.d
 
 SHELL ["/bin/bash", "-c"]
@@ -374,7 +384,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.1/lenses-2.1.10-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.2/lenses-2.2.9-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
@@ -383,8 +393,8 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
 # Add Lenses CLI
 ARG CAD_UN
 ARG CAD_PW
-ARG LC_VERSION="2.1.9"
-ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.1/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+ARG LC_VERSION="2.2.7"
+ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.2/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
     && rm -f /lenses-cli.tgz

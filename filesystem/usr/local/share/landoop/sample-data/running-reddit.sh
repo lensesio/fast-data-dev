@@ -3,6 +3,8 @@
 # shellcheck source=variables.env
 source variables.env
 
+GENERATOR_BROKER=${GENERATOR_BROKER:-localhost}
+
 # Create Topics
 # shellcheck disable=SC2043
 for key in 1; do
@@ -22,9 +24,12 @@ done
 # Insert data with key
 # shellcheck disable=SC2043
 for key in 1; do
+    unset SCHEMA_REGISTRY_OPTS
+    unset SCHEMA_REGISTRY_JMX_OPTS
+    unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list localhost:${BROKER_PORT} \
+            --broker-list ${GENERATOR_BROKER}:${BROKER_PORT} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \

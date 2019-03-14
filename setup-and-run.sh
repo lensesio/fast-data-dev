@@ -69,7 +69,7 @@ source build.info
 export $(cut -d= -f1 /build.info)
 
 # Set env vars to configure Kafka
-export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-0}
+export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-101}
 export KAFKA_NUM_NETWORK_THREADS=${KAFKA_NUM_NETWORK_THREADS:-2}
 export KAFKA_NUM_IO_THREADS=${KAFKA_NUM_IO_THREADS:-4}
 export KAFKA_LOG_DIRS=${KAFKA_LOG_DIRS:-/data/kafka/logdir}
@@ -84,12 +84,16 @@ export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DE
 export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT}
 export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
 export KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS:-}
+export BROKER_JMX_OPTS=${BROKER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$BROKER_JMX_PORT}
+export BROKER_LOG4J_OPTS=${BROKER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/broker/log4j.properties}
 
 # Set env vars to configure Schema Registry
 export SCHEMA_REGISTRY_LISTENERS=${SCHEMA_REGISTRY_LISTENERS:-http://0.0.0.0:$REGISTRY_PORT}
 export SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS:-PLAINTEXT://:$BROKER_PORT}
 export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
 export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
+export SCHEMA_REGISTRY_JMX_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REGISTRY_JMX_PORT}
+export SCHEMA_REGISTRY_LOG4J_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dlog4j.configuration=file:/var/run/schema-registry/log4j.properties}
 
 # Set env vars for Kafka Connect Distributed
 export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
@@ -105,14 +109,12 @@ export CONNECT_ACCESS_CONTROL_ALLOW_METHODS=${CONNECT_ACCESS_CONTROL_ALLOW_METHO
 export CONNECT_ACCESS_CONTROL_ALLOW_ORIGIN=${CONNECT_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
 export CONNECT_PLUGIN_PATH=${CONNECT_PLUGIN_PATH:-/var/run/connect/connectors/stream-reactor,/var/run/connect/connectors/third-party,/connectors}
 export CONNECT_REST_PORT=${CONNECT_REST_PORT:-$CONNECT_PORT}
-export CONNECT_INTERNAL_KEY_CONVERTER=${CONNECT_INTERNAL_KEY_CONVERTER:-org.apache.kafka.connect.json.JsonConverter}
-export CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE:-false}
-export CONNECT_INTERNAL_VALUE_CONVERTER=${CONNECT_INTERNAL_VALUE_CONVERTER:-org.apache.kafka.connect.json.JsonConverter}
-export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=${CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE:-false}
 export CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC:-connect-configs}
 export CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC:-connect-offsets}
 export CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC:-connect-statuses}
 export CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME:-}
+export CONNECT_JMX_OPTS=${CONNECT_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$CONNECT_JMX_PORT}
+export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/connect/connect-log4j.properties}
 
 # Set env vars for REST Proxy
 export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
@@ -124,11 +126,17 @@ export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://l
 export KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS=${KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS:-20000}
 export KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS=${KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS:-18000}
 export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
+export KAFKAREST_JMX_OPTS=${KAFKA_REST_JMX_OPTS:-}
+export KAFKAREST_JMX_OPTS=${KAFKAREST_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REST_JMX_PORT}
+export KAFKAREST_LOG4J_OPTS=${KAFKA_REST_LOG4J_OPTS:-}
+export KAFKAREST_LOG4J_OPTS=${KAFKAREST_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/rest-proxy/log4j.properties}
 
 # Set env vars for ZOOKEEPER
 export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/data/zookeeper}
 export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
 export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
+export ZOOKEEPER_LOG4J_OPTS=${ZOOKEEPER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/zookeeper/log4j.properties}
+export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$ZK_JMX_PORT}
 
 # Set env var for Lenses
 #export LENSES_PORT=${LENSES_PORT:-9991}
@@ -142,7 +150,7 @@ export LENSES_CONNECT_CLUSTERS=${LENSES_CONNECT_CLUSTERS:-$LEN_CONNECT_CLUSTERS}
 export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
 export LENSES_SECURITY_MODE=${LENSES_SECURITY_MODE:-BASIC}
-LEN_SECURITY_GROUPS="[{\"name\":\"adminGroup\",\"roles\":[\"admin\",\"write\",\"PIIWrite\",\"read\"]}]"
+LEN_SECURITY_GROUPS='[{"name":"adminGroup","roles":["Admin", "DataPolicyWrite", "TableStorageWrite", "AlertsWrite"]}]'
 export LENSES_SECURITY_GROUPS=${LENSES_SECURITY_GROUPS:-$LEN_SECURITY_GROUPS}
 export LEN_PASSWORD=${PASSWORD:-admin}
 LEN_SECURITY_USERS="[{\"username\":\"${USER}\",\"password\":\"${LEN_PASSWORD}\",\"displayname\":\"Lenses Admin\",\"groups\":[\"adminGroup\"]}]"
@@ -151,6 +159,7 @@ export LENSES_TELEMETRY_ENABLE=${LENSES_TELEMETRY_ENABLE:-$TELEMETRY}
 export LENSES_BOX=${LENSES_BOX:-true}
 export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
 export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
+export LENSES_PLUGINS_CLASSPATH_OPTS=${LENSES_PLUGINS_CLASSPATH_OPTS:-/plugins}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -161,7 +170,7 @@ export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}
 export ZOOKEEPER_HEAP_OPTS=${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}
 export SCHEMA_REGISTRY_HEAP_OPTS=${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}
 export KAFKA_REST_HEAP_OPTS=${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}
-export LENSES_HEAP_OPTS=${LENSES_HEAP_OPTS:--Xmx1024M -Xmx320M}
+export LENSES_HEAP_OPTS=${LENSES_HEAP_OPTS:--Xmx1024M -Xms320M}
 
 
 # Configure JMX if needed or disable it.
@@ -196,7 +205,7 @@ mkdir -p \
       /var/run/caddy \
       /data/{zookeeper,kafka,lsql-state-dir,lenses} \
       /var/run/lenses
-chmod 777 /data/{zookeeper,kafka,lsql-state-dir}
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses}
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
@@ -255,7 +264,7 @@ if [[ $BROKER_PORT == 0 ]];   then rm /etc/supervisord.d/*broker.conf; fi
 if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; fi
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
 if [[ $REST_PORT == 0 ]];     then rm /etc/supervisord.d/*rest-proxy.conf; fi
-if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*rest-proxy.conf; fi
+if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
 if [[ $LENSES_PORT == 0 ]];   then rm /etc/supervisord.d/*lenses.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
 if [[ $RUNTESTS =~ $FALSE_REG ]]; then
@@ -549,8 +558,9 @@ echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is landoop’s kafka-lenses-dev. Lenses $FDD_LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
 echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
-echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://lenses.stream/dev/lenses-box/ \e[39m"
+echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://docs.lenses.io/dev/lenses-box/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://gitter.im/Landoop/support \e[39m"
+echo -e "\e[92mYou can view the logs for all running services at \e[96mhttp://${PRINT_HOST}:${WEB_PORT}/fdd/logs \e[39m"
 export FDD_DHOST="http://${PRINT_HOST}:${WEB_PORT}"
 
 # Set sample data if needed
@@ -603,8 +613,8 @@ else
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
 chown nobody:nobody "$LENSES_LICENSE_FILE"
-mkdir -p /var/run/lenses/{logs,storage}
-#chmod 777 /var/run/lenses/{logs,storage}
+mkdir -p /var/run/lenses/logs
+#chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
 chown nobody:nobody /var/run/lenses/*
 rm -rf /var/www-lenses
