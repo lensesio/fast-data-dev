@@ -6,7 +6,7 @@ source variables.env
 GENERATOR_BROKER=${GENERATOR_BROKER:-localhost}
 
 # Create Topics
-for key in 0 1 2 3 4 5; do
+for key in 0 1 2 3 4; do
     # Create topic with x partitions and a retention time of 10 years.
     kafka-topics \
         --zookeeper localhost:${ZK_PORT} \
@@ -20,7 +20,7 @@ for key in 0 1 2 3 4 5; do
 done
 
 # Insert data with keys
-for key in 0 1 4 5; do
+for key in 0 3 4; do
     unset SCHEMA_REGISTRY_OPTS
     unset SCHEMA_REGISTRY_JMX_OPTS
     unset SCHEMA_REGISTRY_LOG4J_OPTS
@@ -36,7 +36,7 @@ done
 
 # Insert data without keys
 # shellcheck disable=SC2043
-for key in 2; do
+for key in 1; do
     unset SCHEMA_REGISTRY_OPTS
     unset SCHEMA_REGISTRY_JMX_OPTS
     unset SCHEMA_REGISTRY_LOG4J_OPTS
@@ -50,7 +50,7 @@ done
 
 # Insert json data with text keys converted to json keys
 # shellcheck disable=SC2043
-for key in 3; do
+for key in 2; do
     unset KAFKA_OPTS
     unset KAFKA_JMX_OPTS
     unset KAFKA_LOG4J_OPTS
