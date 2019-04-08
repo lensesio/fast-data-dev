@@ -5,7 +5,7 @@ source variables.env
 
 # Create Topics
 # shellcheck disable=SC2043
-for key in 6; do
+for key in 5; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
@@ -33,7 +33,7 @@ lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://127.0.0.
 
 # Insert data with text key converted to json key
 # shellcheck disable=SC2043
-for key in 6; do
+for key in 5; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
             --broker-list localhost:${BROKER_PORT} \

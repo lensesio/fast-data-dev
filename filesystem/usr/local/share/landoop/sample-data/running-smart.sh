@@ -7,7 +7,7 @@ GENERATOR_BROKER=${GENERATOR_BROKER:-localhost}
 
 # Create Topics
 # shellcheck disable=SC2043
-for key in 3; do
+for key in 2; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
@@ -23,7 +23,7 @@ done
 
 # Insert data with text key converted to json key
 # shellcheck disable=SC2043
-for key in 3; do
+for key in 2; do
     unset KAFKA_OPTS
     unset KAFKA_JMX_OPTS
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
