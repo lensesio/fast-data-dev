@@ -335,6 +335,7 @@ RUN apk add --no-cache \
         gzip \
         jq \
         libstdc++ \
+        nss \
         openjdk8-jre-base \
         openssl \
         sqlite \
