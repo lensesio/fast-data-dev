@@ -203,6 +203,9 @@ if [[ -n ${ADV_HOST} ]]; then
     echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
     if [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
         export KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://${ADV_HOST}:${BROKER_PORT}"
+        TMP_ADV_LISTENERS_SET=true
+    else
+        TMP_ADV_LISTENERS_SET=false
     fi
     if [[ -z $CONNECT_REST_ADVERTISED_HOST_NAME ]]; then
         export CONNECT_REST_ADVERTISED_HOST_NAME=${ADV_HOST}
@@ -416,7 +419,7 @@ ssl.truststore.type=JKS
 EOF
     sed -r -e "s|^(listeners=.*)|\1,SSL://:${BROKER_SSL_PORT}|" \
         -i /var/run/broker/server.properties
-    if [[ -n ${ADV_HOST} ]] && [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
+    if [[ -n ${ADV_HOST} ]] && ${TMP_ADV_LISTENERS_SET}; then
         sed -r \
             -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
             -i /var/run/broker/server.properties
