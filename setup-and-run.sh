@@ -16,6 +16,10 @@ if [[ $STRICT_SCRIPT =~ $TRUE_REG ]]; then
     set -o pipefail
 fi
 
+source /build.info
+export LT_PACKAGE=${LT_PACKAGE:-box}
+export LT_PACKAGE_VERSION=${LT_PACKAGE_VERSION:-$BUILD_COMMIT}
+
 # Default values
 export ZK_PORT=${ZK_PORT:-2181}
 export ZK_JMX_PORT=${ZK_JMX_PORT:-9585}
