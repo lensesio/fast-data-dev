@@ -59,7 +59,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=1.2.0
+ARG STREAM_REACTOR_VERSION=1.2.2
 ARG KAFKA_VERSION_4SR=2.0.0
 ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
@@ -167,19 +167,12 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
     && chown -R root:root /opt/landoop/connectors/third-party/kafka-connect-couchbase \
     && rm -rf /couchbase.zip /couchbase
 
-# Kafka Connect Dbvisit Replicate
-ARG KAFKA_CONNECT_DBVISITREPLICATE_VERSION=2.0.0-SNAPSHOT
-ARG KAFKA_CONNECT_DBVISITREPLICATE_URL="https://www.dropbox.com/s/nhs8v3lwmigpks1/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar?dl=0"
-RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate \
-    && wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_DBVISITREPLICATE_URL" \
-            -O /opt/landoop/connectors/third-party/kafka-connect-dbvisitreplicate/kafka-connect-dbvisitreplicate-${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}.jar
-
 # Kafka Connect Debezium MongoDB / MySQL / Postgres
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.8.3.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.9.5.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.8.3.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.9.5.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.8.3.Final
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.9.5.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
@@ -284,8 +277,6 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_S3_VERSION=${KAFKA_CONNECT_S3_VERSION}"     | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_COUCHBASE_VERSION=${KAFKA_CONNECT_COUCHBASE_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
-    && echo "KAFKA_CONNECT_DBVISITREPLICATE_VERSION=${KAFKA_CONNECT_DBVISITREPLICATE_VERSION}" \
-                                                                       | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
@@ -335,6 +326,7 @@ RUN apk add --no-cache \
         gzip \
         jq \
         libstdc++ \
+        nss \
         openjdk8-jre-base \
         openssl \
         sqlite \
