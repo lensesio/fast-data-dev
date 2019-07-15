@@ -60,7 +60,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION=1.2.2
-ARG KAFKA_VERSION_4SR=2.0.0
+ARG KAFKA_VERSION_4SR=2.1.0
 ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
