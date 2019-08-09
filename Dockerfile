@@ -93,7 +93,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
        done \
     && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+22 " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+23 " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
@@ -168,14 +168,16 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
     && chown -R root:root /opt/landoop/connectors/third-party/kafka-connect-couchbase \
     && rm -rf /couchbase.zip /couchbase
 
-# Kafka Connect Debezium MongoDB / MySQL / Postgres
+# Kafka Connect Debezium MongoDB / MySQL / Postgres / MsSQL
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.9.5.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.9.5.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.9.5.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
-RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres} \
+ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=0.9.5.Final
+ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-sqlserver/${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}/debezium-connector-sqlserver-${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}-plugin.tar.gz"
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,sqlserver} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
     && file /debezium-mongodb.tgz \    
     && tar -xf /debezium-mongodb.tgz \
@@ -191,7 +193,11 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
     && tar -xf /debezium-postgres.tgz \
            --owner=root --group=root --strip-components=1 \
            -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-postgres \
-    && rm -rf /debezium-{mongodb,mysql,postgres}.tgz
+    && wget "$KAFKA_CONNECT_DEBEZIUM_SQLSERVER_URL" -O /debezium-sqlserver.tgz \
+    && tar -xf /debezium-sqlserver.tgz \
+           --owner=root --group=root --strip-components=1 \
+           -C  /opt/landoop/connectors/third-party/kafka-connect-debezium-sqlserver \
+    && rm -rf /debezium-{mongodb,mysql,postgres,sqlserver}.tgz
 
 # Kafka Connect Splunk
 ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
@@ -284,6 +290,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
+                                                                       | tee -a /opt/landoop/build.info \
+    && echo "KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
