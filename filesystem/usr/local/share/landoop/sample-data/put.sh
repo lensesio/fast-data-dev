@@ -72,6 +72,7 @@ done
 for key in 5; do
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-console-producer \
-            --broker-list localhost:${BROKER_PORT} \
+            --broker-list ${GENERATOR_BROKER} \
+            ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}"
 done
