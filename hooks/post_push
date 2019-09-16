@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+FULL_VERSION="$(docker run --rm landoop/kafka-lenses-dev bash -c 'cat build.info | grep FDD_LENSES_VERSION | sed -e 's/FDD_LENSES_VERSION=//'')"
+
+if [[ $FULL_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    docker tag $IMAGE_NAME $DOCKER_REPO:$FULL_VERSION-test
+    docker push $DOCKER_REPO:$FULL_VERSION-test
+fi
