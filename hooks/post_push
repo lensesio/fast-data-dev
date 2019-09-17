@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Load build information
+eval $(docker run --rm $IMAGE_NAME cat build.info)
+
+MODE=fdd
+if [[ -n $FDD_LENSES_VERSION ]]; then
+    MODE=box
+fi
+
+# Master should publish fast-data-dev:latest
+if [[ $BUILD_BRANCH == master ]]; then
+    # 'landooop/fast-data-dev:latest' is pushed automatically
+
+    # Also push to lensesio/fast-data-dev
+    docker tag $IMAGE_NAME lensesio/fast-data-dev:latest
+    docker push lensesio/fast-data-dev:latest
+fi
+
+# FDD branches should publish minor and major version tags
+if [[ $BUILD_BRANCH =~ ^[0-9]+\.[0-9]+$ ]] && [[ -n $FDD_LKD_VERSION ]]; then
+    # 'landoop/fast-data-dev:$BUILD_BRANCH is pushed automatically
+
+    # Also push 'lensesio/fast-data-dev:$BUILD_BRANCH
+    docker tag $IMAGE_NAME lensesio/fast-data-dev:$BUILD_BRANCH
+    docker push lensesio/fast-data-dev:$BUILD_BRANCH
+
+    # Also push 'landoop/fast-data-dev:$FDD_LKD_VERSION'
+    docker tag $IMAGE_NAME landoop/fast-data-dev:$FDD_LKD_VERSION
+    docker push landoop/fast-data-dev:$FDD_LKD_VERSION
+
+    # Also push 'lensesio/fast-data-dev:$FDD_LKD_VERSION'
+    docker tag $IMAGE_NAME lensesio/fast-data-dev:$FDD_LKD_VERSION
+    docker push lensesio/fast-data-dev:$FDD_LKD_VERSION
+fi
