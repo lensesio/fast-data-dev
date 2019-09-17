@@ -5,10 +5,10 @@ set -o nounset
 # Load build information
 eval $(docker run --rm $IMAGE_NAME cat build.info)
 
-MODE=fdd
-if [[ -n $FDD_LENSES_VERSION ]]; then
-    MODE=box
-fi
+# MODE=fdd
+# if [[ -n $FDD_LENSES_VERSION ]]; then
+#     MODE=box
+# fi
 
 # Master should publish fast-data-dev:latest
 if [[ $BUILD_BRANCH == master ]]; then
