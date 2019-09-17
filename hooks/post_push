@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o nounset
+
 # Load build information
 eval $(docker run --rm $IMAGE_NAME cat build.info)
 
@@ -18,18 +20,20 @@ if [[ $BUILD_BRANCH == master ]]; then
 fi
 
 # FDD branches should publish minor and major version tags
-if [[ $BUILD_BRANCH =~ ^[0-9]+\.[0-9]+$ ]] && [[ -n $FDD_LKD_VERSION ]]; then
+if [[ $BUILD_BRANCH =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ -n $FDD_LKD_VERSION ]]; then
+    # BUILD_BRANCH is the same as FDD_LKD_VERSION, e.g 2.2.1
     # 'landoop/fast-data-dev:$BUILD_BRANCH is pushed automatically
 
-    # Also push 'lensesio/fast-data-dev:$BUILD_BRANCH
+    # Also push 'lensesio/fast-data-dev:$BUILD_BRANCH'
     docker tag $IMAGE_NAME lensesio/fast-data-dev:$BUILD_BRANCH
     docker push lensesio/fast-data-dev:$BUILD_BRANCH
 
-    # Also push 'landoop/fast-data-dev:$FDD_LKD_VERSION'
-    docker tag $IMAGE_NAME landoop/fast-data-dev:$FDD_LKD_VERSION
-    docker push landoop/fast-data-dev:$FDD_LKD_VERSION
+    MAJOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+$/\1/' <<<"$FDD_LKD_VERSION")"
+    # Also push 'landoop/fast-data-dev:$MAJOR_VERSION'
+    docker tag $IMAGE_NAME landoop/fast-data-dev:$MAJOR_VERSION
+    docker push landoop/fast-data-dev:$MAJOR_VERSION
 
-    # Also push 'lensesio/fast-data-dev:$FDD_LKD_VERSION'
-    docker tag $IMAGE_NAME lensesio/fast-data-dev:$FDD_LKD_VERSION
-    docker push lensesio/fast-data-dev:$FDD_LKD_VERSION
+    # Also push 'lensesio/fast-data-dev:$MAJOR_VERSION
+    docker tag $IMAGE_NAME lensesio/fast-data-dev:$MAJOR_VERSION
+    docker push lensesio/fast-data-dev:$MAJOR_VERSION
 fi
