@@ -3,7 +3,7 @@
 set -o nounset
 
 # Load build information
-eval $(docker run --rm $IMAGE_NAME cat build.info)
+eval $(docker run --rm $DOCKER_REPO:$DOCKER_TAG cat build.info)
 
 
 FDD_LENSES_VERSION=${FDD_LKD_VERSION:-}
