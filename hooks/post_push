@@ -9,7 +9,7 @@ docker run --rm $DOCKER_REPO:$DOCKER_TAG cat build.info
 eval $(docker run --rm $DOCKER_REPO:$DOCKER_TAG cat build.info)
 
 
-FDD_LENSES_VERSION=${FDD_LKD_VERSION:-}
+FDD_LENSES_VERSION=${FDD_LENSES_VERSION:-}
 
 # MODE=fdd
 # if [[ -n $FDD_LENSES_VERSION ]]; then
