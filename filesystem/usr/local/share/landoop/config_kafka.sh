@@ -120,19 +120,20 @@ function process_lenses_variable {
     fi
 
     # Else try to detect if we need quotes
-    if [[ "${!var}" =~ .*[?:,()*/#!].* ]]; then
+    if [[ "${!var}" =~ .*[?:,()*/#|!].* ]]; then
         # echo -n "[Variable needed quotes] "
         echo "${conf}=\"${!var}\"" >> "$config_file"
     else
         echo "${conf}=${!var}" >> "$config_file"
     fi
+
     if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
         # echo "${conf}=********"
         unset "${var}"
     else
         # echo "${conf}=${!var}"
         echo -n
-    fi￼
+    fi
 }
 
 # Setup Kafka
