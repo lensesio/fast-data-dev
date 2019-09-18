@@ -132,7 +132,7 @@ function process_lenses_variable {
     else
         # echo "${conf}=${!var}"
         echo -n
-    fi
+    fi￼
 }
 
 # Setup Kafka
@@ -244,6 +244,12 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+
+    # If we didn't found any variables, create an empty security.conf
+    # so Lenses can start (it is configured to load the security file)
+    if [[ ! -f $CONFIG ]]; then
+        touch "$CONFIG"
+    fi
 else
     echo "Lenses security conf config found at '$CONFIG'. We won't process variables."
 fi
