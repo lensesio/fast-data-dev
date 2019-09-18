@@ -2,6 +2,9 @@
 
 set -o nounset
 
+# Print build information
+echo "Image: $DOCKER_REPO:$DOCKER_TAG"
+docker run --rm $DOCKER_REPO:$DOCKER_TAG cat build.info
 # Load build information
 eval $(docker run --rm $DOCKER_REPO:$DOCKER_TAG cat build.info)
 
