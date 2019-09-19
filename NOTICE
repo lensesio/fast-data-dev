@@ -1,11 +1,11 @@
 fast-data-dev
-Copyright 2016-2018 Landoop LTD
+Copyright 2016-2019, Lenses.io, Ltd
 
 This product includes software developed at
-Landoop LTD (http://www.landoop.com).
+Lenses.io, Ltd (https://lenses.io)
 
 Software included in the Docker image produced by this repository includes
-software by third parties and other Landoop repositories.
+software by third parties and other Lenses.io repositories.
 
 We do not claim ownership of third party software and each component retains
 its original license.
@@ -13,10 +13,10 @@ its original license.
 The most important software components and their license are:
 
 By Landoop:
-Landoop Stream Reactor        : Apache 2.0
-Landoop Kafka Connect UI      : BSL (http://www.landoop.com/bsl/)
-Landoop Kafka Topics UI       : BSL (http://www.landoop.com/bsl/)
-Landoop Schema Registry UI    : BSL (http://www.landoop.com/bsl/)
+Lenses.io Stream Reactor        : Apache 2.0
+Lenses.io Kafka Connect UI      : BSL (http://www.landoop.com/bsl/)
+Lenses.io Kafka Topics UI       : BSL (http://www.landoop.com/bsl/)
+Lenses.io Schema Registry UI    : BSL (http://www.landoop.com/bsl/)
 
 Third Party:
 Caddy                                  : Apache 2.0
