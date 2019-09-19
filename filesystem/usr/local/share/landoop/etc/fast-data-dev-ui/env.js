@@ -1,10 +1,10 @@
 var runningServices = [
   {
     "name" : "Lenses $FDD_LENSES_VERSION",
-    "description": "<a href=\"https://lenses.io/downloads/lenses-enterprise/?s=from-box\">Ready to run Lenses on your own Kafka cluster?</a>"
+    "description": "A rich, streaming platform and powerful DataOps tool for Apache Kafka."
   },
   {
-    "name" : "Kafka $FDD_KAFKA_VERSION @ Landoop's Apache Kafka Distribution",
+    "name" : "Kafka $FDD_KAFKA_VERSION @ Lenses.io's Apache Kafka Distribution",
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× Zookeeper"
   },
   {
@@ -13,7 +13,7 @@ var runningServices = [
   },
   {
     "name": "Third Party Connectors",
-    "description": "Extra connectors from Confluent, Couchbase, Dbvisit, Debezium"
+    "description": "Extra connectors from Confluent, Couchbase, Debezium"
   }
 ];
 
@@ -22,7 +22,7 @@ var disabled = [
 
 var servicesInfo = [
   {
-    "name" : "Landoop Lenses",
+    "name" : "Lenses",
     "port" : "$LENSES_PORT",
     "url"  : "localhost"
   },
