@@ -518,7 +518,7 @@ export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is Landoop’s fast-data-dev. Kafka ${FDD_KAFKA_VERSION} (Landoop's Kafka Distribution).\e[39m"
+echo -e "\e[92mThis is Lenses.io’s fast-data-dev. Kafka ${FDD_KAFKA_VERSION} (Lenses.io's Kafka Distribution).\e[39m"
 echo -e "\e[34mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[34m in about \e[96ma minute\e[34m.\e[39m"
 
 # Set sample data if needed

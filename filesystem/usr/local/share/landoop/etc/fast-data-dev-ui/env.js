@@ -1,27 +1,27 @@
 var runningServices = [
   {
-    "name" : "Kafka $FDD_KAFKA_VERSION @ Landoop's Apache Kafka Distribution",
+    "name" : "Kafka $FDD_KAFKA_VERSION @ Lenses.io's Apache Kafka Distribution",
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× REST Proxy, 1× Zookeeper"
   },
   {
-    "name" : "Landoop Stream Reactor $FDD_STREAM_REACTOR_VERSION",
+    "name" : "Lenses.io Stream Reactor $FDD_STREAM_REACTOR_VERSION",
     "description" : "Source & Sink connectors collection (25+) supporting KCQL"
   },
   {
-    "name" : "Landoop Schema Registry UI $FDD_SCHEMA_REGISTRY_UI_VERSION",
+    "name" : "Lenses.io Schema Registry UI $FDD_SCHEMA_REGISTRY_UI_VERSION",
     "description" : "Create, view, search, edit, validate, evolve & configure Avro schemas"
   },
   {
-    "name" : "Landoop Kafka Topics UI $FDD_KAFKA_TOPICS_UI_VERSION",
+    "name" : "Lenses.io Kafka Topics UI $FDD_KAFKA_TOPICS_UI_VERSION",
     "description" : "Browse and search topics, inspect data, metadata and configuration"
   },
   {
-    "name" : "Landoop Kafka Connect UI $FDD_KAFKA_CONNECT_UI_VERSION",
+    "name" : "Lenses.io Kafka Connect UI $FDD_KAFKA_CONNECT_UI_VERSION",
     "description" : "View, create, update and manage connectors"
   },
   {
     "name": "Third Party Connectors",
-    "description": "Extra connectors from Confluent, Couchbase, Dbvisit, Debezium"
+    "description": "Extra connectors from Confluent, Couchbase, Debezium"
   }
 ];
 
