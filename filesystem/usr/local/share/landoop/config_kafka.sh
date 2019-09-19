@@ -126,12 +126,13 @@ function process_lenses_variable {
     fi
 
     # Else try to detect if we need quotes
-    if [[ "${!var}" =~ .*[?:,()*/#!].* ]]; then
+    if [[ "${!var}" =~ .*[?:,()*/#|!].* ]]; then
         # echo -n "[Variable needed quotes] "
         echo "${conf}=\"${!var}\"" >> "$config_file"
     else
         echo "${conf}=${!var}" >> "$config_file"
     fi
+
     if [[ "$OPTS_SENSITIVE" =~ " $var " ]]; then
         # echo "${conf}=********"
         unset "${var}"
@@ -250,6 +251,12 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+
+    # If we didn't found any variables, create an empty security.conf
+    # so Lenses can start (it is configured to load the security file)
+    if [[ ! -f $CONFIG ]]; then
+        touch "$CONFIG"
+    fi
 else
     echo "Lenses security conf config found at '$CONFIG'. We won't process variables."
 fi

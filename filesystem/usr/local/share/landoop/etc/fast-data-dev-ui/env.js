@@ -1,7 +1,7 @@
 var runningServices = [
   {
-    "name" : "Landoop Lenses $FDD_LENSES_VERSION",
-    "description": "Enterprise grade product that provides faster streaming application deliveries and data flow management that natively integrates."
+    "name" : "Lenses $FDD_LENSES_VERSION",
+    "description": "<a href=\"https://lenses.io/downloads/lenses-enterprise/?s=from-box\">Ready to run Lenses on your own Kafka cluster?</a>"
   },
   {
     "name" : "Kafka $FDD_KAFKA_VERSION @ Landoop's Apache Kafka Distribution",
