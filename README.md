@@ -1,36 +1,36 @@
 # fast-data-dev / kafka-lenses-dev (Lenses Box) #
-landoop/fast-data-dev
+lensesio/fast-data-dev
 [![docker](https://img.shields.io/docker/pulls/landoop/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/landoop/fast-data-dev/)
 [![](https://images.microbadger.com/badges/image/landoop/fast-data-dev.svg)](http://microbadger.com/images/landoop/fast-data-dev) [![Join the chat at https://gitter.im/Landoop/fast-data-dev](https://badges.gitter.im/Landoop/fast-data-dev.svg)](https://gitter.im/Landoop/fast-data-dev?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-landoop/kafka-lenses-dev
+lensesio/box (landoop/kafka-lenses-dev)
 [![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
 [![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev) [![Join the chat at https://gitter.im/Landoop/support](https://badges.gitter.im/Landoop/support.svg)](https://gitter.im/Landoop/support?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [Apache Kafka](http://kafka.apache.org/) docker image for developers; with
-Landoop Lenses
-([landoop/kafka-lenses-dev](https://hub.docker.com/r/landoop/kafka-lenses-dev))
-or Landoop's open source UI tools
-([landoop/fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev)). Have
+Lenses
+([lensesio/box](https://hub.docker.com/r/lensesio/box))
+or Lenses.io's open source UI tools
+([lensesio/fast-data-dev](https://hub.docker.com/r/lensesio/fast-data-dev)). Have
 a full fledged Kafka installation up and running in seconds and top it off with
 a modern streaming platform (only for kafka-lenses-dev), intuitive UIs and extra
-goodies. Also includes Kafka Connect, Schema Registry, Landoop Stream Reactor
+goodies. Also includes Kafka Connect, Schema Registry, Lenses.io's Stream Reactor
 25+ Connectors and more.
 
-> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](http://www.landoop.com/downloads/lenses/)**
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/downloads/lenses/)**
 
 ### Introduction
 
 When you need:
 
 1. **A Kafka distribution** with Apache Kafka, Kafka Connect, Zookeeper, Confluent Schema Registry and REST Proxy
-2. **Landoop** Lenses or kafka-topics-ui, schema-registry-ui, kafka-connect-ui
-3. **Landoop** Stream Reactor, 25+ Kafka Connectors to simplify ETL processes
+2. **Lenses.io** Lenses or kafka-topics-ui, schema-registry-ui, kafka-connect-ui
+3. **Lenses.io** Stream Reactor, 25+ Kafka Connectors to simplify ETL processes
 4. Integration testing and examples embedded into the docker
 
 just run:
 
-    docker run --rm --net=host landoop/fast-data-dev
+    docker run --rm --net=host lensesio/fast-data-dev
 
 That's it. Visit <http://localhost:3030> to get into the fast-data-dev environment
 
@@ -47,7 +47,7 @@ If you want to have the services remotely accessible, then you may need to pass
 in your machine's IP address or hostname that other machines can use to access
 it:
 
-    docker run --rm --net=host -e ADV_HOST=<IP> landoop/fast-data-dev
+    docker run --rm --net=host -e ADV_HOST=<IP> lensesio/fast-data-dev
 
 > Hit **control+c** to stop and remove everything
 
@@ -57,7 +57,7 @@ it:
 
 Create a VM with 4+GB RAM using Docker Machine:
 
-    docker-machine create --driver virtualbox --virtualbox-memory 4096 landoop
+    docker-machine create --driver virtualbox --virtualbox-memory 4096 lensesio
 
 
 Run `docker-machine ls` to verify that the Docker Machine is running correctly. The command's output should be similar to:
@@ -65,17 +65,17 @@ Run `docker-machine ls` to verify that the Docker Machine is running correctly. 
 
     $ docker-machine ls
     NAME        ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
-    landoop     *        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.1-ce
+    lensesio     *        virtualbox   Running   tcp://192.168.99.100:2376           v17.03.1-ce
 
-Configure your terminal to be able to use the new Docker Machine named landoop:
+Configure your terminal to be able to use the new Docker Machine named lensesio:
 
-    eval $(docker-machine env landoop)
+    eval $(docker-machine env lensesio)
 
 And run the Kafka Development Environment. Define ports, advertise the hostname and use extra parameters:
 
     docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
            -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=192.168.99.100 \
-           landoop/fast-data-dev:latest
+           lensesio/fast-data-dev:latest
 
 That's it. Visit <http://192.168.99.100:3030> to get into the fast-data-dev environment
 
@@ -93,15 +93,15 @@ This is important!
 Once the firewall is open try:
 
     docker run -d --net=host -e ADV_HOST=[VM_EXTERNAL_IP] \
-               -e RUNNING_SAMPLEDATA=1 landoop/fast-data-dev
+               -e RUNNING_SAMPLEDATA=1 lensesio/fast-data-dev
 
 Alternatively just export the ports you need. E.g:
 
     docker run -d -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
                -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=[VM_EXTERNAL_IP] \
-               -e RUNNING_SAMPLEDATA=1 landoop/fast-data-dev
+               -e RUNNING_SAMPLEDATA=1 lensesio/fast-data-dev
 
-Enjoy Kafka, Schema Registry, Connect, Landoop UIs and Stream Reactor.
+Enjoy Kafka, Schema Registry, Connect, Lensesio UIs and Stream Reactor.
 
 ### Customize execution
 
@@ -139,7 +139,7 @@ jdbc, s3, twitter.
 
 To programmatically get a list, run:
 
-    docker run --rm -it landoop/fast-data-dev \
+    docker run --rm -it lensesio/fast-data-dev \
            find /opt/landoop/connectors -type d -maxdepth 2 -name "kafka-connect-*"
 
 Optional Parameters (unsupported) | Description
@@ -166,7 +166,7 @@ As example:
 
 We also support the variables that set JVM options, such as `KAFKA_OPTS`, `SCHEMA_REGISTRY_JMX_OPTS`, etc.
 
-Landoop's Kafka Distribution (LKD) supports a few extra flags as well. Since in
+Lensesio's Kafka Distribution (LKD) supports a few extra flags as well. Since in
 the Apache Kafka build, both the broker and the connect worker expect JVM
 options at the default `KAFKA_OPTS`, LKD supports using `BROKER_OPTS`, etc for
 the broker and `CONNECT_OPTS`, etc for the connect worker. Of course
@@ -189,19 +189,24 @@ avro, but disabling `LANDOOP_COMMON` will render Stream Reactor inoperable.
 The latest version of this docker image tracks our latest stable tag (1.0.1). Our
 images include:
 
- Version                       | Kafka Distro  | Landoop tools | Apache Kafka  | Connectors
+ Version                       | Kafka Distro  | Lensesio tools | Apache Kafka  | Connectors
 -------------------------------| ------------- | ------------- | ------------- | --------------
+lensesio/fast-data-dev:2.3.0   | LKD 2.3.0-L0  |       ✓       |    2.3.0      | 30+ connectors
+lensesio/fast-data-dev:2.2.1   | LKD 2.2.1-L0  |       ✓       |    2.2.1      | 30+ connectors
+lensesio/fast-data-dev:2.1.1   | LKD 2.1.1-L0  |       ✓       |    2.1.1      | 30+ connectors
+lensesio/fast-data-dev:2.0.1   | LKD 2.0.1-L0  |       ✓       |    2.0.1      | 30+ connectors
+landoop/fast-data-dev:1.1.1    | LKD 1.1.1-L0  |       ✓       |    1.1.1      | 30+ connectors
 landoop/fast-data-dev:1.0.1    | LKD 1.0.1-L0  |       ✓       |    1.0.1      | 30+ connectors
 landoop/fast-data-dev:cp3.3.0  | CP 3.3.0 OSS  |       ✓       |    0.11.0.0   | 30+ connectors
 landoop/fast-data-dev:cp3.2.2  | CP 3.2.2 OSS  |       ✓       |    0.10.2.1   | 24+ connectors
 landoop/fast-data-dev:cp3.1.2  | CP 3.1.2 OSS  |       ✓       |    0.10.1.1   | 20+ connectors
 landoop/fast-data-dev:cp3.0.1  | CP 3.0.1 OSS  |       ✓       |    0.10.0.1   | 20+ connectors
 
-*LKD stands for Landoop's Kafka Distribution. We build and package Apache Kafka with Kafka Connect
+*LKD stands for Lenses.io's Kafka Distribution. We build and package Apache Kafka with Kafka Connect
 and Apache Zookeeper, Confluent Schema Registry and REST Proxy and a collection of third party
 Kafka Connectors as well as our own Stream Reactor collection.
 
-Please note the [BSL license](http://www.landoop.com/bsl/) of the tools. To use them on a PROD
+Please note the [BSL license](https://lensesio.com/bsl/) of the tools. To use them on a PROD
 cluster with > 3 Kafka nodes, you should contact us.
 
 ### Building it
@@ -211,14 +216,14 @@ multistage builds.
 
 To build it just run:
 
-    docker build -t landoop/fast-data-dev .
+    docker build -t lensesio/fast-data-dev .
 
 Periodically pull from docker hub to refresh your cache.
 
 If you have an older version installed, try the single-stage build at the expense
 of the extra size:
 
-    docker build -t landoop/fast-data-dev -f Dockerfile-singlestage .
+    docker build -t lensesio/fast-data-dev -f Dockerfile-singlestage .
 
 
 ### Advanced Features and Settings
@@ -236,7 +241,7 @@ to assign 8082 (default REST Proxy port) to the brokers.
                -e ZK_PORT=3181 -e WEB_PORT=3040 -e REGISTRY_PORT=8081 \
                -e REST_PORT=7082 -e CONNECT_PORT=7083 -e BROKER_PORT=7092 \
                -e ADV_HOST=127.0.0.1 \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
 A port of `0` will disable the service.
 
@@ -245,11 +250,11 @@ A port of `0` will disable the service.
 Do you need to execute kafka related console tools? Whilst your Kafka containers is running,
 try something like:
 
-    docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 --list
+    docker run --rm -it --net=host lensesio/fast-data-dev kafka-topics --zookeeper localhost:2181 --list
 
 Or enter the container to use any tool as you like:
 
-    docker run --rm -it --net=host landoop/fast-data-dev bash
+    docker run --rm -it --net=host lensesio/fast-data-dev bash
 
 #### View logs
 
@@ -266,7 +271,7 @@ broker? We got you covered. Enable TLS via `-e ENABLE_SSL=1`:
 
     docker run --rm --net=host \
                -e ENABLE_SSL=1 \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
 When fast-data-dev spawns, it will create a self-signed CA. From that it will
 create a truststore and two signed key-certificate pairs, one for the broker,
@@ -279,13 +284,13 @@ variable.
 Here is a simple example of how the SSL functionality can be used. Let's spawn
 a fast-data-dev to act as the server:
 
-    docker run --rm --net=host -e ENABLE_SSL=1 -e RUNTESTS=0 landoop/fast-data-dev
+    docker run --rm --net=host -e ENABLE_SSL=1 -e RUNTESTS=0 lensesio/fast-data-dev
 
 On a new console, run another instance of fast-data-dev only to get access to
 Kafka command line utilities and use TLS to connect to the broker of the former
 container:
 
-    docker run --rm -it --net=host --entrypoint bash landoop/fast-data-dev
+    docker run --rm -it --net=host --entrypoint bash lensesio/fast-data-dev
     root@fast-data-dev / $ wget localhost:3030/certs/truststore.jks
     root@fast-data-dev / $ wget localhost:3030/certs/client.jks
     root@fast-data-dev / $ kafka-producer-perf-test --topic tls_test \
@@ -309,7 +314,7 @@ explicitly using the `CONNECTORS` environment variable:
 
     docker run --rm -it --net=host \
                -e CONNECTORS=jdbc,elastic,hbase \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
 Please note that if you don't enable jdbc, some tests will fail.
 This doesn't affect fast-data-dev's operation.
@@ -323,7 +328,7 @@ disable:
 
     docker run --rm -it --net=host \
                -e DISABLE=elastic,hbase \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
 If you disable the jdbc connector, some tests will fail to run.
 
@@ -337,7 +342,7 @@ directory and any multi-jar connectors it will find in subdirectories of this di
     docker run --rm -it --net=host \
                -v /path/to/my/connector/connector.jar:/connectors/connector.jar \
                -v /path/to/my/multijar-connector-directory:/connectors/multijar-connector-directory \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
 #### Build Kafka-Connect clusters
 
@@ -355,11 +360,11 @@ In short, you can run a docker Kafka-Connect instance to join the connect-cluste
                -e ZK=zk1:2181,zk2:2181 \
                -e SC=http://schema-registry:8081 \
                -e HOST=<IP OR FQDN>
-               landoop/fast-data-dev-connect-cluster
+               lensesio/fast-data-dev-connect-cluster
 
 ### FAQ
 
-- Landoop's Fast Data Web UI tools and integration test requires some time
+- Lensesio's Fast Data Web UI tools and integration test requires some time
   till they fully work. Especially the tests and Kafka Connect UI will need
   a few minutes.
   
@@ -391,16 +396,16 @@ In short, you can run a docker Kafka-Connect instance to join the connect-cluste
 
 *Note:* Web only mode will be deprecated in the future.
 
-This is a special mode only for Linux hosts, where *only* Landoop's Web UIs
+This is a special mode only for Linux hosts, where *only* Lensesio's Web UIs
 are started and kafka services are expected to be running on the local
 machine. It must be run with `--net=host` flag, thus the Linux only
 requisite:
 
     docker run --rm -it --net=host \
                -e WEB_ONLY=true \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
-This is useful if you already have a Kafka cluster and want just the additional Landoop Fast Data web UI.
+This is useful if you already have a Kafka cluster and want just the additional Lensesio Fast Data web UI.
 _Please note that we provide separate, lightweight docker images for each UI component
 and we strongly encourage to use these over fast-data-dev._
 
@@ -409,11 +414,11 @@ and we strongly encourage to use these over fast-data-dev._
 You can configure Connect's heap size via the environment variable
 `CONNECT_HEAP`. The default is `640M`:
 
-    docker run -e CONNECT_HEAP=3G -d landoop/fast-data-dev
+    docker run -e CONNECT_HEAP=3G -d lensesio/fast-data-dev
 
 #### Basic Auth (password)
 
-We have included a web server to serve Landoop UIs and proxy the schema registry
+We have included a web server to serve Lensesio UIs and proxy the schema registry
 and kafa REST proxy services, in order to share your docker over the web.
 If you want some basic protection, pass the `PASSWORD` variable and the web
 server will be protected by user `kafka` with your password. If you want to
@@ -421,7 +426,7 @@ setup the username too, set the `USER` variable.
 
      docker run --rm -it -p 3030:3030 \
                 -e PASSWORD=password \
-                landoop/fast-data-dev
+                lensesio/fast-data-dev
 
 #### Disable tests
 
@@ -436,7 +441,7 @@ using the flag:
 In the recent versions of fast-data-dev, we switched to running Kafka as user
 `nobody` instead of `root` since it was a bad practice. The old behaviour may
 still be desirable, for example on our
-[HDFS connector tests](http://coyote.landoop.com/connect/kafka-connect-hdfs/),
+[HDFS connector tests](http://coyote.lensesio.com/connect/kafka-connect-hdfs/),
 Connect worker needs to run as the root user in order to be able to write to the
 HDFS. To switch to the old behaviour, use:
 
@@ -450,7 +455,7 @@ environment variable:
 
     docker run --rm -it --net=host \
                -e DISABLE_JMX=1 \
-               landoop/fast-data-dev
+               lensesio/fast-data-dev
 
 JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
 `9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
