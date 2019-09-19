@@ -1,14 +1,14 @@
 var runningServices = [
   {
-    "name" : "Landoop Schema Registry UI $FDD_SCHEMA_REGISTRY_UI_VERSION",
+    "name" : "Lenses.io Schema Registry UI $FDD_SCHEMA_REGISTRY_UI_VERSION",
     "description" : "Create / view / search / validate / evolve / view history & configure Avro schemas of your Kafka cluster"
   },
   {
-    "name" : "Landoop Kafka Topics UI $FDD_KAFKA_TOPICS_UI_VERSION",
+    "name" : "Lenses.io Kafka Topics UI $FDD_KAFKA_TOPICS_UI_VERSION",
     "description" : "Browse Kafka topics and understand what's happening on your cluster. Find topics / view topic metadata / browse topic data (kafka messages) / view topic configuration / download data."
   },
   {
-    "name" : "Landoop Kafka Connect UI $FDD_KAFKA_CONNECT_UI_VERSION",
+    "name" : "Lenses.io Kafka Connect UI $FDD_KAFKA_CONNECT_UI_VERSION",
     "description" : "This is a web tool for Kafka Connect for setting up and managing connectors for multiple connect clusters."
   }
 ];
