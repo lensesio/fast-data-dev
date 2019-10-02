@@ -48,7 +48,7 @@ Apart from docker, the only requirement is you have at least 4GB of memory avail
 
 ## Quick Start
 
-It is hard to cover the whole surface of Lenses capabilities in a few lines, to learn more please visit our [quickstart documentation](https://www.landoop.com/docs/lenses/lenses/development-environment/latest/).
+It is hard to cover the whole surface of Lenses capabilities in a few lines, to learn more please visit our [quickstart documentation](https://docs.lenses.io/dev/lenses-box/).
 
 In addition, all options of [fast-data-dev](https://github.com/Landoop/fast-data-dev) are available for this image as well.
 
