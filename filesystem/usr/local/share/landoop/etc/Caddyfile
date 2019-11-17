@@ -2,6 +2,9 @@
   tls off
   log stdout
   errors stdout
+  errors {
+    502 /var/www/custom_502.html
+  }
   proxy /api localhost:$LENSES_PORT {
     websocket
   }
