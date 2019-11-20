@@ -3,15 +3,13 @@
 # shellcheck source=variables.env
 source variables.env
 
-GENERATOR_BROKER=${GENERATOR_BROKER:-localhost:$BROKER_PORT}
-
 # Create Topics
 # shellcheck disable=SC2043
 for key in 2; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
-        --zookeeper localhost:${ZK_PORT} \
+        --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
@@ -29,8 +27,8 @@ for key in 2; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
-            --broker-list ${GENERATOR_BROKER} \
-            ${GENERATOR_PRODUCER_PROPERTIES} \
+            --broker-list "${GENERATOR_BROKER}" \
+            "${GENERATOR_PRODUCER_PROPERTIES}" \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property "key.separator=#"

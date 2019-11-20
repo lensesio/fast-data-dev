@@ -132,6 +132,11 @@ export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
 export ZOOKEEPER_LOG4J_OPTS=${ZOOKEEPER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/zookeeper/log4j.properties}
 export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$ZK_JMX_PORT}
 
+# Set env vars for generator
+export GENERATOR_BROKER=${GENERATOR_BROKER:-localhost:$BROKER_PORT}
+export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-localhost}
+export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+
 # Set memory limits
 # Set connect heap size if needed
 if [[ -n $CONNECT_HEAP ]]; then CONNECT_HEAP="-Xmx$CONNECT_HEAP"; fi
@@ -223,7 +228,7 @@ for service in /usr/local/share/landoop/etc/supervisord.templates.d/*.conf; do
     envsubst < "$service" > /etc/supervisord.d/"$(basename "$service")"
 done
 # Disable services if asked
-if [[ $ZK_PORT == 0 ]];       then rm /etc/supervisord.d/*zookeeper.conf; fi
+if [[ $ZK_PORT == 0 ]] || [[ $GENERATOR_ZK_HOST != "localhost" ]];       then rm /etc/supervisord.d/*zookeeper.conf; fi
 if [[ $BROKER_PORT == 0 ]];   then rm /etc/supervisord.d/*broker.conf; fi
 if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; fi
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
