@@ -3,15 +3,13 @@
 # shellcheck source=variables.env
 source variables.env
 
-GENERATOR_BROKER=${GENERATOR_BROKER:-localhost:$BROKER_PORT}
-
 # Create Topics
 # shellcheck disable=SC2043
 for key in 1; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
-        --zookeeper localhost:${ZK_PORT} \
+        --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
@@ -29,11 +27,11 @@ for key in 1; do
     unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list ${GENERATOR_BROKER} \
-            ${GENERATOR_PRODUCER_PROPERTIES} \
+            --broker-list "${GENERATOR_BROKER}" \
+            "${GENERATOR_PRODUCER_PROPERTIES}" \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
-            --property schema.registry.url=http://localhost:${REGISTRY_PORT}
+            --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}"
 done
