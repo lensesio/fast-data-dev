@@ -9,7 +9,7 @@ for key in 5; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
-        --zookeeper localhost:${ZK_PORT} \
+        --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
@@ -25,10 +25,10 @@ PASSWORD=${PASSWORD:-admin}
 # Wait for Lenses to get up if needed and see the topic
 for ((i=0;i<30;i++)); do
     sleep 5
-    lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://127.0.0.1:$LENSES_PORT topics | grep -sq "${TOPICS[key]}" && { sleep 5; break; };
+    lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://"${GENERATOR_LENSES}" topics | grep -sq "${TOPICS[key]}" && { sleep 5; break; };
 done
 # Set Lenses to recognize topic as CSV
-lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://127.0.0.1:$LENSES_PORT \
+lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://"${GENERATOR_LENSES}" \
            topics metadata set --name="financial_tweets" --key-type="BYTES" --value-type="CSV"
 
 # Insert data with text key converted to json key
@@ -36,6 +36,6 @@ lenses-cli --timeout 3s --user "$USER" --pass "$PASSWORD" --host http://127.0.0.
 for key in 5; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
-            --broker-list localhost:${BROKER_PORT} \
+            --broker-list "${GENERATOR_BROKER}" \
             --topic "${TOPICS[key]}"
 done
