@@ -167,7 +167,12 @@ export LENSES_PLUGINS_CLASSPATH_OPTS=${LENSES_PLUGINS_CLASSPATH_OPTS:-/plugins}
 export GENERATOR_BROKER=${GENERATOR_BROKER:-localhost:$BROKER_PORT}
 export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-localhost}
 export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
-
+export GENERATOR_LENSES=${GENERATOR_LENSES:-127.0.0.1:$LENSES_PORT}
+if [[ "$GENERATOR_BROKER" != *"localhost"* ]]; then
+    sed -e "/^brokers/ s/0\.0\.0\.0:9092/${GENERATOR_BROKER}/" \
+        -e "/^schema\.registry/ s#http://0\.0\.0\.0:8081#${GENERATOR_SCHEMA_REGISTRY_URL}#" \
+        -i /opt/generator/lenses.conf
+fi
 
 # Set memory limits
 # Set connect heap size if needed
