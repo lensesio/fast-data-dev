@@ -112,26 +112,27 @@ via environment variables.
 
 #### fast-data-dev / kafka-lenses-dev advanced configuration
 
- Optional Parameters              | Description
---------------------------------- | ------------------------------------------------------------------------------------------------------------
- `CONNECT_HEAP=3G`                | Configure the maximum (`-Xmx`) heap size allocated to Kafka Connect. Useful when you want to start many connectors.
- `<SERVICE>_PORT=<PORT>`          | Custom port `<PORT>` for service, `0` will disable it. `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`.
- `<SERVICE>_JMX_PORT=<PORT>`      | Custom JMX port `<PORT>` for service, `0` will disable it. `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`.
- `USER=username`                  | Run in combination with `PASSWORD` to specify the username to use on basic auth.
- `PASSWORD=password`              | Protect the fast-data-dev UI when running publicly. If `USER` is not set, the default username is `kafka`.
- `SAMPLEDATA=0`                   | Do not create topics with sample avro and json records; (e.g do not create topics `sea_vessel_position_reports`, `reddit_posts`).
- `RUNNING_SAMPLEDATA=1`           | In the sample topics send a continuous (yet very low) flow of messages, so you can develop against live data.
- `RUNTESTS=0`                     | Disable the (coyote) integration tests from running when container starts.
- `FORWARDLOGS=0`                  | Disable running the file source connector that brings broker logs into a Kafka topic.
- `RUN_AS_ROOT=1`                  | Run kafka as `root` user - useful to i.e. test HDFS connector.
- `DISABLE_JMX=1`                  | Disable JMX - enabled by default on ports 9581 - 9585. You may also disable it individually for services.
- `ENABLE_SSL=1`                   | Generate a CA, key-certificate pairs and enable a SSL port on the broker.
- `SSL_EXTRA_HOSTS=IP1,host2`      | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate.
- `CONNECTORS=<CONNECTOR>[,<CON2>]`| Explicitly set which connectors* will be enabled. E.g `hbase`, `elastic` (Stream Reactor version)
- `DISABLE=<CONNECTOR>[,<CON2>]`   | Disable one or more connectors*. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
- `BROWSECONFIGS=1`                | Expose service configuration in the UI. Useful to see how Kafka is setup.
- `DEBUG=1`                        | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
- `SUPERVISORWEB=1`                | Enable supervisor web interface on port 9001 (adjust via `SUPERVISORWEB_PORT`) in order to control services, run `tail -f`, etc.
+ Optional Parameters                 | Description
+------------------------------------ | ------------------------------------------------------------------------------------------------------------
+ `CONNECT_HEAP=3G`                   | Configure the maximum (`-Xmx`) heap size allocated to Kafka Connect. Useful when you want to start many connectors.
+ `<SERVICE>_PORT=<PORT>`             | Custom port `<PORT>` for service, `0` will disable it. `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`.
+ `<SERVICE>_JMX_PORT=<PORT>`         | Custom JMX port `<PORT>` for service, `0` will disable it. `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`.
+ `USER=username`                     | Run in combination with `PASSWORD` to specify the username to use on basic auth.
+ `PASSWORD=password`                 | Protect the fast-data-dev UI when running publicly. If `USER` is not set, the default username is `kafka`.
+ `KAFKA_CREATE_TOPICS=topic1,topic2` | Creates user-defined topics on startup. Topics are expressed as following: `name:partitions:replicas:cleanup.policy`. E.g `meteo:3:1`
+ `SAMPLEDATA=0`                      | Do not create topics with sample avro and json records; (e.g do not create topics `sea_vessel_position_reports`, `reddit_posts`).
+ `RUNNING_SAMPLEDATA=1`              | In the sample topics send a continuous (yet very low) flow of messages, so you can develop against live data.
+ `RUNTESTS=0`                        | Disable the (coyote) integration tests from running when container starts.
+ `FORWARDLOGS=0`                     | Disable running the file source connector that brings broker logs into a Kafka topic.
+ `RUN_AS_ROOT=1`                     | Run kafka as `root` user - useful to i.e. test HDFS connector.
+ `DISABLE_JMX=1`                     | Disable JMX - enabled by default on ports 9581 - 9585. You may also disable it individually for services.
+ `ENABLE_SSL=1`                      | Generate a CA, key-certificate pairs and enable a SSL port on the broker.
+ `SSL_EXTRA_HOSTS=IP1,host2`         | If SSL is enabled, extra hostnames and IP addresses to include to the broker certificate.
+ `CONNECTORS=<CONNECTOR>[,<CON2>]`   | Explicitly set which connectors* will be enabled. E.g `hbase`, `elastic` (Stream Reactor version)
+ `DISABLE=<CONNECTOR>[,<CON2>]`      | Disable one or more connectors*. E.g `hbase`, `elastic` (Stream Reactor version), `elasticsearch` (Confluent version)
+ `BROWSECONFIGS=1`                   | Expose service configuration in the UI. Useful to see how Kafka is setup.
+ `DEBUG=1`                           | Print stdout and stderr of all processes to container's stdout. Useful for debugging early container exits.
+ `SUPERVISORWEB=1`                   | Enable supervisor web interface on port 9001 (adjust via `SUPERVISORWEB_PORT`) in order to control services, run `tail -f`, etc.
 
 *Available connectors are: azure-documentdb, blockchain, bloomberg, cassandra,
 coap, druid, elastic, elastic5, ftp, hazelcast, hbase, influxdb, jms, kudu,
