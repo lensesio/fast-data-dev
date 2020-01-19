@@ -83,9 +83,9 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
     && rm -f /elasticsearch/lib/apache-log4j-extras* \
     && mv /elasticsearch/lib/*.jar /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/ \
     && rm -rf /elasticsearch* \
-    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
+    && wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
             -P /opt/landoop/connectors/stream-reactor/kafka-connect-jms \
-    && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
+    && wget https://repo1.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
             -O /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && for path in /opt/landoop/connectors/stream-reactor/kafka-connect-*; do \
           cp /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar $path/; \
