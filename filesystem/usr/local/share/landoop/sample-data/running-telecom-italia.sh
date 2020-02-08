@@ -29,7 +29,7 @@ for key in 4; do
     /usr/local/bin/normcat -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
             --broker-list "${GENERATOR_BROKER}" \
-            "${GENERATOR_PRODUCER_PROPERTIES}" \
+            ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \
