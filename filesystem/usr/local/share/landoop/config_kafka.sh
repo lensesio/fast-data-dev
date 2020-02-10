@@ -156,6 +156,8 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "Broker config found at '$CONFIG'. We won't process variables."
 fi
@@ -172,6 +174,8 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "Connect worker config found at '$CONFIG'. We won't process variables."
 fi
@@ -188,6 +192,8 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "Schema registry config found at '$CONFIG'. We won't process variables."
 fi
@@ -204,6 +210,8 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "REST Proxy config found at '$CONFIG'. We won't process variables."
 fi
@@ -220,6 +228,8 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "Zookeeper config found at '$CONFIG'. We won't process variables."
 fi
