@@ -247,6 +247,8 @@ if [[ ! -f "$CONFIG" ]]; then
     done
     # Clean empty variables
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "Lenses conf config found at '$CONFIG'. We won't process variables."
 fi
