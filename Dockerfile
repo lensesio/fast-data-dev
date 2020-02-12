@@ -384,7 +384,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/2.3/lenses-2.3.6-linux64.tar.gz"
+ARG AD_URL="https://archive.landoop.com/lenses/2.3/lenses-2.3.7-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
@@ -393,7 +393,7 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
 # Add Lenses CLI
 ARG CAD_UN
 ARG CAD_PW
-ARG LC_VERSION="2.3.4"
+ARG LC_VERSION="2.3.5"
 ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/2.3/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
