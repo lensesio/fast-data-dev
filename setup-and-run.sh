@@ -20,6 +20,25 @@ source /build.info
 export LT_PACKAGE=${LT_PACKAGE:-box}
 export LT_PACKAGE_VERSION=${LT_PACKAGE_VERSION:-$BUILD_COMMIT}
 
+# Run pre-setup user provided scripts.
+export PRE_SETUP=${PRE_SETUP:-}
+export PRE_SETUP_FILE=${PRE_SETUP_FILE:-}
+export PRE_SETUP_URL=${PRE_SETUP_URL:-}
+if [[ -n "$PRE_SETUP" ]]; then
+    $PRE_SETUP
+fi
+if [[ -n "$PRE_SETUP_FILE" ]]; then
+    if [[ ! -f "$PRE_SETUP_FILE" ]]; then
+        echo "Although PRE_SETUP_FILE is set, I cannot find the file."
+    fi
+    source $PRE_SETUP_FILE
+fi
+if [[ -n "$PRE_SETUP_URL" ]]; then
+    curl "$PRE_SETUP_URL" --silent --show-error --fail --output /tmp/PRE_SETUP_URL
+    source /tmp/PRE_SETUP_URL
+    rm /tmp/PRE_SETUP_URL
+fi
+
 # Default values
 export ZK_PORT=${ZK_PORT:-2181}
 export ZK_JMX_PORT=${ZK_JMX_PORT:-9585}
@@ -638,5 +657,24 @@ rm -rf /var/www-lenses
 mkdir /var/www-lenses
 ln -s /var/www /var/www-lenses/fdd
 echo "}" >> /var/run/caddy/Caddyfile
+
+# Run post-setup user provided scripts.
+export POST_SETUP=${POST_SETUP:-}
+export POST_SETUP_FILE=${POST_SETUP_FILE:-}
+export POST_SETUP_URL=${POST_SETUP_URL:-}
+if [[ -n "$POST_SETUP" ]]; then
+    $POST_SETUP
+fi
+if [[ -n "$POST_SETUP_FILE" ]]; then
+    if [[ ! -f "$POST_SETUP_FILE" ]]; then
+        echo "Although POST_SETUP_FILE is set, I cannot find the file."
+    fi
+    source $POST_SETUP_FILE
+fi
+if [[ -n "$POST_SETUP_URL" ]]; then
+    curl "$POST_SETUP_URL" --silent --show-error --fail --output /tmp/POST_SETUP_URL
+    source /tmp/POST_SETUP_URL
+    rm /tmp/POST_SETUP_URL
+fi
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf
