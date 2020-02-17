@@ -431,6 +431,40 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"   | tee -a /build.info \
     && sed -e 's/^/FDD_/' /opt/landoop/build.info | tee -a /build.info
 
+ENV FDD_ROOT=/opt/fdd-root
+RUN chgrp -R 0 ${FDD_ROOT} && \
+    chmod -R g=u ${FDD_ROOT} /etc/passwd
+ENV HOME=${APP_ROOT}
+RUN mkdir -p \
+          /etc/supervisor.d \
+          /var/log \
+          /var/run/broker \
+          /var/run/caddy \
+          /var/run/connect \
+          /var/run/connect/connectors/stream-reactor \
+          /var/run/connect/connectors/third-party \
+          /var/run/coyote \
+          /var/run/rest-proxy \
+          /var/run/schema-registry \
+          /var/run/zookeeper \
+          /var/www && \
+    chown 10001:10001  \
+          /etc/supervisor.d \
+          /var/log \
+          /var/run/broker \
+          /var/run/caddy \
+          /var/run/connect \
+          /var/run/connect/connectors/stream-reactor \
+          /var/run/connect/connectors/third-party \
+          /var/run/coyote \
+          /var/run/rest-proxy \
+          /var/run/schema-registry \
+          /var/run/zookeeper \
+          /var/www
+USER 10001
+
+
+
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/usr/local/bin/setup-and-run.sh"]

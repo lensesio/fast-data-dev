@@ -180,6 +180,14 @@ else
     export REST_JMX_PORT=0
 fi
 
+# make dafault user work well in openshift
+# taken from https://github.com/RHsyseng/container-rhel-examples
+if ! whoami &> /dev/null; then
+  if [ -w /etc/passwd ]; then
+    echo "${USER_NAME:-default}:x:$(id -u):0:${USER_NAME:-default} user:${HOME}:/sbin/nologin" >> /etc/passwd
+  fi
+fi
+
 # Create run directories for various services and initialize where applicable with configuration files.
 mkdir -p \
       /var/run/zookeeper \
@@ -360,6 +368,7 @@ if [[ -n $CONNECTORS ]]; then
     done
 fi
 IFS="$OLD_IFS"
+
 
 # Enable root-mode if needed
 if [[ $RUN_AS_ROOT =~ $TRUE_REG ]]; then
