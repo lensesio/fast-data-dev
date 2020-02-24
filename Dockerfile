@@ -36,13 +36,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry and REST Proxy
-ARG REGISTRY_VERSION=5.3.0-lkd-r0
+ARG REGISTRY_VERSION=5.3.2-lkd-r0
 ARG REGISTRY_URL="${ARCHIVE_SERVER}/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
     && rm -rf /opt/registry.tar.gz
 
-ARG REST_VERSION=5.3.0-lkd-r0
+ARG REST_VERSION=5.3.2-lkd-r0
 ARG REST_URL="${ARCHIVE_SERVER}/lkd/packages/rest-proxy/rest-proxy-${REST_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
     && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
@@ -84,9 +84,9 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
     && rm -f /elasticsearch/lib/apache-log4j-extras* \
     && mv /elasticsearch/lib/*.jar /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/ \
     && rm -rf /elasticsearch* \
-    && wget http://central.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
+    && wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
             -P /opt/landoop/connectors/stream-reactor/kafka-connect-jms \
-    && wget http://central.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
+    && wget https://repo1.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
             -O /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && for path in /opt/landoop/connectors/stream-reactor/kafka-connect-*; do \
           cp /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar $path/; \
@@ -117,7 +117,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
 ## Kafka Connect JDBC
-ARG KAFKA_CONNECT_JDBC_VERSION=5.3.0-lkd-r0
+ARG KAFKA_CONNECT_JDBC_VERSION=5.3.2-lkd-r0
 ARG KAFKA_CONNECT_JDBC_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-jdbc/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
          -O /opt/kafka-connect-jdbc.tar.gz \
@@ -127,7 +127,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
     && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 ## Kafka Connect ELASTICSEARCH
-ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=5.3.0-lkd-r0
+ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=5.3.2-lkd-r0
 ARG KAFKA_CONNECT_ELASTICSEARCH_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-elasticsearch/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
          -O /opt/kafka-connect-elasticsearch.tar.gz \
@@ -137,7 +137,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
 
 ## Kafka Connect HDFS
-ARG KAFKA_CONNECT_HDFS_VERSION=5.3.0-lkd-r0
+ARG KAFKA_CONNECT_HDFS_VERSION=5.3.2-lkd-r0
 ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
          -O /opt/kafka-connect-hdfs.tar.gz \
@@ -147,7 +147,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
     && rm -rf /opt/kafka-connect-hdfs.tar.gz
 
 # Kafka Connect S3
-ARG KAFKA_CONNECT_S3_VERSION=5.3.0-lkd-r0
+ARG KAFKA_CONNECT_S3_VERSION=5.3.2-lkd-r0
 ARG KAFKA_CONNECT_S3_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-s3/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
          -O /opt/kafka-connect-s3.tar.gz \
