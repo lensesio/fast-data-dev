@@ -375,17 +375,17 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && apk add --no-cache --allow-untrusted glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
     && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
     && wget "$CADDY_URL" -O /caddy.tgz \
-      && mkdir -p /opt/caddy \
-      && tar xzf /caddy.tgz -C /opt/caddy \
-      && rm -f /caddy.tgz \
-      && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
-  ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
+    && mkdir -p /opt/caddy \
+    && tar xzf /caddy.tgz -C /opt/caddy \
+    && rm -f /caddy.tgz \
+    && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-  COPY /filesystem /
-  RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
-               /usr/local/share/landoop/sample-data/*.sh
+COPY /filesystem /
+RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
+             /usr/local/share/landoop/sample-data/*.sh
 
-  # Create system symlinks to Kafka binaries
+# Create system symlinks to Kafka binaries
 RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Add kafka ssl principal builder
@@ -433,12 +433,11 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
 
 ENV FDD_ROOT=/opt/fdd-root
 ENV HOME=${APP_ROOT}
-
-RUN mkdir -p ${FDD_ROOT} &&\
+RUN mkdir -p /opt/fdd-root && \
     chgrp -R 0 ${FDD_ROOT} && \
     chmod -R g=u ${FDD_ROOT} /etc/passwd && \
     mkdir -p \
-          /etc/supervisord.d/ \
+          /etc/supervisord.d \
           /var/log \
           /var/run/broker \
           /var/run/caddy \
