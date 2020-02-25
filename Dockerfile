@@ -7,7 +7,7 @@ RUN apt-get update \
          wget \
     && rm -rf /var/lib/apt/lists/* \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
-    && mkdir -p /mnt /opt /data \
+    && mkdir -p /mnt /opt \
     && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /bin/duphard \
     && chmod +x /bin/duphard
 
@@ -375,17 +375,17 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && apk add --no-cache --allow-untrusted glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
     && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
     && wget "$CADDY_URL" -O /caddy.tgz \
-    && mkdir -p /opt/caddy \
-    && tar xzf /caddy.tgz -C /opt/caddy \
-    && rm -f /caddy.tgz \
-    && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
-ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
+      && mkdir -p /opt/caddy \
+      && tar xzf /caddy.tgz -C /opt/caddy \
+      && rm -f /caddy.tgz \
+      && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+  ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-COPY /filesystem /
-RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
-             /usr/local/share/landoop/sample-data/*.sh
+  COPY /filesystem /
+  RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
+               /usr/local/share/landoop/sample-data/*.sh
 
-# Create system symlinks to Kafka binaries
+  # Create system symlinks to Kafka binaries
 RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Add kafka ssl principal builder
@@ -432,11 +432,13 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && sed -e 's/^/FDD_/' /opt/landoop/build.info | tee -a /build.info
 
 ENV FDD_ROOT=/opt/fdd-root
-RUN chgrp -R 0 ${FDD_ROOT} && \
-    chmod -R g=u ${FDD_ROOT} /etc/passwd
 ENV HOME=${APP_ROOT}
-RUN mkdir -p \
-          /etc/supervisor.d \
+
+RUN mkdir -p ${FDD_ROOT} &&\
+    chgrp -R 0 ${FDD_ROOT} && \
+    chmod -R g=u ${FDD_ROOT} /etc/passwd && \
+    mkdir -p \
+          /etc/supervisord.d/ \
           /var/log \
           /var/run/broker \
           /var/run/caddy \
@@ -449,7 +451,7 @@ RUN mkdir -p \
           /var/run/zookeeper \
           /var/www && \
     chown 10001:10001  \
-          /etc/supervisor.d \
+          /etc/supervisord.d \
           /var/log \
           /var/run/broker \
           /var/run/caddy \
@@ -462,8 +464,6 @@ RUN mkdir -p \
           /var/run/zookeeper \
           /var/www
 USER 10001
-
-
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
