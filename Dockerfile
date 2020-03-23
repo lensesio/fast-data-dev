@@ -202,6 +202,21 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
     && wget "$KAFKA_CONNECT_SPLUNK_URL" \
        -O /opt/landoop/connectors/third-party/kafka-connect-splunk/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar
 
+###################
+# Add ElasticSearch
+###################
+
+ARG ELASTICSEARCH_VERSION="7.6.1"
+ARG ELASTICSEARCH_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTICSEARCH_VERSION}-no-jdk-linux-x86_64.tar.gz"
+RUN wget "${ELASTICSEARCH_URL}" -O /elasticsearch.tar.gz \
+    && mkdir -p /opt/elasticsearch \
+    && tar -xzf /elasticsearch.tar.gz \
+           --owner=root --group=root --strip-components=1 \
+           -C  /opt/elasticsearch \
+    && rm -f /elasticsearch.tar.gz \
+    && sed -i '2iif [[ -z $JAVA_HOME ]]; then JAVA_HOME=/usr; fi' /opt/elasticsearch/bin/elasticsearch-env \
+    && chmod o+r /opt/elasticsearch/config/*
+
 ############
 # Add tools/
 ############
@@ -298,7 +313,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
     && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
     && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
+    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info \
+    && echo "ELASTICSEARCH_VERSION=${ELASTICSEARCH_VERSION}"           | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
 # We run as two separate commands because otherwise the build fails in docker hub (but not locally)
@@ -411,7 +427,7 @@ RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
              /usr/local/share/landoop/sample-data/*.sh
 
 # Create system symlinks to Kafka binaries
-RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
+RUN bash -c 'for i in $(find /opt/landoop/{kafka,tools}/bin /opt/elasticsearch/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Add kafka ssl principal builder
 RUN wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
