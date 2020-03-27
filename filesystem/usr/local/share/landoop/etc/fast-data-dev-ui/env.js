@@ -14,6 +14,10 @@ var runningServices = [
   {
     "name": "Third Party Connectors",
     "description": "Extra connectors from Confluent, Couchbase, Debezium"
+  },
+  {
+    "name": "ElasticSearch OSS $FDD_ELASTICSEARCH_VERSION",
+    "description": "Extra connectors from Confluent, Couchbase, Debezium"
   }
 ];
 
@@ -65,6 +69,18 @@ var servicesInfo = [
   {
     "name" : "Web Server",
     "port" : "$WEB_PORT",
+    "jmx"  : "",
+    "url"  : "http://localhost"
+  },
+  {
+    "name" : "ElasticSearch HTTP Port",
+    "port" : "$ELASTICSEARCH_PORT",
+    "jmx"  : "",
+    "url"  : "http://localhost"
+  },
+  {
+    "name" : "ElasticSearch Transport Port",
+    "port" : "$ELASTICSEARCH_TRANSPORT_PORT",
     "jmx"  : "",
     "url"  : "http://localhost"
   }

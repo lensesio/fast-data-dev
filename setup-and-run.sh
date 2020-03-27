@@ -54,6 +54,8 @@ export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
 export LENSES_PORT=${LENSES_PORT:-9991}
 export LENSES_JMX_PORT=${LENSES_JMX_PORT:-9586}
+export ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT:-9200}
+export ELASTICSEARCH_TRASNPORT_PORT=${ELASTICSEARCH_TRANSPORT_PORT:-9300}
 export FDD_PORT=${FDD_PORT:-28371}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
@@ -82,9 +84,10 @@ export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/landoop/wai
 export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
 export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
 export WAIT_SCRIPT_LENSES=${WAIT_SCRIPT_LENSES:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_ELASTICSEARCH=${WAIT_SCRIPT_ELASTICSEARCH:-/usr/local/share/landoop/wait-scripts/wait-for-elasticsearch.sh}
 
 # These ports are always used.
-PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT"
+PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT $ELASTICSEARCH_PORT $ELASTICSEARCH_TRASNPORT_PORT"
 
 # Export versions so envsubst will work
 source build.info
@@ -193,17 +196,30 @@ if [[ "$GENERATOR_BROKER" != *"localhost"* ]]; then
         -i /opt/generator/lenses.conf
 fi
 
+# Set env vars for ElasticSearch
+export ES_CLUSTER_NAME=${ES_CLUSTER_NAME:-lenses-box}
+export ES_NODE_NAME=${ES_NODE_NAME:-box-1}
+export ES_PATH_DATA=${ES_PATH_DATA:-/data/elasticsearch}
+export ES_PATH_LOGS=${ES_PATH_LOGS:-/var/run/elasticsearch}
+export ES_BOOTSTRAP_MEMORY__LOCK=${ES_BOOTSTRAP_MEMORY__LOCK:-false}
+export ES_HTTP_HOST=${ES_HTTP_HOST:-0.0.0.0}
+export ES_HTTP_PORT=${ES_HTTP_PORT:-$ELASTICSEARCH_PORT}
+export ES_ACTION_DESTRUCTIVE__REQUIRES__NAME=${ES_ACTION_DESTRUCTIVE__REQUIRES__NAME:-true}
+
+
 # Set memory limits
 # Set connect heap size if needed
 if [[ -n $CONNECT_HEAP ]]; then CONNECT_HEAP="-Xmx$CONNECT_HEAP"; fi
 CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:-$CONNECT_HEAP}
 export CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:--Xmx640M -Xms128M}
-export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}
-export ZOOKEEPER_HEAP_OPTS=${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}
-export SCHEMA_REGISTRY_HEAP_OPTS=${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}
-export KAFKA_REST_HEAP_OPTS=${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}
+export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx256M -Xms256M}
+export ZOOKEEPER_HEAP_OPTS=${ZOOKEEPER_HEAP_OPTS:--Xmx192M -Xms64M}
+export SCHEMA_REGISTRY_HEAP_OPTS=${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx192M -Xms128M}
+export KAFKA_REST_HEAP_OPTS=${KAFKA_REST_HEAP_OPTS:--Xmx192M -Xms128M}
 export LENSES_HEAP_OPTS=${LENSES_HEAP_OPTS:--Xmx1024M -Xms320M}
-
+export ES_HEAP_OPTS=${ES_HEAP_OPTS:--Xmx192M -Xms128M}
+ES_JAVA_OPTS=${ES_JAVA_OPTS:-}
+export ES_JAVA_OPTS="${ES_JAVA_OPTS} ${ES_HEAP_OPTS}"
 
 # Configure JMX if needed or disable it.
 if [[ ! $DISABLE_JMX =~ $TRUE_REG ]]; then
@@ -219,11 +235,11 @@ else
     export REST_JMX_PORT=0
     export LENSES_JMX_PORT=0
 fi
+
 if [[ $LENSES_JMX_PORT == 0 ]]; then
     # Lenses do not support setting lenses.jmx.port=0
     unset LENSES_JMX_PORT
 fi
-
 
 # Create run directories for various services and initialize where applicable with configuration files.
 mkdir -p \
@@ -235,9 +251,10 @@ mkdir -p \
       /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka,lsql-state-dir,lenses} \
-      /var/run/lenses
-chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses}
+      /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} \
+      /var/run/lenses \
+      /var/run/elasticsearch
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} /var/run/elasticsearch
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
@@ -252,6 +269,7 @@ cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
    /var/run/rest-proxy/
 cp /opt/lenses/logback.xml \
    /var/run/lenses/
+cp /opt/elasticsearch/config/{log4j2.properties,jvm.options} /var/run/elasticsearch
 
 # Copy tests
 # This differs in that we need to adjust it later
@@ -302,6 +320,7 @@ if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.co
 if [[ $REST_PORT == 0 ]];     then rm /etc/supervisord.d/*rest-proxy.conf; fi
 if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
 if [[ $LENSES_PORT == 0 ]];   then rm /etc/supervisord.d/*lenses.conf; fi
+if [[ $ELASTICSEARCH_PORT == 0 ]]; then rm /etc/supervisord.d/*elasticsearch.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
 if [[ $RUNTESTS =~ $FALSE_REG ]]; then
     rm /etc/supervisord.d/*smoke-tests.conf
@@ -605,6 +624,8 @@ if [[ $RUNNING_SAMPLEDATA =~ $TRUE_REG ]] && [[ $SAMPLEDATA =~ $TRUE_REG ]]; the
              > /etc/supervisord.d/99-supervisord-running-sample-data.conf
     envsubst < /usr/local/share/landoop/etc/supervisord.d/09-nullsink-connector.conf \
              > /etc/supervisord.d/09-nullsink-connector.conf
+    envsubst < /usr/local/share/landoop/etc/supervisord.d/09-elastic-ships-connector.conf \
+             > /etc/supervisord.d/09-elastic-ships-connector.conf
 elif [[ $SAMPLEDATA =~ $TRUE_REG ]]; then
     # This should be added only if we don't have running data, because it sets
     # retention period to 10 years (as the data is so few in this case).
@@ -614,6 +635,7 @@ else
     # If SAMPLEDATA=0 and FORWARDLOGS connector not explicitly requested
     export FORWARDLOGS=0
     export NULLSINK=0
+    export ELASTIC_SHIPS=0
 fi
 
 LICENSE_URL=${LICENSE_URL:-}

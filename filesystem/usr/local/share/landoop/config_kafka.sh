@@ -12,7 +12,12 @@ function process_variable {
     fi
 
     # If _OPTS they are already exported, so continue
-    if [[ $var =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER|LENSES)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
+    if [[ $var =~ ^(KAFKA|BROKER|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER|LENSES|ES)_(JAVA_|HEAP_|JMX_|LOG4J_|PERFORMANCE_|)OPTS$ ]]; then
+        # export "${var}"="${!var}"
+        return
+    fi
+    # Other things that should not get exported
+    if [[ $var =~ ^ES_PATH_CONF$ ]]; then
         # export "${var}"="${!var}"
         return
     fi
@@ -33,7 +38,8 @@ function process_variable {
     fi
     # Convert underscores in var name to stops
     conf="${conf//_/.}"
-
+    # Convert double stops to single underscore
+    conf="${conf//../_}"
 
     echo "${conf}=${!var}" >> "$config_file"
     return 0
@@ -273,4 +279,24 @@ if [[ ! -f "$CONFIG" ]]; then
     fi
 else
     echo "Lenses security conf config found at '$CONFIG'. We won't process variables."
+fi
+
+# Setup ElasticSearch
+CONFIG="/var/run/elasticsearch/elasticsearch.yml"
+if [[ ! -f "$CONFIG" ]]; then
+    printenv \
+        | grep -E "^ES_" \
+        | sed -e 's/=.*//' \
+        | while read var
+    do
+        process_variable "$var" "ES_" "$CONFIG"
+    done
+    # Clean empty variables
+    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
+    # Allow empty variables
+    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
+    # Elasticsearch expects yml. Let's replace = with :
+    sed -r -e 's/=/: /' -i "$CONFIG"
+else
+    echo "ElasticSearch config found at '$CONFIG'. We won't process variables."
 fi
