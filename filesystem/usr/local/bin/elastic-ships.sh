@@ -9,7 +9,8 @@ FALSE_REG='^([fF][aA][lL][sS][eE]|[nN]|[nN][oO]|0)$'
 
 if [[ $ELASTIC_SHIPS =~ $FALSE_REG ]] \
        || [[ $CONNECT_PORT == 0 ]] \
-       || [[ $ELASTICSEARCH_TRANSPORT_PORT == 0 ]]; then
+       || [[ $ELASTICSEARCH_TRANSPORT_PORT == 0 ]] \
+       || [[ $ELASTICSEARCH_PORT == 0 ]]; then
     echo "Skipping elastic-ships connector."
     exit 0
 fi
