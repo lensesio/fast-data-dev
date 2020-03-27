@@ -17,7 +17,7 @@ var runningServices = [
   },
   {
     "name": "ElasticSearch OSS $FDD_ELASTICSEARCH_VERSION",
-    "description": "Extra connectors from Confluent, Couchbase, Debezium"
+    "description": "Open Source Search"
   }
 ];
 
