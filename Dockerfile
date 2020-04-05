@@ -1,5 +1,5 @@
 FROM debian as compile-lkd
-MAINTAINER Marios Andreopoulos <marios@landoop.com>
+MAINTAINER Marios Andreopoulos <marios@lenses.io>
 
 RUN apt-get update \
     && apt-get install -y \
@@ -17,7 +17,7 @@ WORKDIR /
 # Login args for development archives
 ARG DEVARCH_USER
 ARG DEVARCH_PASS
-ARG ARCHIVE_SERVER=https://archive.landoop.com
+ARG ARCHIVE_SERVER=https://archive.lenses.io
 ARG LKD_VERSION=2.2.2
 
 ############
@@ -61,7 +61,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION=1.2.4
 ARG KAFKA_VERSION_4SR=2.1.0
-ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
+ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
 ARG CALCITE_LINQ4J_VERSION=1.12.0
@@ -111,7 +111,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
 # Add Third Party Connectors
 
 ## Twitter
-ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
+ARG TWITTER_CONNECTOR_URL="https://archive.lenses.io/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
@@ -336,7 +336,7 @@ ENV LKD_VERSION=${LKD_VERSION}
 CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt landoop; chown --reference=/mnt /mnt/LKD-${LKD_VERSION}.tar.gz"]
 
 FROM alpine
-MAINTAINER Marios Andreopoulos <marios@landoop.com>
+MAINTAINER Marios Andreopoulos <marios@lenses.io>
 COPY --from=compile-lkd /opt /opt
 
 # Update, install tooling and some basic setup
@@ -401,7 +401,7 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 # Add and setup Lenses
 ARG AD_UN
 ARG AD_PW
-ARG AD_URL="https://archive.landoop.com/lenses/3.1/lenses-3.1.0-linux64.tar.gz"
+ARG AD_URL="https://archive.lenses.io/lenses/3.1/lenses-3.1.0-linux64.tar.gz"
 RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
     && tar xf /lenses.tgz -C /opt \
     && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
@@ -410,14 +410,14 @@ RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
 # Add Lenses CLI
 ARG CAD_UN
 ARG CAD_PW
-ARG LC_VERSION="3.0.7"
-ARG LC_URL="https://archive.landoop.com/tools/lenses-cli/3.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+ARG LC_VERSION="3.1.0"
+ARG LC_URL="https://archive.lenses.io/tools/lenses-cli/3.1/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
     && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
     && rm -f /lenses-cli.tgz
 
 # Add cc_payments generator
-RUN wget https://archive.landoop.com/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
+RUN wget https://archive.lenses.io/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
     && mkdir -p /opt/generator \
     && tar xf /generator.tgz --no-same-owner --strip-components=1 -C /opt/generator \
     && sed -e 's/localhost/0.0.0.0/' -i /opt/generator/lenses.conf \
@@ -431,12 +431,12 @@ RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink,elastic-ships}.s
 RUN bash -c 'for i in $(find /opt/landoop/{kafka,tools}/bin /opt/elasticsearch/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Add kafka ssl principal builder
-RUN wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
+RUN wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
          -P /opt/landoop/kafka/share/java/kafka \
     && mkdir -p /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
-    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/LICENSE \
+    && wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/LICENSE \
          -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
-    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/README.md \
+    && wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/README.md \
          -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder
 
 # Setup Kafka Topics UI, Schema Registry UI, Kafka Connect UI
