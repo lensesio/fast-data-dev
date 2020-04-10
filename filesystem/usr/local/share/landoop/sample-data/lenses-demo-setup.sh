@@ -16,3 +16,10 @@ lenses-cli \
     --redaction Last-4 \
     --fields CreditCardId,cc,creditcard \
     --category PII
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    groups create /usr/local/share/landoop/sample-data/group_logviewer.yaml
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    users create /usr/local/share/landoop/sample-data/user_logviewer.yaml
