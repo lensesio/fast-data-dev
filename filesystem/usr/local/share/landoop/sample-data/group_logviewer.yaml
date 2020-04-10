@@ -1,0 +1,17 @@
+name: logviewer
+description: "logviewer"
+applicationPermissions:
+- ViewKafkaConsumers
+- ViewConnectors
+- ViewSQLProcessors
+- ViewSchemaRegistry
+- ViewTopology
+dataNamespaces:
+- wildcards:
+    - "*"
+  permissions:
+    - QueryTopic
+    - ShowTopic
+    - ViewSchema
+  system: Kafka
+  instance: Dev

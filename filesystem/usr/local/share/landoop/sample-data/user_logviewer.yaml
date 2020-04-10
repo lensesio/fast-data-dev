@@ -1,0 +1,5 @@
+username: logviewer
+password: logviewer
+security: basic
+groups:
+- logviewer
