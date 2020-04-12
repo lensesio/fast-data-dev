@@ -1,14 +1,13 @@
 name: logviewer
-description: "logviewer"
+description: This group only lets you view topics starting with log. To use it, try to login as logviewer/logviewer.
 applicationPermissions:
 - ViewKafkaConsumers
 - ViewConnectors
 - ViewSQLProcessors
-- ViewSchemaRegistry
 - ViewTopology
 dataNamespaces:
 - wildcards:
-    - "*"
+    - "log*"
   permissions:
     - QueryTopic
     - ShowTopic
