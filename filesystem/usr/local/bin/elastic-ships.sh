@@ -53,10 +53,13 @@ cat <<EOF >/tmp/connector-elastic-ships
 }
 EOF
 
-curl -vs --stderr - -X POST -H "Content-Type: application/json" \
-     --data @/tmp/connector-elastic-ships "http://localhost:$CONNECT_PORT/connectors"
+# We can create the connector only if the Elasticsearch 6 plugin is loaded
+if curl "http://localhost:$CONNECT_PORT/connector-plugins" | grep -sq "elastic6"; then
+    curl -vs --stderr - -X POST -H "Content-Type: application/json" \
+         --data @/tmp/connector-elastic-ships "http://localhost:$CONNECT_PORT/connectors"
+fi
 
-rm /tmp/connector-elastic-ships
+rm -f /tmp/connector-elastic-ships
 
 # Create ES connection
 curl \
