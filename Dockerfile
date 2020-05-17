@@ -265,6 +265,10 @@ RUN mkdir -p /opt/landoop/tools/bin/win \
                 /opt/landoop/tools/bin/mac/coyote \
     && rm -f /normcat-linux.tg /normcat-mac.zip /normcat-win.zip
 
+# Add connect-cli
+ARG CONNECT_CLI_VERSION=1.0.9
+ARG CONNECT_CLI_URL="https://github.com/lensesio/kafka-connect-tools/releases/download/v${CONNECT_CLI_VERSION}/connect-cli"
+RUN wget "$CONNECT_CLI_URL" -O /opt/landoop/tools/bin/connect-cli && chmod +x /opt/landoop/tools/bin/connect-cli
 
 ##########
 # Finalize
@@ -298,7 +302,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
     && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
     && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
+    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info \
+    && echo "CONNECT_CLI_VERSION=${CONNECT_CLI_VERSION}"               | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
 # We run as two separate commands because otherwise the build fails in docker hub (but not locally)
