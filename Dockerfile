@@ -60,7 +60,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=1.2.4
+ARG STREAM_REACTOR_VERSION=1.2.5
 ARG KAFKA_VERSION_4SR=2.1.0
 ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ELASTICSEARCH_2X_VERSION=2.4.6
@@ -169,13 +169,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
     && rm -rf /couchbase.zip /couchbase
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres / MsSQL
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=0.10.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=1.0.1.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=0.10.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=1.0.1.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=0.10.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=1.0.1.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=0.10.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=1.0.1.Final
 ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-sqlserver/${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}/debezium-connector-sqlserver-${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,sqlserver} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
@@ -269,6 +269,10 @@ RUN mkdir -p /opt/landoop/tools/bin/win \
                 /opt/landoop/tools/bin/mac/coyote \
     && rm -f /normcat-linux.tg /normcat-mac.zip /normcat-win.zip
 
+# Add connect-cli
+ARG CONNECT_CLI_VERSION=1.0.9
+ARG CONNECT_CLI_URL="https://github.com/lensesio/kafka-connect-tools/releases/download/v${CONNECT_CLI_VERSION}/connect-cli"
+RUN wget "$CONNECT_CLI_URL" -O /opt/landoop/tools/bin/connect-cli && chmod +x /opt/landoop/tools/bin/connect-cli
 
 ##########
 # Finalize
@@ -302,7 +306,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/landoop/build.info \
     && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
     && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
-    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info
+    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info \
+    && echo "CONNECT_CLI_VERSION=${CONNECT_CLI_VERSION}"               | tee -a /opt/landoop/build.info
 
 # duphard (replace duplicates with hard links) and create archive
 # We run as two separate commands because otherwise the build fails in docker hub (but not locally)
