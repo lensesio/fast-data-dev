@@ -59,7 +59,7 @@ DISABLE=${DISABLE:-}
 CONNECTORS=${CONNECTORS:-}
 export ADV_HOST=${ADV_HOST:-}
 export ADV_HOST_JMX=${ADV_HOST_JMX:-${ADV_HOST}}
-export ADV_HOST_JMX=${ADV_HOST_JMX:-localhost}
+export ADV_HOST_JMX=${ADV_HOST_JMX:-127.0.0.1}
 CONNECT_HEAP=${CONNECT_HEAP:-}
 WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
@@ -92,7 +92,7 @@ export KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=${KAFKA_TRANSACTION_STATE_
 export KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-1}
 export KAFKA_LOG_RETENTION_HOURS=${KAFKA_LOG_RETENTION_HOURS:-168}
 export KAFKA_LOG_SEGMENT_BYTES=${KAFKA_LOG_SEGMENT_BYTES:-104857600}
-export KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
+export KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT:-127.0.0.1:$ZK_PORT}
 export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS:-1000}
 export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT}
 export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
@@ -109,12 +109,12 @@ export SCHEMA_REGISTRY_JMX_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dcom.sun.management
 export SCHEMA_REGISTRY_LOG4J_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dlog4j.configuration=file:/var/run/schema-registry/log4j.properties}
 
 # Set env vars for Kafka Connect Distributed
-export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
+export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://127.0.0.1:$BROKER_PORT}
 export CONNECT_GROUP_ID=${CONNECT_GROUP_ID:-connect-fast-data}
 export CONNECT_KEY_CONVERTER=${CONNECT_KEY_CONVERTER:-io.confluent.connect.avro.AvroConverter}
-export CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=${CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=${CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
 export CONNECT_VALUE_CONVERTER=${CONNECT_VALUE_CONVERTER:-io.confluent.connect.avro.AvroConverter}
-export CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=${CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=${CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
 export CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=${CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR:-1}
 export CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=${CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR:-1}
 export CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=${CONNECT_STATUS_STORAGE_REPLICATION_FACTOR:-1}
@@ -130,15 +130,15 @@ export CONNECT_JMX_OPTS=${CONNECT_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom
 export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/connect/connect-log4j.properties}
 
 # Set env vars for REST Proxy
-export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://localhost:$BROKER_PORT}
+export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://127.0.0.1:$BROKER_PORT}
 export KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS=${KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
 export KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN=${KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
 export KAFKA_REST_LISTENERS=${KAFKA_REST_LISTENERS:-http://0.0.0.0:$REST_PORT}
-export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
 # Next two lines are a fix for REST Proxy
 export KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS=${KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS:-20000}
 export KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS=${KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS:-18000}
-export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-localhost:$ZK_PORT}
+export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-127.0.0.1:$ZK_PORT}
 export KAFKAREST_JMX_OPTS=${KAFKA_REST_JMX_OPTS:-}
 export KAFKAREST_JMX_OPTS=${KAFKAREST_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REST_JMX_PORT}
 export KAFKAREST_LOG4J_OPTS=${KAFKA_REST_LOG4J_OPTS:-}
@@ -152,9 +152,9 @@ export ZOOKEEPER_LOG4J_OPTS=${ZOOKEEPER_LOG4J_OPTS:--Dlog4j.configuration=file:/
 export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$ZK_JMX_PORT}
 
 # Set env vars for generator
-export GENERATOR_BROKER=${GENERATOR_BROKER:-localhost:$BROKER_PORT}
-export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-localhost}
-export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://localhost:$REGISTRY_PORT}
+export GENERATOR_BROKER=${GENERATOR_BROKER:-127.0.0.1:$BROKER_PORT}
+export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-127.0.0.1}
+export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
 
 # Set memory limits
 # Set connect heap size if needed
@@ -235,7 +235,7 @@ if [[ -n ${ADV_HOST} ]]; then
     if [[ -z $CONNECT_REST_ADVERTISED_HOST_NAME ]]; then
         export CONNECT_REST_ADVERTISED_HOST_NAME=${ADV_HOST}
     fi
-    sed -e "s#localhost#${ADV_HOST}#g" -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js
+    sed -e "s#127.0.0.1#${ADV_HOST}#g" -i /var/run/coyote/simple-integration-tests.yml /var/www/env.js
 fi
 
 # setup Kafka (and components)
@@ -247,7 +247,7 @@ for service in /usr/local/share/landoop/etc/supervisord.templates.d/*.conf; do
     envsubst < "$service" > /etc/supervisord.d/"$(basename "$service")"
 done
 # Disable services if asked
-if [[ $ZK_PORT == 0 ]] || [[ $GENERATOR_ZK_HOST != "localhost" ]];       then rm /etc/supervisord.d/*zookeeper.conf; fi
+if [[ $ZK_PORT == 0 ]] || [[ $GENERATOR_ZK_HOST != "127.0.0.1" ]];       then rm /etc/supervisord.d/*zookeeper.conf; fi
 if [[ $BROKER_PORT == 0 ]];   then rm /etc/supervisord.d/*broker.conf; fi
 if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; fi
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
@@ -388,7 +388,7 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
             pushd /tmp/certs
             # Create Landoop Fast Data Dev CA
             quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
-            SSL_HOSTS="localhost,127.0.0.1,192.168.99.100"
+            SSL_HOSTS="127.0.0.1,127.0.0.1,192.168.99.100"
             HOSTNAME=${HOSTNAME:-} # This come from the container, so let's not permit it be unbound
             if [[ ! -z $HOSTNAME ]]; then SSL_HOSTS="$SSL_HOSTS,$HOSTNAME"; fi
             if [[ ! -z $ADV_HOST ]]; then SSL_HOSTS="$SSL_HOSTS,$ADV_HOST"; fi
@@ -537,7 +537,7 @@ else
     fi
 fi
 
-PRINT_HOST=${ADV_HOST:-localhost}
+PRINT_HOST=${ADV_HOST:-127.0.0.1}
 export PRINT_HOST
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
