@@ -6,19 +6,19 @@
   entries:
 # BASIC / PERFORMANCE
     - name: Wait for broker to get up
-      command: bash -c 'for ((i=0;i<60;i++)); do sleep 2; echo dump | nc localhost 2181 | grep brokers && { sleep 5; break; }; done'
+      command: bash -c 'for ((i=0;i<60;i++)); do sleep 2; echo dump | nc 127.0.0.1 2181 | grep brokers && { sleep 5; break; }; done'
       nolog: true
 
     - name: Create Topic (basic kafka)
       command: |
-        kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --partitions 1 --replication-factor 1
+        kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote_basic_%UNIQUE_BASIC% --partitions 1 --replication-factor 1
                      --create --config retention.ms=60000 --config retention.bytes=52428800
     - name: List Topics (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --list
+      command: kafka-topics --zookeeper 127.0.0.1:2181 --list
     - name: Performance Test (basic kafka)
       command: |
         kafka-producer-perf-test --topic coyote_basic_%UNIQUE_BASIC% --throughput 100000 --record-size 1000 --num-records 500000
-                                 --producer-props bootstrap.servers="localhost:9092"
+                                 --producer-props bootstrap.servers="127.0.0.1:9092"
       timeout: 90s
 
 - name: REST Proxy
@@ -26,20 +26,20 @@
   entries:
 # HTTP REST PROXY
     - name: Wait for rest proxy to get up
-      command: bash -c 'for ((i=0;i<90;i++)); do sleep 2; curl "http://localhost:8082" | grep "{}" && { sleep 2; break; }; done'
+      command: bash -c 'for ((i=0;i<90;i++)); do sleep 2; curl "http://127.0.0.1:8082" | grep "{}" && { sleep 2; break; }; done'
       nolog: true
 
     - name: List Topics (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics"
+      command: curl -vs --stderr - "http://127.0.0.1:8082/topics"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Topic Information (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_basic_%UNIQUE_BASIC%"
+      command: curl -vs --stderr - "http://127.0.0.1:8082/topics/coyote_basic_%UNIQUE_BASIC%"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Topic Partitions (rest proxy)
-      command: curl -vs --stderr - "http://localhost:8082/topics/coyote_basic_%UNIQUE_BASIC%/partitions"
+      command: curl -vs --stderr - "http://127.0.0.1:8082/topics/coyote_basic_%UNIQUE_BASIC%/partitions"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_basic_%UNIQUE_BASIC% --delete
+      command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote_basic_%UNIQUE_BASIC% --delete
     - name: Produce Avro Message (rest proxy, schema registry)
       # Please do not change the formatting (e.g. add new lines) of the JSON message below, REST Proxy is very sensitive.
       command: |
@@ -47,91 +47,91 @@
              -H "Content-Type: application/vnd.kafka.avro.v1+json"
              --data '{"value_schema": "{\"type\": \"record\", \"name\": \"User\", \"fields\": [{\"name\": \"name\", \"type\": \"string\"}]}",
                       "records": [{"value": {"name": "testUser"}}]}'
-             "http://localhost:8082/topics/coyote-test-avro"
+             "http://127.0.0.1:8082/topics/coyote-test-avro"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Create Consumer for Avro data (rest proxy, schema registry)
       command: |
         curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v1+json"
              --data '{"name": "a-consumer", "format": "avro", "auto.offset.reset": "smallest"}'
-             "http://localhost:8082/consumers/coyote-avro"
+             "http://127.0.0.1:8082/consumers/coyote-avro"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - command: sleep 5
       nolog: true
     - name: Consume Avro Message (rest proxy, schema registry)
       command: |
         curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.avro.v1+json"
-             "http://localhost:8082/consumers/coyote-avro/instances/a-consumer/topics/coyote-test-avro?max_bytes=30"
+             "http://127.0.0.1:8082/consumers/coyote-avro/instances/a-consumer/topics/coyote-test-avro?max_bytes=30"
       stdout_has: [ 'testUser' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Avro Consumer (rest proxy, schema registry)
-      command: curl -vs --stderr - -X DELETE "http://localhost:8082/consumers/coyote-avro/instances/a-consumer"
+      command: curl -vs --stderr - -X DELETE "http://127.0.0.1:8082/consumers/coyote-avro/instances/a-consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     # - name: Delete Consumer Group Info
-    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://localhost:9092 --delete --group coyote-avro
+    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://127.0.0.1:9092 --delete --group coyote-avro
     #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 5
       nolog: true
-    - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-avro --delete
+    - command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-test-avro --delete
       nolog: true
 
     - name: Produce JSON Message (rest proxy)
       command: |
         curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.json.v1+json"
-              --data '{"records":[{"value":{"foo":"bar"}}]}' "http://localhost:8082/topics/coyote-test-json"
+              --data '{"records":[{"value":{"foo":"bar"}}]}' "http://127.0.0.1:8082/topics/coyote-test-json"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Create Consumer for JSON data (rest proxy)
       command: |
         curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v1+json"
               --data '{"name": "a-consumer", "format": "json", "auto.offset.reset": "smallest"}'
-              "http://localhost:8082/consumers/coyote-json"
+              "http://127.0.0.1:8082/consumers/coyote-json"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - command: sleep 2
       nolog: true
     - name: Consume JSON Message (rest proxy)
       command: |
         curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.json.v1+json"
-              "http://localhost:8082/consumers/coyote-json/instances/a-consumer/topics/coyote-test-json?max_bytes=15"
+              "http://127.0.0.1:8082/consumers/coyote-json/instances/a-consumer/topics/coyote-test-json?max_bytes=15"
       stdout_has: [ 'foo.*bar' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete JSON Consumer (rest proxy)
-      command: curl -vs --stderr - -X DELETE "http://localhost:8082/consumers/coyote-json/instances/a-consumer"
+      command: curl -vs --stderr - -X DELETE "http://127.0.0.1:8082/consumers/coyote-json/instances/a-consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     # - name: Delete Consumer Group Info
-    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://localhost:9092 --delete --group coyote-json
+    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://127.0.0.1:9092 --delete --group coyote-json
     #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 2
       nolog: true
-    - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-json --delete
+    - command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-test-json --delete
       nolog: true
 
     - name: Produce Binary Message (rest proxy)
       command: |
         curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.binary.v1+json"
-            --data '{"records":[{"value":"S2Fma2E="}]}' "http://localhost:8082/topics/coyote-test-binary"
+            --data '{"records":[{"value":"S2Fma2E="}]}' "http://127.0.0.1:8082/topics/coyote-test-binary"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Create Consumer for Binary data (rest proxy)
       command: |
         curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v1+json"
               --data '{"name": "a-consumer", "format": "binary", "auto.offset.reset": "smallest"}'
-              "http://localhost:8082/consumers/coyote-binary"
+              "http://127.0.0.1:8082/consumers/coyote-binary"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - command: sleep 2
       nolog: true
     - name: Consume Binary Message (rest proxy)
       command: |
         curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.binary.v1+json"
-              "http://localhost:8082/consumers/coyote-binary/instances/a-consumer/topics/coyote-test-binary?max_bytes=10"
+              "http://127.0.0.1:8082/consumers/coyote-binary/instances/a-consumer/topics/coyote-test-binary?max_bytes=10"
       stdout_has: [ 'S2Fma2E=' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Binary Consumer (rest proxy)
-      command: curl -vs --stderr - -XDELETE "http://localhost:8082/consumers/coyote-binary/instances/a-consumer"
+      command: curl -vs --stderr - -XDELETE "http://127.0.0.1:8082/consumers/coyote-binary/instances/a-consumer"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     # - name: Delete Consumer Group Info
-    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://localhost:9092 --delete --group coyote-binary
+    #   command: kafka-consumer-groups --bootstrap-server PLAINTEXT://127.0.0.1:9092 --delete --group coyote-binary
     #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 5
       nolog: true
-    - command: kafka-topics --zookeeper localhost:2181 --topic coyote-test-binary --delete
+    - command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-test-binary --delete
       nolog: true
 
 - name: Schema Registry
@@ -142,34 +142,34 @@
       command: |
         curl  -vs --stderr - -XPOST -i -H "Content-Type: application/vnd.schemaregistry.v1+json"
              --data '{"schema": "{\"type\": \"string\"}"}'
-             "http://localhost:8081/subjects/coyote_basic/versions"
+             "http://127.0.0.1:8081/subjects/coyote_basic/versions"
     - name: List subjects (schema registry)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects"
+      command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8081/subjects"
       stdout_has: [ 'coyote_basic' ]
     - name: List Schema versions (schema registry)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects/coyote_basic/versions"
+      command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8081/subjects/coyote_basic/versions"
     # - name: Fetch Schema by globally unique id 1 (schema registry)
-    #   command: curl -vs --stderr - -XGET -i "http://localhost:8081/schemas/ids/1"
+    #   command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8081/schemas/ids/1"
     #   stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Fetch Schema by name and version (schema registry)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8081/subjects/coyote_basic/versions/1"
+      command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8081/subjects/coyote_basic/versions/1"
       stdout_has: [ '"subject":"coyote_basic","version":1' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Register Complex Schema (schema registry)
       command: |
         curl -vs --stderr - -XPOST -i -H "Content-Type: application/vnd.schemaregistry.v1+json"
              --data '{"schema": "{\"type\": \"record\", \"name\": \"User\", \"fields\": [{\"name\": \"name\", \"type\": \"string\"}]}"}'
-             "http://localhost:8081/subjects/coyote_test_02/versions"
+             "http://127.0.0.1:8081/subjects/coyote_test_02/versions"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Test Schema Compatibility (schema registry)
       command: |
         curl -vs --stderr - -XPOST -i -H "Content-Type: application/vnd.schemaregistry.v1+json"
              --data '{"schema": "{\"type\": \"record\", \"name\": \"User\", \"fields\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"address\", \"type\": \"string\"}]}"}'
-             "http://localhost:8081/compatibility/subjects/coyote_test_02/versions/latest"
+             "http://127.0.0.1:8081/compatibility/subjects/coyote_test_02/versions/latest"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
       stdout_has: [ 'is_compatible' ]
     - name: Get Schema Registry Configuration (schema registry)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8081/config"
+      command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8081/config"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
 
 - name: Connect
@@ -177,11 +177,11 @@
   entries:
 # CONNECT
     - name: Wait for connect to get up
-      command: bash -c 'for ((i=0;i<60;i++)); do sleep 5; curl "http://localhost:8083/connectors" && { sleep 5; break; }; done'
+      command: bash -c 'for ((i=0;i<60;i++)); do sleep 5; curl "http://127.0.0.1:8083/connectors" && { sleep 5; break; }; done'
       nolog: true
 
     - name: Get list of Connectors (connect distributed)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8083/connectors"
+      command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8083/connectors"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
 
     - name: Create a Console Connector (connect distributed)
@@ -189,18 +189,18 @@
         curl -vs --stderr - -X POST -H "Content-Type: application/json"
              --data '{ "name": "coyote_test_console_source-%UNIQUE_CD%",
                "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"coyote_cd-%UNIQUE_CD%","file":"/etc/fstab"}}'
-             "http://localhost:8083/connectors"
+             "http://127.0.0.1:8083/connectors"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Sleep a bit to let the connector spawn and work
       command: sleep 10
       nolog: true
     - name: Get Connector s Configuration (connect distributed)
-      command: curl -vs --stderr - -XGET -i "http://localhost:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
+      command: curl -vs --stderr - -XGET -i "http://127.0.0.1:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
       stdout_has: [ '/etc/fstab' ]
     - name: "Run Console Consumer to fix Kafka's transient state (basic kafka)"
       command: |
         timeout 10
-        kafka-console-consumer --bootstrap-server localhost:9092
+        kafka-console-consumer --bootstrap-server 127.0.0.1:9092
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
                                --timeout-ms 5000
@@ -208,19 +208,19 @@
     - name: Run Console Consumer (basic kafka)
       command: |
         timeout 10
-        kafka-console-consumer --bootstrap-server localhost:9092
+        kafka-console-consumer --bootstrap-server 127.0.0.1:9092
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
                                --timeout-ms 5000
       stdout_has: [ 'cdrom' ]
       ignore_exit_code: true
     - name: Delete connector
-      command:  curl -vs --stderr - -XDELETE "http://localhost:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
+      command:  curl -vs --stderr - -XDELETE "http://127.0.0.1:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - command: sleep 5
       nolog: true
     - name: Delete Connect Distributes Test Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote_cd-%UNIQUE_CD% --delete
+      command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote_cd-%UNIQUE_CD% --delete
 
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset
       nolog: true
@@ -243,11 +243,11 @@
     - name: Create coyote_connect_standalone.properties
       command: tee coyote_connect_standalone.properties
       stdin: |
-        bootstrap.servers=localhost:9092
+        bootstrap.servers=127.0.0.1:9092
         key.converter=io.confluent.connect.avro.AvroConverter
-        key.converter.schema.registry.url=http://localhost:8081
+        key.converter.schema.registry.url=http://127.0.0.1:8081
         value.converter=io.confluent.connect.avro.AvroConverter
-        value.converter.schema.registry.url=http://localhost:8081
+        value.converter.schema.registry.url=http://127.0.0.1:8081
         internal.key.converter=org.apache.kafka.connect.json.JsonConverter
         internal.value.converter=org.apache.kafka.connect.json.JsonConverter
         internal.key.converter.schemas.enable=false
@@ -265,7 +265,7 @@
     - name: Run Console Consumer (basic kafka)
       command: |
         timeout 10
-        kafka-console-consumer --bootstrap-server localhost:9092
+        kafka-console-consumer --bootstrap-server 127.0.0.1:9092
                                --topic coyote-ca-accounts
                                --from-beginning
                                --timeout-ms 10000
@@ -273,6 +273,6 @@
       stdout_has: [ 'alice', 'bob' ]
       ignore_exit_code: true
     - name: Delete Connect Standalone Test Topic (basic kafka)
-      command: kafka-topics --zookeeper localhost:2181 --topic coyote-ca-accounts --delete
+      command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-ca-accounts --delete
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset
       nolog: true

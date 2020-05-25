@@ -24,7 +24,7 @@ cat <<EOF >/tmp/connector
 EOF
 
     curl -vs --stderr - -X POST -H "Content-Type: application/json" \
-         --data @/tmp/connector "http://localhost:$CONNECT_PORT/connectors"
+         --data @/tmp/connector "http://127.0.0.1:$CONNECT_PORT/connectors"
 done
 
 rm /tmp/connector
