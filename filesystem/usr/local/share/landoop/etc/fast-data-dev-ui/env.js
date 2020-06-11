@@ -8,7 +8,7 @@ var runningServices = [
     "description" : "1× Broker, 1× Schema Registry, 1× Connect Distributed Worker, 1× Zookeeper"
   },
   {
-    "name" : "Landoop Stream Reactor $FDD_STREAM_REACTOR_VERSION",
+    "name" : "Lenses.io Stream Reactor $FDD_STREAM_REACTOR_VERSION",
     "description" : "Source & Sink connectors collection (25+) supporting KCQL"
   },
   {
