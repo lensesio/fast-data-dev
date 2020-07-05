@@ -3,6 +3,10 @@
 CONNECT_PORT=${CONNECT_PORT:-8083}
 ELASTICSEARCH_TRANSPORT_PORT=${ELASTICSEARCH_TRANSPORT_PORT:-9300}
 ELASTIC_SHIPS="${ELASTIC_SHIPS:-1}"
+W_ELASTIC_ADDRESS=${W_ELASTIC_ADDRESS:-localhost}
+W_ELASTIC_PORT=${W_ELASTIC_PORT:-$ELASTICSEARCH_PORT}
+W_LENSES_ADDRESS=${W_LENSES_ADDRESS:-localhost}
+W_LENSES_PORT=${W_LENSES_PORT:-$LENSES_PORT}
 
 TRUE_REG='^([tT][rR][uU][eE]|[yY]|[yY][eE][sS]|1)$'
 FALSE_REG='^([fF][aA][lL][sS][eE]|[nN]|[nN][oO]|0)$'
@@ -16,7 +20,7 @@ if [[ $ELASTIC_SHIPS =~ $FALSE_REG ]] \
 fi
 
 # Create index and map geo_point value
-curl -XPUT 'localhost:9200/sea-vessel-position-reports?pretty' \
+curl -XPUT "http://${W_ELASTIC_ADDRESS}:${W_ELASTIC_PORT}/sea-vessel-position-reports?pretty" \
      -H 'Content-Type: application/json' \
      -d'
 {
@@ -27,7 +31,7 @@ curl -XPUT 'localhost:9200/sea-vessel-position-reports?pretty' \
     }
   }
 }'
-curl -X POST "http://localhost:9200/sea-vessel-position-reports/sea-vessel-position-reports/_mapping" \
+curl -X POST "http://${W_ELASTIC_ADDRESS}:${W_ELASTIC_PORT}/sea-vessel-position-reports/sea-vessel-position-reports/_mapping" \
      -H 'Content-Type: application/json' \
      -d '{
    "sea-vessel-position-reports" : {
@@ -64,6 +68,6 @@ rm -f /tmp/connector-elastic-ships
 # Create ES connection
 curl \
     -H "Content-Type:application/json" \
-    -H "x-kafka-lenses-token:$(curl -H "Content-Type:application/json" -X POST -d '{"user":"admin",  "password":"admin"}' http://localhost:3030/api/login --compressed -s)" \
-    http://localhost:$LENSES_PORT/api/v1/connection/connections \
-    -XPOST -d '{"name":"ES-1","templateName":"Elasticsearch","configuration":[{"key":"nodes","value":["http://localhost:9200"]}],"tags":[]}'
+    -H "x-kafka-lenses-token:$(curl -H "Content-Type:application/json" -X POST -d '{"user":"admin",  "password":"admin"}' http://$W_LENSES_ADDRESS:$W_LENSES_PORT/api/login --compressed -s)" \
+    http://$W_LENSES_ADDRESS:$W_LENSES_PORT/api/v1/connection/connections \
+    -XPOST -d "{\"name\":\"ES-1\",\"templateName\":\"Elasticsearch\",\"configuration\":[{\"key\":\"nodes\",\"value\":[\"http://${W_ELASTIC_ADDRESS}:${W_ELASTIC_PORT}\"]}],\"tags\":[\"preview\"]}"
