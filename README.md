@@ -7,7 +7,9 @@
 
 [Lenses](https://lenses.io/box/) docker image with [fast-data-dev](https://hub.docker.com/r/lensesio/fast-data-dev/) technology for fast evaluation!
 
-Besides [Lenses](https://lenses.io/box/) we include a full fledged [Kafka](https://kafka.apache.org/) installation with Kafka Connect and Confluent Schema Registry, [Lenses SQL Engine](https://lenses.io/product/sql/), Landoop’s open-source connector collection [Stream Reactor](https://lenses.io/connect/) and data generators to experiment with.
+Beside [Lenses](https://lenses.io/box/) we include a full fledged [Kafka](https://kafka.apache.org/) installation with Kafka Connect and Confluent Schema Registry, [Lenses SQL Engine](https://lenses.io/product/sql/), Landoop’s open-source connector collection [Stream Reactor](https://lenses.io/connect/) and data generators to experiment with.
+=======
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/box/)**
 
 [Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy streaming can get!
 
