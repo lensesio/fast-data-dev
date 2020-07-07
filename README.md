@@ -19,7 +19,7 @@ a modern streaming platform (only for kafka-lenses-dev), intuitive UIs and extra
 goodies. Also includes Kafka Connect, Schema Registry, Lenses.io's Stream Reactor
 25+ Connectors and more.
 
-> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/downloads/lenses/)**
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/box/)**
 
 ### Introduction
 
