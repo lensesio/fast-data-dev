@@ -1,11 +1,11 @@
 # fast-data-dev / kafka-lenses-dev (Lenses Box) #
 lensesio/fast-data-dev
-[![docker](https://img.shields.io/docker/pulls/landoop/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/landoop/fast-data-dev/)
-[![](https://images.microbadger.com/badges/image/landoop/fast-data-dev.svg)](http://microbadger.com/images/landoop/fast-data-dev)
+[![docker](https://img.shields.io/docker/pulls/lensesio/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/lensesio/fast-data-dev/)
+[![](https://images.microbadger.com/badges/image/lensesio/fast-data-dev.svg)](http://microbadger.com/images/lensesio/fast-data-dev)
 
-lensesio/box (landoop/kafka-lenses-dev)
-[![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
-[![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev)
+lensesio/box (lensesio/box)
+[![docker](https://img.shields.io/docker/pulls/lensesio/box.svg?style=flat)](https://hub.docker.com/r/lensesio/box/)
+[![](https://images.microbadger.com/badges/image/lensesio/box.svg)](http://microbadger.com/images/lensesio/box)
 
 [Join the Slack Lenses.io Community!](https://launchpass.com/lensesio)
 
