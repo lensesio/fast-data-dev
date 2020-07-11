@@ -4,10 +4,10 @@ USER=${USER:-admin}
 PASSWORD=${PASSWORD:-admin}
 
 SRC_TP="sea_vessel_position_reports"
-PROC_SQL="SET autocreate=true;
+PROC_SQL="SET defaults.topic.autocreate=true;
 
 INSERT INTO fast_vessel_processor
-    SELECT MMSI, Speed, Longitude AS Long, Latitude AS Lat, \`Timestamp\`
+    SELECT STREAM MMSI, Speed, Longitude AS Long, Latitude AS Lat, \`Timestamp\`
     FROM ${SRC_TP}
     WHERE Speed > 10;"
 
@@ -21,7 +21,7 @@ for ((i=0;i<60;i++)); do
     sleep 5
     if lenses-cli --timeout 3s --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" topics \
             | grep ${SRC_TP} | grep -sqE "AVRO\s*AVRO"; then
-        sleep 5
+        sleep 10
         break
     fi
 done
