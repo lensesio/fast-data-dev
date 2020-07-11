@@ -288,7 +288,6 @@ sed -e "s/3030/$WEB_PORT/" \
 # Copy other templated files (caddy, logs-to-kafka, env.js)
 envsubst < /usr/local/share/landoop/etc/Caddyfile                   > /var/run/caddy/Caddyfile
 envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js     > /var/www/env.js
-envsubst < /usr/local/share/landoop/html-errors/custom_502.html > /var/www/custom_502.html
 
 # Set ADV_HOST if needed
 if [[ -n ${ADV_HOST} ]]; then

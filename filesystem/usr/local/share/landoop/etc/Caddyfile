@@ -3,7 +3,7 @@
   log stdout
   errors stdout
   errors {
-    502 /var/www/custom_502.html
+    502 /usr/local/share/landoop/html-errors/custom_502.html
   }
   proxy /api localhost:$LENSES_PORT {
     websocket
