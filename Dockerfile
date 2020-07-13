@@ -343,8 +343,7 @@ RUN tar -czf /LKD-${LKD_VERSION}.tar.gz \
 # Unfortunately we have to make this a separate step in order for docker to understand the change to hardlinks
 # Good thing: final image that people download is much smaller (~200MB).
 RUN tar xf /LKD-${LKD_VERSION}.tar.gz -C /opt \
-    && rm /LKD-${LKD_VERSION}.tar.gz \
-    && duphard -d=0 /opt/landoop
+    && rm /LKD-${LKD_VERSION}.tar.gz
 
 ENV LKD_VERSION=${LKD_VERSION}
 # If this stage is run as container and you mount `/mnt`, we will create the LKD archive there.
