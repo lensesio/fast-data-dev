@@ -1,13 +1,15 @@
 # Lenses for Kafka with fast-data-dev #
 
-[![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
-[![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev)
+[![docker](https://img.shields.io/docker/pulls/lensesio/box.svg?style=flat)](https://hub.docker.com/r/lensesio/box/)
+[![](https://images.microbadger.com/badges/image/lensesio/box.svg)](http://microbadger.com/images/lensesio/box)
 
 [Join the Slack Lenses.io Community!](https://launchpass.com/lensesio)
 
-[Lenses](https://www.landoop.com/kafka-lenses/) docker image with [fast-data-dev](https://hub.docker.com/r/landoop/fast-data-dev/) technology for fast evaluation!
+[Lenses](https://lenses.io/box/) docker image with [fast-data-dev](https://hub.docker.com/r/lensesio/fast-data-dev/) technology for fast evaluation!
 
-Besides [Lenses](https://www.landoop.com/kafka-lenses/) we include a full fledged [Kafka](https://kafka.apache.org/) installation with Kafka Connect and Confluent Schema Registry, [Lenses SQL Engine](https://www.landoop.com/kafka/kafka-sql/), Landoop’s open-source connector collection [Stream Reactor](https://www.landoop.com/kafka/connectors/) and data generators to experiment with.
+Beside [Lenses](https://lenses.io/box/) we include a full fledged [Kafka](https://kafka.apache.org/) installation with Kafka Connect and Confluent Schema Registry, [Lenses SQL Engine](https://lenses.io/product/sql/), Landoop’s open-source connector collection [Stream Reactor](https://lenses.io/connect/) and data generators to experiment with.
+=======
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/box/)**
 
 [Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy streaming can get!
 

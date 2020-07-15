@@ -1,3 +1,11 @@
+ARG LENSES_ARCHIVE=remote
+ARG AD_URL=https://archive.landoop.com/lenses/3.2/lenses-3.2.3-linux64.tar.gz
+ARG LENSESCLI_ARCHIVE=remote
+ARG LC_VERSION="3.2.0"
+ARG LC_URL="https://archive.lenses.io/tools/lenses-cli/3.2/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+
+#== Docker image that builds Lenses.io's Kafka Distributions and tools ==#
+
 FROM debian as compile-lkd
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
 
@@ -345,6 +353,72 @@ ENV LKD_VERSION=${LKD_VERSION}
 # If this stage is run as container and you mount `/mnt`, we will create the LKD archive there.
 CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt landoop; chown --reference=/mnt /mnt/LKD-${LKD_VERSION}.tar.gz"]
 
+
+#= Docker Images that bring in Lenses, either from a remote or using files on disk =#
+
+# This is the default image we use for installing Lenses
+FROM alpine as lenses_archive_remote
+ONBUILD ARG AD_UN
+ONBUILD ARG AD_PW
+ONBUILD ARG AD_URL
+ONBUILD RUN apk add --no-cache wget \
+        && echo "progress = dot:giga" | tee /etc/wgetrc \
+        && mkdir -p /opt  \
+        && echo "$AD_URL $AD_FILENAME" \
+        && if [ -z "$AD_URL" ]; then exit 0; fi && wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
+        && tar xf /lenses.tgz -C /opt \
+        && rm /lenses.tgz
+
+# This image gets Lenses from a local file instead of a remote URL
+FROM alpine as lenses_archive_local
+ONBUILD ARG AD_FILENAME
+ONBUILD RUN mkdir -p /opt
+ONBUILD ADD $AD_FILENAME /opt
+
+# This image gets Lenses and a custom Lenses frontend from a local file
+FROM alpine as lenses_archive_local_with_ui
+ONBUILD ARG AD_FILENAME
+ONBUILD RUN mkdir -p /opt
+ONBUILD ADD $AD_FILENAME /opt
+ONBUILD ARG UI_FILENAME
+ONBUILD ADD $UI_FILENAME /opt
+ONBUILD RUN rm -rf /opt/lenses/ui \
+            && mv /opt/dist /opt/lenses/ui \
+            && sed \
+                 -e "s/export LENSESUI_REVISION=.*/export LENSESUI_REVISION=$(cat /opt/lenses/ui/build.info | cut -f 2 -d ' ')/" \
+                 -i /opt/lenses/bin/lenses
+
+# This image is here to just trigger the build of any of the above 3 images
+FROM lenses_archive_${LENSES_ARCHIVE} as lenses_archive
+
+
+#= Docker Images that bring in lenses-cli, either from a remote or using files on disk =#
+
+# This is the default image we use for installing Lenses
+FROM alpine as lenses_cli_remote
+ONBUILD ARG CAD_UN
+ONBUILD ARG CAD_PW
+ONBUILD ARG LC_VERSION
+ONBUILD ARG LC_URL
+ONBUILD RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
+          && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
+          && rm -f /lenses-cli.tgz
+
+# This image gets Lenses from a local file instead of a remote URL
+FROM alpine as lenses_cli_local
+ONBUILD ARG LC_FILENAME
+ONBUILD RUN mkdir -p /lenses-cli
+ONBUILD COPY $LC_FILENAME /lenses-cli.tgz
+ONBUILD RUN mkdir  -p /usr/local/bin && \
+            tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin
+
+# This image is here to just trigger the build of any of the above 3 images
+ARG LENSESCLI_ARCHIVE
+FROM lenses_cli_${LENSESCLI_ARCHIVE} as lenses_cli
+
+
+#= Final Docker Image =#
+
 FROM alpine
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
 COPY --from=compile-lkd /opt /opt
@@ -408,23 +482,15 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-# Add and setup Lenses
-ARG AD_UN
-ARG AD_PW
-ARG AD_URL="https://archive.lenses.io/lenses/3.2/lenses-3.2.3-linux64.tar.gz"
-RUN wget $AD_UN $AD_PW "$AD_URL" -O /lenses.tgz \
-    && tar xf /lenses.tgz -C /opt \
-    && ln -s /opt/lenses/bin/lenses /usr/local/bin/lenses \
-    && rm /lenses.tgz
+
+# PLACEHOLDER: This line can be used to inject code if needed, please do not remove #
+
+# Add Lenses
+COPY --from=lenses_archive /opt/lenses /opt/lenses
 
 # Add Lenses CLI
-ARG CAD_UN
-ARG CAD_PW
-ARG LC_VERSION="3.2.0"
-ARG LC_URL="https://archive.lenses.io/tools/lenses-cli/3.2/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
-RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
-    && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
-    && rm -f /lenses-cli.tgz
+ARG LC_VERSION
+COPY --from=lenses_cli /usr/local/bin/lenses-cli /usr/local/bin/lenses-cli
 
 # Add cc_payments generator
 RUN wget https://archive.lenses.io/tools/cc_payments_demo_generator/generator-1.0.tgz -O /generator.tgz \
@@ -481,9 +547,9 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}" | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"     | tee -a /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"   | tee -a /build.info \
-    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
-    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
-    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' | tee -a /build.info \
+    && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
+    && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
+    && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
     && echo "FDD_LENSES_CLI_VERSION=${LC_VERSION}" | tee -a /build.info \
     && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info \
     && sed -e 's/^/FDD_/' /opt/elasticsearch/build.info  | tee -a /build.info

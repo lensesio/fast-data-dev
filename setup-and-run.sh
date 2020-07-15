@@ -285,8 +285,8 @@ sed -e "s/3030/$WEB_PORT/" \
     -i /var/run/coyote/simple-integration-tests.yml
 
 # Copy other templated files (caddy, logs-to-kafka, env.js)
-envsubst < /usr/local/share/landoop/etc/Caddyfile               > /var/run/caddy/Caddyfile
-envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js > /var/www/env.js
+envsubst < /usr/local/share/landoop/etc/Caddyfile                   > /var/run/caddy/Caddyfile
+envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js     > /var/www/env.js
 
 # Set ADV_HOST if needed
 if [[ -n ${ADV_HOST} ]]; then
