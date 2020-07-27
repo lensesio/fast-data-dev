@@ -1,8 +1,8 @@
 ARG LENSES_ARCHIVE=remote
-ARG AD_URL=https://archive.landoop.com/lenses/3.2/lenses-3.2.3-linux64.tar.gz
+ARG AD_URL=https://archive.landoop.com/lenses/4.0/lenses-4.0.0-linux64.tar.gz
 ARG LENSESCLI_ARCHIVE=remote
-ARG LC_VERSION="3.2.0"
-ARG LC_URL="https://archive.lenses.io/tools/lenses-cli/3.2/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
+ARG LC_VERSION="4.0.0"
+ARG LC_URL="https://archive.lenses.io/tools/lenses-cli/4.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 
 #== Docker image that builds Lenses.io's Kafka Distributions and tools ==#
 
