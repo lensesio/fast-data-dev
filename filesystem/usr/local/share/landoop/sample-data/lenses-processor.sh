@@ -23,7 +23,7 @@ for ((i=0;i<60;i++)); do
     sleep 5
     if lenses-cli --timeout 3s --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" topics \
             | grep ${SRC_TP} | grep -E "AVRO\s*AVRO"; then
-        sleep 10
+        sleep 30
         break
     fi
 done
