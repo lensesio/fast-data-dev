@@ -68,12 +68,10 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=1.2.7
-ARG KAFKA_VERSION_4SR=2.1.0
+ARG STREAM_REACTOR_VERSION=2.1.0
+ARG KAFKA_VERSION_4SR=2.5.0
 ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
-ARG ELASTICSEARCH_2X_VERSION=2.4.6
 ARG ACTIVEMQ_VERSION=5.12.3
-ARG CALCITE_LINQ4J_VERSION=1.12.0
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
     && mkdir -p /opt/landoop/connectors/stream-reactor \
@@ -83,27 +81,12 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
            -C /opt/landoop/connectors/stream-reactor \
     && rm /stream-reactor.tar.gz \
     && rm -rf /opt/landoop/connectors/stream-reactor/kafka-connect-hive-1.1 \
-    && wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ELASTICSEARCH_2X_VERSION}/elasticsearch-${ELASTICSEARCH_2X_VERSION}.tar.gz \
-            -O /elasticsearch.tar.gz \
-    && mkdir /elasticsearch \
-    && tar -xf /elasticsearch.tar.gz \
-           --no-same-owner \
-           --strip-components=1 \
-           -C /elasticsearch \
-    && rm -f /elasticsearch/lib/apache-log4j-extras* \
-    && mv /elasticsearch/lib/*.jar /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/ \
-    && rm -rf /elasticsearch* \
     && wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
             -P /opt/landoop/connectors/stream-reactor/kafka-connect-jms \
-    && wget https://repo1.maven.org/maven2/org/apache/calcite/calcite-linq4j/${CALCITE_LINQ4J_VERSION}/calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
-            -O /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
-    && for path in /opt/landoop/connectors/stream-reactor/kafka-connect-*; do \
-          cp /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar $path/; \
-       done \
-    && rm /calcite-linq4j-${CALCITE_LINQ4J_VERSION}.jar \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+23 " | awk '{print $2}' ); do \
-         cp /opt/landoop/connectors/stream-reactor/kafka-connect-elastic/$file /opt/landoop/kafka/share/java/landoop-common/; \
+    && export _NUM_CONNECTORS=$(ls /opt/landoop/connectors/stream-reactor | wc -l) \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+${_NUM_CONNECTORS} " | awk '{print $2}' ); do \
+         cp /opt/landoop/connectors/stream-reactor/kafka-connect-aws-s3/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
     && for file in $(find /opt/landoop/kafka/share/java/{kafka,landoop-common} -maxdepth 1 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+2 " | awk '{print $2}' ); do \
