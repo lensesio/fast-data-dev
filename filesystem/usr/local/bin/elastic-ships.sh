@@ -49,9 +49,10 @@ cat <<EOF >/tmp/connector-elastic-ships
   "config": {
     "connector.class": "com.datamountaineer.streamreactor.connect.elastic6.ElasticSinkConnector",
     "topics": "sea_vessel_position_reports",
-    "connect.elastic.url": "localhost:$ELASTICSEARCH_TRANSPORT_PORT",
+    "connect.elastic.protocol": "http",
+    "connect.elastic.hosts": "localhost",
+    "connect.elastic.port": "$ELASTICSEARCH_PORT",
     "connect.elastic.kcql": "INSERT INTO sea-vessel-position-reports SELECT * FROM sea_vessel_position_reports",
-    "connect.elastic.url.prefix": "elasticsearch",
     "connect.elastic.cluster.name": "lenses-box"
   }
 }
