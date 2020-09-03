@@ -1,5 +1,5 @@
 ARG LENSES_ARCHIVE=remote
-ARG AD_URL=https://archive.lenses.io/lenses/4.0/lenses-4.0.1-linux64.tar.gz
+ARG AD_URL=https://archive.lenses.io/lenses/4.0/lenses-4.0.2-linux64.tar.gz
 ARG LENSESCLI_ARCHIVE=remote
 ARG LC_VERSION="4.0.1"
 ARG LC_URL="https://archive.lenses.io/tools/lenses-cli/4.0/$LC_VERSION/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
