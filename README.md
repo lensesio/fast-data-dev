@@ -117,6 +117,7 @@ via environment variables.
  `CONNECT_HEAP=3G`                | Configure the maximum (`-Xmx`) heap size allocated to Kafka Connect. Useful when you want to start many connectors.
  `<SERVICE>_PORT=<PORT>`          | Custom port `<PORT>` for service, `0` will disable it. `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`.
  `<SERVICE>_JMX_PORT=<PORT>`      | Custom JMX port `<PORT>` for service, `0` will disable it. `<SERVICE>` one of `ZK`, `BROKER`, `BROKER_SSL`, `REGISTRY`, `REST`, `CONNECT`.
+ `REGISTRY_BASIC_AUTH=1`          | Configures Schema Registry with basic auth. Username and password will be hardcoded to `admin:admin`. 
  `USER=username`                  | Run in combination with `PASSWORD` to specify the username to use on basic auth.
  `PASSWORD=password`              | Protect the fast-data-dev UI when running publicly. If `USER` is not set, the default username is `kafka`.
  `SAMPLEDATA=0`                   | Do not create topics with sample avro and json records; (e.g do not create topics `sea_vessel_position_reports`, `reddit_posts`).

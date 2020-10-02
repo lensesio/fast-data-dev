@@ -108,6 +108,11 @@ export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN=${SCHEMA_REGISTRY_ACCESS_CONT
 export SCHEMA_REGISTRY_JMX_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REGISTRY_JMX_PORT}
 export SCHEMA_REGISTRY_LOG4J_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dlog4j.configuration=file:/var/run/schema-registry/log4j.properties}
 
+if [[ -n "$REGISTRY_BASIC_AUTH" ]]; then
+  export REGISTRY_JAAS_CONFIG="/var/run/schema-registry/jaas_config"
+  export REGISTRY_OPTS="-Djava.security.auth.login.config=$REGISTRY_JAAS_CONFIG"
+fi
+
 # Set env vars for Kafka Connect Distributed
 export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://127.0.0.1:$BROKER_PORT}
 export CONNECT_GROUP_ID=${CONNECT_GROUP_ID:-connect-fast-data}

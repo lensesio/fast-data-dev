@@ -39,6 +39,30 @@ function process_variable {
     return 0
 }
 
+function set_schemaregistry_basicauth {
+    local props_file="$1"
+    local password_file="$2"
+    local jaas_config_file="$3"
+    local realm="SchemaRegistry"
+
+    cat >> $props_file <<EOF
+authentication.method=BASIC
+authentication.roles=user
+authentication.realm=$realm
+EOF
+
+    cat > $password_file <<EOL
+admin: admin,user
+EOL
+
+    cat > $jaas_config_file <<EOF
+$realm {
+  org.eclipse.jetty.jaas.spi.PropertyFileLoginModule required
+  file="$password_file"
+  debug="true";
+};
+EOF
+}
 
 # Setup Kafka
 CONFIG="/var/run/broker/server.properties"
@@ -92,6 +116,10 @@ if [[ ! -f "$CONFIG" ]]; then
     sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
     # Allow empty variables
     sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
+
+    if [[ -n "$REGISTRY_BASIC_AUTH" ]]; then
+      set_schemaregistry_basicauth $CONFIG "/var/run/schema-registry/passwords" $REGISTRY_JAAS_CONFIG
+    fi
 else
     echo "Schema registry config found at '$CONFIG'. We won't process variables."
 fi
