@@ -233,11 +233,11 @@ ADD lkd/simple-integration-tests.yml /opt/landoop/tools/share/coyote/examples/
 
 # Add Kafka Topic UI, Schema Registry UI, Kafka Connect UI
 ARG KAFKA_TOPICS_UI_VERSION=0.9.4
-ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v${KAFKA_TOPICS_UI_VERSION}/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
+ARG KAFKA_TOPICS_UI_URL="https://archive.lenses.io/tools/kafka-topics-ui/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
 ARG SCHEMA_REGISTRY_UI_VERSION=0.9.5
-ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
+ARG SCHEMA_REGISTRY_UI_URL="https://github.com/lensesio/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
 ARG KAFKA_CONNECT_UI_VERSION=0.9.7
-ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
+ARG KAFKA_CONNECT_UI_URL="https://github.com/lensesio/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
 RUN mkdir -p /opt/landoop/tools/share/kafka-topics-ui/ \
              /opt/landoop/tools/share/schema-registry-ui/ \
              /opt/landoop/tools/share/kafka-connect-ui/ \
