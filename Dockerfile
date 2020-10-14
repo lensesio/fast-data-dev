@@ -246,20 +246,24 @@ ADD lkd/simple-integration-tests.yml /opt/landoop/tools/share/coyote/examples/
 
 # Add Kafka Topic UI, Schema Registry UI, Kafka Connect UI
 ARG KAFKA_TOPICS_UI_VERSION=0.9.4
-ARG KAFKA_TOPICS_UI_URL="https://github.com/Landoop/kafka-topics-ui/releases/download/v${KAFKA_TOPICS_UI_VERSION}/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
+ARG KAFKA_TOPICS_UI_URL="https://github.com/lensesio/kafka-topics-ui/releases/download/v${KAFKA_TOPICS_UI_VERSION}/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
 ARG SCHEMA_REGISTRY_UI_VERSION=0.9.5
-ARG SCHEMA_REGISTRY_UI_URL="https://github.com/Landoop/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
+ARG SCHEMA_REGISTRY_UI_URL="https://github.com/lensesio/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
 ARG KAFKA_CONNECT_UI_VERSION=0.9.7
-ARG KAFKA_CONNECT_UI_URL="https://github.com/Landoop/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
+ARG KAFKA_CONNECT_UI_URL="https://github.com/lensesio/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
 RUN mkdir -p /opt/landoop/tools/share/kafka-topics-ui/ \
              /opt/landoop/tools/share/schema-registry-ui/ \
              /opt/landoop/tools/share/kafka-connect-ui/ \
-    && wget "$KAFKA_TOPICS_UI_URL" \
-            -O /opt/landoop/tools/share/kafka-topics-ui/kafka-topics-ui.tar.gz \
-    && wget "$SCHEMA_REGISTRY_UI_URL" \
-            -O /opt/landoop/tools/share/schema-registry-ui/schema-registry-ui.tar.gz \
-    && wget "$KAFKA_CONNECT_UI_URL" \
-            -O /opt/landoop/tools/share/kafka-connect-ui/kafka-connect-ui.tar.gz
+    && wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
+    && tar xvf /kafka-topics-ui.tar.gz -C /opt/landoop/tools/share/kafka-topics-ui \
+    && mv /opt/landoop/tools/share/kafka-topics-ui/env.js /opt/landoop/tools/share/kafka-topics-ui/env.js.sample \
+    && wget "$SCHEMA_REGISTRY_UI_URL" -O /schema-registry-ui.tar.gz \
+    && tar xvf /schema-registry-ui.tar.gz -C /opt/landoop/tools/share/schema-registry-ui \
+    && mv /opt/landoop/tools/share/schema-registry-ui/env.js /opt/landoop/tools/share/schema-registry-ui/env.js.sample \
+    && wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
+    && tar xvf /kafka-connect-ui.tar.gz -C /opt/landoop/tools/share/kafka-connect-ui \
+    && mv /opt/landoop/tools/share/kafka-connect-ui/env.js /opt/landoop/tools/share/kafka-connect-ui/env.js.sample \
+    && rm -f /kafka-topics-ui.tar.gz /schema-registry-ui.tar.gz /kafka-connect-ui.tar.gz
 
 # Add Kafka Autocomplete
 ARG KAFKA_AUTOCOMPLETE_VERSION=0.3
@@ -516,15 +520,9 @@ RUN mkdir -p \
       /var/www/kafka-topics-ui \
       /var/www/schema-registry-ui \
       /var/www/kafka-connect-ui \
-    && tar -xf /opt/landoop/tools/share/kafka-topics-ui/kafka-topics-ui.tar.gz \
-           -C /var/www/kafka-topics-ui \
-           --exclude=env.js \
-    && tar -xf /opt/landoop/tools/share/schema-registry-ui/schema-registry-ui.tar.gz \
-           -C /var/www/schema-registry-ui \
-           --exclude=env.js \
-    && tar -xf /opt/landoop/tools/share/kafka-connect-ui/kafka-connect-ui.tar.gz \
-           -C /var/www/kafka-connect-ui \
-           --exclude=env.js
+    && cp -ax /opt/landoop/tools/share/kafka-topics-ui/* /var/www/kafka-topics-ui/ \
+    && cp -ax /opt/landoop/tools/share/schema-registry-ui/* /var/www/schema-registry-ui/ \
+    && cp -ax /opt/landoop/tools/share/kafka-connect-ui/* /var/www/kafka-connect-ui/
 
 RUN ln -s /var/log /var/www/logs
 
