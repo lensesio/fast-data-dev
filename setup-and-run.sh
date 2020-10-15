@@ -194,7 +194,7 @@ export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-127.0.0.1}
 export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
 export GENERATOR_LENSES=${GENERATOR_LENSES:-127.0.0.1:$LENSES_PORT}
 if [[ "$GENERATOR_BROKER" != *"127.0.0.1"* ]]; then
-    sed -e "/^brokers/ s/0\.0\.0\.0:9092/${GENERATOR_BROKER}/" \
+    sed -e "/^brokers/ s#0\.0\.0\.0:9092#${GENERATOR_BROKER}#" \
         -e "/^schema\.registry/ s#http://0\.0\.0\.0:8081#${GENERATOR_SCHEMA_REGISTRY_URL}#" \
         -i /opt/generator/lenses.conf
 fi
