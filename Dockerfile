@@ -92,6 +92,10 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
 #        >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
 #     && mkdir -p /opt/landoop/connectors/stream-reactor
 
+# Add Secrets Provider
+ARG SECRET_PROVIDER_VERSION=2.0.1
+ARG SECRET_PROVIDER_URL="https://github.com/lensesio/secret-provider/releases/download/${SECRET_PROVIDER_VERSION}/secret-provider-${SECRET_PROVIDER_VERSION}-all.jar"
+RUN wget "${SECRET_PROVIDER_URL}" -O "/opt/landoop/connectors/stream-reactor/secret-provider-${SECRET_PROVIDER_VERSION}-all.jar"
 
 # Add Third Party Connectors
 
@@ -272,6 +276,7 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /opt/landoop/build.info \
     && echo "REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /opt/landoop/build.info \
     && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /opt/landoop/build.info \
+    && echo "SECRET_PROVIDER_VERSION=${SECRET_PROVIDER_VERSION}"       | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /opt/landoop/build.info \
     && echo "KAFKA_CONNECT_ELASTICSEARCH_VERSION=${KAFKA_CONNECT_ELASTICSEARCH_VERSION}" \
                                                                        | tee -a /opt/landoop/build.info \
