@@ -95,7 +95,8 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
 # Add Secrets Provider
 ARG SECRET_PROVIDER_VERSION=2.0.1
 ARG SECRET_PROVIDER_URL="https://github.com/lensesio/secret-provider/releases/download/${SECRET_PROVIDER_VERSION}/secret-provider-${SECRET_PROVIDER_VERSION}-all.jar"
-RUN wget "${SECRET_PROVIDER_URL}" -O "/opt/landoop/connectors/stream-reactor/secret-provider-${SECRET_PROVIDER_VERSION}-all.jar"
+RUN mkdir -p /opt/landoop/connectors/stream-reactor/kafka-connect-secret-provider \
+    && wget "${SECRET_PROVIDER_URL}" -P "/opt/landoop/connectors/stream-reactor/kafka-connect-secret-provider"
 
 # Add Third Party Connectors
 
