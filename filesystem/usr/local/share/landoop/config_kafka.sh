@@ -38,7 +38,9 @@ function process_variable {
     fi
     # Convert underscores in var name to stops
     conf="${conf//_/.}"
-    # Convert double stops to single underscore
+    # Convert triple underscores in var name to dashes
+    conf="${conf//.../-}"
+    # Convert double underscores in var name to underscores
     conf="${conf//../_}"
 
     echo "${conf}=${!var}" >> "$config_file"
