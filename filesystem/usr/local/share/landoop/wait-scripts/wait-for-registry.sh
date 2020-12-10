@@ -9,4 +9,8 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
     curl -sS "$W_SR_ADDRESS" | grep "{}" && exit 0
 done
 
-exit 1
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi

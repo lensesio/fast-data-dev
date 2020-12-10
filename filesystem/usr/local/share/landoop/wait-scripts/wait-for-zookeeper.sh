@@ -11,4 +11,8 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
     echo ruok | nc $W_ZK_ADDRESS $W_ZK_PORT | grep imok && exit 0
 done
 
-exit 1
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi

@@ -2,7 +2,6 @@
 
 W_ITERATIONS=${W_ITERATIONS:-60}
 W_PERIOD_SECS=${W_PERIOD_SECS:-2}
-W_ALLOW_FAIL=${W_ALLOW_FAIL:-0}
 W_BROKERS_WANTED=${W_BROKERS_WANTED:-1}
 W_ZK_ADDRESS=${W_ZK_ADDRESS:-127.0.0.1}
 W_ZK_PORT=${W_ZK_PORT:-$ZK_PORT}
@@ -18,4 +17,8 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
     fi
 done
 
-exit 1
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi

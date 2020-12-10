@@ -15,4 +15,8 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
         && { sleep $(( RANDOM%(5*W_PERIOD_SECS) )); exit 0; }
 done
 
-exit 1
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi
