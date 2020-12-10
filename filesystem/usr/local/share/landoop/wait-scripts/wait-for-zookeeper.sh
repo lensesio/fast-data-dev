@@ -8,6 +8,11 @@ W_ZK_PORT=${W_ZK_PORT:-2181}
 
 for ((i=0;i<$W_ITERATIONS;i++)); do
     sleep $W_PERIOD_SECS
-    echo ruok | nc $W_ZK_ADDRESS $W_ZK_PORT | grep imok && break
+    echo ruok | nc $W_ZK_ADDRESS $W_ZK_PORT | grep imok && exit 0
 done
 
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi

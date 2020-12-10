@@ -13,7 +13,12 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
     echo "Brokers detected/wanted: $_BROKER_NUM / $W_BROKERS_WANTED"
     if [[ ${_BROKER_NUM} -ge ${W_BROKERS_WANTED} ]]; then
         sleep 1
-        break
+        exit 0
     fi
 done
 
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi
