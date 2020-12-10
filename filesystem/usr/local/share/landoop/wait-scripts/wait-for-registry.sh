@@ -6,6 +6,7 @@ W_SR_ADDRESS=${W_SR_ADDRESS:-http://127.0.0.1:$REGISTRY_PORT}
 
 for ((i=0;i<$W_ITERATIONS;i++)); do
     sleep $W_PERIOD_SECS
-    curl -sS "$W_SR_ADDRESS" | grep "{}" && break
+    curl -sS "$W_SR_ADDRESS" | grep "{}" && exit 0
 done
 
+exit 1

@@ -12,6 +12,7 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
     # random wait. It isn't a great solution, but it may help.
     curl -sS "${W_CONNECT_ADDRESS}/connector-plugins/" \
         | grep "org.apache.kafka.connect.file.FileStreamSourceConnector" \
-        && { sleep $(( RANDOM%(5*W_PERIOD_SECS) )); break; }
+        && { sleep $(( RANDOM%(5*W_PERIOD_SECS) )); exit 0; }
 done
 
+exit 1
