@@ -14,6 +14,11 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
     sleep $W_PERIOD_SECS
     curl -sS "$W_ELASTICSEARCH_ADDRESS" \
         | grep "cluster_uuid" \
-        && break
+        && exit 0
 done
 
+if [[ $W_ITERATIONS == 0 ]]; then
+    exit 0
+else
+    exit 1
+fi
