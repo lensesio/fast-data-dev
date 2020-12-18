@@ -367,7 +367,7 @@ WORKDIR /
 #            https://github.com/mholt/caddy
 ARG CHECKPORT_URL="https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport"
 ARG QUICKCERT_URL="https://github.com/andmarios/quickcert/releases/download/1.0/quickcert-1.0-linux-amd64-alpine"
-ARG GLIBC_INST_VERSION="2.27-r0"
+ARG GLIBC_INST_VERSION="2.32-r0"
 ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_amd64.tar.gz
 RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && wget "$QUICKCERT_URL" -O /usr/local/bin/quickcert \
