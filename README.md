@@ -1,11 +1,11 @@
 # fast-data-dev / kafka-lenses-dev (Lenses Box) #
 lensesio/fast-data-dev
-[![docker](https://img.shields.io/docker/pulls/landoop/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/landoop/fast-data-dev/)
-[![](https://images.microbadger.com/badges/image/landoop/fast-data-dev.svg)](http://microbadger.com/images/landoop/fast-data-dev)
+[![docker](https://img.shields.io/docker/pulls/lensesio/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/lensesio/fast-data-dev/)
+[![](https://images.microbadger.com/badges/image/lensesio/fast-data-dev.svg)](http://microbadger.com/images/lensesio/fast-data-dev)
 
-lensesio/box (landoop/kafka-lenses-dev)
-[![docker](https://img.shields.io/docker/pulls/landoop/kafka-lenses-dev.svg?style=flat)](https://hub.docker.com/r/landoop/kafka-lenses-dev/)
-[![](https://images.microbadger.com/badges/image/landoop/kafka-lenses-dev.svg)](http://microbadger.com/images/landoop/kafka-lenses-dev)
+lensesio/box (lensesio/box)
+[![docker](https://img.shields.io/docker/pulls/lensesio/box.svg?style=flat)](https://hub.docker.com/r/lensesio/box/)
+[![](https://images.microbadger.com/badges/image/lensesio/box.svg)](http://microbadger.com/images/lensesio/box)
 
 [Join the Slack Lenses.io Community!](https://launchpass.com/lensesio)
 
@@ -19,7 +19,7 @@ a modern streaming platform (only for kafka-lenses-dev), intuitive UIs and extra
 goodies. Also includes Kafka Connect, Schema Registry, Lenses.io's Stream Reactor
 25+ Connectors and more.
 
-> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/downloads/lenses/)**
+> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/box/)**
 
 ### Introduction
 
