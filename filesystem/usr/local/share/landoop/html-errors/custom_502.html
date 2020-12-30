@@ -7,12 +7,21 @@
           }
         //-->
     </script>
+    <style>
+        .text {
+          color:rgba(42, 51, 72, 0.8);
+        }
+    </style>
   </head>
-  <body style="color:#fff;background:rgba(42, 51, 72, 0.8);" onload="JavaScript:AutoRefresh(5000);">
-    <center style="position:absolute; top:30%;left:30%;text-align:center;width:40%;font-family:arial;font-size:18:px">
+  <body style="color:#fff;background:white" onload="JavaScript:AutoRefresh(5000);">
+    <center style="position:absolute; top:15%;left:30%;text-align:center;width:40%;font-family:arial;font-size:18:px">
 
-            <h1>Box is loading...</h1>
-            <p>Kafka, Lenses, and peripheral services need some time to start up; usually up to a minute. This page will refresh every 5 seconds.</p>
+            <h1 class="text">Data Engineering box is loading...</h1>
+            <br/>
+            <img src="kafka-docker-lenses.jpg" style="max-width:600px"/>
+            <p class="text">Apache Kafka, Lenses, and services are starting up. The page will refresh every 5 seconds.
+                Check <a href="https://docs.lenses.io/dev/lenses-box/" target="_blank">advanced options</a></p>
+            <p>Taking too long? Check the services' logs here.</p>
             <p><a href="/fdd/logs">Taking too long? Check the services' logs here.</a></p>
 
     </center>
