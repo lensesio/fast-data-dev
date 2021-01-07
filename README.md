@@ -33,6 +33,8 @@ When you need:
 just run:
 
     docker run --rm --net=host lensesio/fast-data-dev
+    
+    docker run --rm -p 3030:3030  lensesio/fast-data-dev
 
 That's it. Visit <http://localhost:3030> to get into the fast-data-dev environment
 
