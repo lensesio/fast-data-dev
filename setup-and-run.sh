@@ -456,8 +456,8 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
         {
             mkdir -p /tmp/certs
             pushd /tmp/certs
-            # Create Landoop Fast Data Dev CA
-            quickcert -ca -out lfddca. -CN "Landoop's Fast Data Dev Self Signed Certificate Authority"
+            # Create Lenses.io Fast Data Dev CA
+            quickcert -ca -out lfddca. -CN "Lenses.io's Fast Data Dev Self Signed Certificate Authority"
             SSL_HOSTS="localhost,127.0.0.1,192.168.99.100"
             HOSTNAME=${HOSTNAME:-} # This come from the container, so let's not permit it be unbound
             if [[ ! -z $HOSTNAME ]]; then SSL_HOSTS="$SSL_HOSTS,$HOSTNAME"; fi
@@ -489,7 +489,7 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
             keytool -importcert \
                     -noprompt \
                     -keystore truststore.jks \
-                    -alias LandoopFastDataDevCA \
+                    -alias LensesioFastDataDevCA \
                     -file lfddca.crt.pem \
                     -storepass fastdata
 
@@ -668,7 +668,7 @@ elif [[ -f $LENSES_LICENSE_FILE ]]; then
     echo
 else
     echo -e "\e[91mNo license was provided. Lenses will not work."
-    echo -e "\e[93mPlease visit <https://www.landoop.com> to get your free license.\e[91m"
+    echo -e "\e[93mPlease visit <https://lenses.io> to get your free license.\e[91m"
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
