@@ -67,6 +67,7 @@ export RUNTESTS=${RUNTESTS:-1}
 export BROWSECONFIGS=${BROWSECONFIGS:-1}
 export SUPERVISORWEB=${SUPERVISORWEB:-0}
 export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
+export WEB_TERMINAL_PORT=${WEB_TERMINAL_PORT:-0}
 export DEBUG_AUTH=${DEBUG_AUTH:-0}
 export WAIT_SCRIPT_BROKER=${WAIT_SCRIPT_BROKER:-/usr/local/share/landoop/wait-scripts/wait-for-zookeeper.sh}
 export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/landoop/wait-scripts/wait-for-kafka.sh}
@@ -255,6 +256,7 @@ if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; 
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
 if [[ $REST_PORT == 0 ]];     then rm /etc/supervisord.d/*rest-proxy.conf; fi
 if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
+if [[ $WEB_TERMINAL_PORT == 0 ]];      then rm /etc/supervisord.d/*gotty-web-terminal.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
 if [[ $RUNTESTS =~ $FALSE_REG ]]; then
     rm /etc/supervisord.d/*smoke-tests.conf
@@ -541,6 +543,8 @@ fi
 
 PRINT_HOST=${ADV_HOST:-127.0.0.1}
 export PRINT_HOST
+WEB_TERMINAL_CREDS=${WEB_TERMINAL_CREDS:-admin:admin}
+export WEB_TERMINAL_CREDS
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
