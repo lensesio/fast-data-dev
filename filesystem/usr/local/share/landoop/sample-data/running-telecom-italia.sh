@@ -13,10 +13,10 @@ for key in 3 4; do
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
-        --config retention.bytes=26214400 \
+        --config retention.bytes=${RETENTION_BYTES} \
         --config compression.type="${COMPRESSION[key]}" \
         --config "cleanup.policy=${CLEANUP_POLICY[key]}" \
-        --config segment.bytes=8388608 \
+        --config segment.bytes=${SEGMENT_BYTES} \
         --create
 done
 
