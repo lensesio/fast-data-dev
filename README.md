@@ -18,7 +18,7 @@ Beside [Lenses](https://lenses.io/box/) we include a full fledged [Kafka](https:
 Once you get your license, run our image with:
 
     docker run -e ADV_HOST=127.0.0.1 -e LICENSE_URL="[CHECK_YOUR_EMAIL_FOR_PERSONAL_ID]" \
-               -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses landoop/kafka-lenses-dev
+               -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses lensesio/box
 
 Once the services are loaded (it usually takes 30-45 seconds), visit http://localhost:3030 and login with `admin` / `admin` for full access
 or `logviewer` / `logviewer` for  limited access to certain topics.
