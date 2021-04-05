@@ -72,3 +72,12 @@ curl \
     -H "x-kafka-lenses-token:$(curl -H "Content-Type:application/json" -X POST -d '{"user":"admin",  "password":"admin"}' http://$W_LENSES_ADDRESS:$W_LENSES_PORT/api/login --compressed -s)" \
     http://$W_LENSES_ADDRESS:$W_LENSES_PORT/api/v1/connection/connections \
     -XPOST -d "{\"name\":\"ES-1\",\"templateName\":\"Elasticsearch\",\"configuration\":[{\"key\":\"nodes\",\"value\":[\"http://${W_ELASTIC_ADDRESS}:${W_ELASTIC_PORT}\"]}],\"tags\":[\"preview\"]}"
+
+
+USER=${USER:-admin}
+PASSWORD=${PASSWORD:-admin}
+sleep 20
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://$W_LENSES_ADDRESS:$W_LENSES_PORT" \
+    dataset update-tags --connection=ES-1 --name=sea-vessel-position-reports \
+    --tag transport --tag external --tag filtered

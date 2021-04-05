@@ -56,3 +56,41 @@ telecom-crm|Marios|"demo","table","stream","avro"|1.0|loop-generator|supervisord
 dc-monitoring|Marios|"demo","monitoring","json"|1.0|loop-generator|supervisord unit|Backblaze's S.M.A.R.T. dataset sample loop generator. Can you find the average temperature of a certain hard disk model via SQL?|{"name":"backblaze_smart"}
 payments-processor|Stefan|"demo","payments","joins","table","stream","avro"|1.0|random-generator|supervisord unit|A random generator with a topic of credit card data (use as a table) and a stream of transactions (use as a stream)|{"name":"cc_data"},{"name":"cc_payments"}
 EOF
+
+# Add tags to datasets
+sleep 20
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=nyc_yellow_taxi_trip_data \
+    --tag transport --tag PII
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=sea_vessel_position_reports \
+    --tag transport
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=telecom_italia_data \
+    --tag communication
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=cc_payments \
+    --tag financial --tag confidential --tag PII
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=financial_tweets \
+    --tag financial
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=telecom_italia_grid \
+    --tag communication
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=cc_data \
+    --tag financial
+
