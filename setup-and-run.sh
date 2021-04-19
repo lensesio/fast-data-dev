@@ -141,6 +141,10 @@ export CONNECT_CONFIG_STORAGE_TOPIC=${CONNECT_CONFIG_STORAGE_TOPIC:-connect-conf
 export CONNECT_OFFSET_STORAGE_TOPIC=${CONNECT_OFFSET_STORAGE_TOPIC:-connect-offsets}
 export CONNECT_STATUS_STORAGE_TOPIC=${CONNECT_STATUS_STORAGE_TOPIC:-connect-statuses}
 export CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME:-}
+export CONNECT_CONFIG_PROVIDERS=${CONNECT_CONFIG_PROVIDERS:-aes256}
+export CONNECT_CONFIG_PROVIDERS_AES256_CLASS=${CONNECT_CONFIG_PROVIDERS_AES256_CLASS:-io.lenses.connect.secrets.providers.Aes256DecodingProvider}
+export CONNECT_CONFIG_PROVIDERS_AES256_PARAM_AES256_KEY=${CONNECT_CONFIG_PROVIDERS_AES256_PARAM_AES256_KEY:-0123456789abcdef0123456789abcdef}
+export CONNECT_CONFIG_PROVIDERS_AES256_PARAM_FILE_DIR=${CONNECT_CONFIG_PROVIDERS_AES256_PARAM_FILE_DIR:-/tmp/connect-secrets}
 export CONNECT_JMX_OPTS=${CONNECT_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$CONNECT_JMX_PORT}
 export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/connect/connect-log4j.properties}
 
@@ -175,7 +179,7 @@ export LENSES_ZOOKEEPER_HOSTS=${LENSES_ZOOKEEPER_HOSTS:-$LEN_ZOOKEEPER_HOSTS}
 export LENSES_KAFKA_BROKERS=${LENSES_KAFKA_BROKERS:-"PLAINTEXT://0.0.0.0:$BROKER_PORT"}
 LEN_SCHEMA_REGISTRY_URLS="[{url:\"http://0.0.0.0:$REGISTRY_PORT\",jmx:\"0.0.0.0:$REGISTRY_JMX_PORT\"}]"
 export LENSES_SCHEMA_REGISTRY_URLS=${LENSES_SCHEMA_REGISTRY_URLS:-$LEN_SCHEMA_REGISTRY_URLS}
-LEN_KAFKA_CONNECT_CLUSTERS="[{name:\"dev\",urls:[{url:\"http://0.0.0.0:$CONNECT_PORT\",jmx:\"0.0.0.0:$CONNECT_JMX_PORT\"}],statuses:\"connect-statuses\",configs:\"connect-configs\",offsets:\"connect-offsets\"}]"
+LEN_KAFKA_CONNECT_CLUSTERS="[{name:\"dev\",urls:[{url:\"http://0.0.0.0:$CONNECT_PORT\",jmx:\"0.0.0.0:$CONNECT_JMX_PORT\"}],statuses:\"connect-statuses\",configs:\"connect-configs\",offsets:\"connect-offsets\",aes256.key:\"0123456789abcdef0123456789abcdef\"}]"
 export LENSES_KAFKA_CONNECT_CLUSTERS=${LENSES_KAFKA_CONNECT_CLUSTERS:-$LEN_KAFKA_CONNECT_CLUSTERS}
 export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
