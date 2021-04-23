@@ -18,7 +18,7 @@ WORKDIR /
 # Login args for development archives
 ARG DEVARCH_USER
 ARG DEVARCH_PASS
-ARG ARCHIVE_SERVER=https://archive.landoop.com
+ARG ARCHIVE_SERVER=https://archive.lenses.io
 ARG LKD_VERSION=2.6.2-L0
 
 ############
@@ -62,7 +62,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 # Add Stream Reactor and needed components
 ARG STREAM_REACTOR_VERSION=2.1.3
 ARG KAFKA_VERSION_4SR=2.5.0
-ARG STREAM_REACTOR_URL="https://archive.landoop.com/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
+ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ACTIVEMQ_VERSION=5.12.3
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
@@ -101,7 +101,7 @@ RUN mkdir -p /opt/landoop/connectors/stream-reactor/kafka-connect-secret-provide
 # Add Third Party Connectors
 
 ## Twitter
-ARG TWITTER_CONNECTOR_URL="https://archive.landoop.com/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
+ARG TWITTER_CONNECTOR_URL="https://archive.lenses.io/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
@@ -397,12 +397,12 @@ RUN chmod +x /usr/local/bin/{smoke-tests,logs-to-kafka,nullsink}.sh \
 RUN bash -c 'for i in $(find /opt/landoop/kafka/bin /opt/landoop/tools/bin -maxdepth 1 -type f); do ln -s $i /usr/local/bin/$(echo $i | sed -e "s>.*/>>"); done'
 
 # Add kafka ssl principal builder
-RUN wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
+RUN wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/kafka-custom-principal-builder-1.0-SNAPSHOT.jar \
          -P /opt/landoop/kafka/share/java/kafka \
     && mkdir -p /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
-    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/LICENSE \
+    && wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/LICENSE \
          -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder \
-    && wget https://archive.landoop.com/third-party/kafka-custom-principal-builder/README.md \
+    && wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/README.md \
          -P /opt/landoop/kafka/share/docs/kafka-custom-principal-builder
 
 # Setup Kafka Topics UI, Schema Registry UI, Kafka Connect UI
