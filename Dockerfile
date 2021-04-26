@@ -1,7 +1,7 @@
 ARG LENSES_ARCHIVE=remote
 ARG AD_URL=https://archive.lenses.io/lenses/4.1/lenses-4.1.3-linux64.tar.gz
 ARG LENSESCLI_ARCHIVE=remote
-ARG LC_VERSION="4.1.3"
+ARG LC_VERSION="4.1.4"
 ARG LC_URL="https://archive.lenses.io/lenses/4.1/cli/lenses-cli-linux-amd64-$LC_VERSION.tar.gz"
 
 #== Docker image that builds Lenses.io's Kafka Distributions and tools ==#
