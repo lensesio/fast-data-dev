@@ -6,7 +6,7 @@
 # topics off for our broker but since this is a dev box we don't want to.
 
 kafka-topics \
-    --bootstrap-server localhost:9092 \
+    --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
     --topic "$CONNECT_CONFIG_STORAGE_TOPIC" \
     --partitions "$CONNECT_CONFIG_STORAGE_PARTITIONS" \
     --replication-factor "$CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR" \
@@ -14,7 +14,7 @@ kafka-topics \
     --create
 
 kafka-topics \
-    --bootstrap-server localhost:9092 \
+    --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
     --topic "$CONNECT_OFFSET_STORAGE_TOPIC" \
     --partitions "$CONNECT_OFFSET_STORAGE_PARTITIONS" \
     --replication-factor "$CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR" \
@@ -22,7 +22,7 @@ kafka-topics \
     --create
 
 kafka-topics \
-    --bootstrap-server localhost:9092 \
+    --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
     --topic "$CONNECT_STATUS_STORAGE_TOPIC" \
     --partitions "$CONNECT_STATUS_STORAGE_PARTITIONS" \
     --replication-factor "$CONNECT_STATUS_STORAGE_REPLICATION_FACTOR" \
