@@ -364,7 +364,7 @@ WORKDIR /
 #            https://github.com/sgerrand/alpine-pkg-glibc
 # caddy    : an excellent web server we use to serve fast-data-dev UI, proxy various REST
 #            endpoints, etc
-#            https://github.com/mholt/caddy
+#            https://github.com/caddyserver/caddy
 ARG CHECKPORT_URL="https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport"
 ARG QUICKCERT_URL="https://github.com/andmarios/quickcert/releases/download/1.0/quickcert-1.0-linux-amd64-alpine"
 ARG GLIBC_INST_VERSION="2.32-r0"
