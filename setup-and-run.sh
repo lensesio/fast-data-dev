@@ -263,8 +263,8 @@ mkdir -p \
       /var/run/caddy \
       /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} \
       /var/run/lenses \
-      /var/run/elasticsearch
-chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} /var/run/elasticsearch
+      /var/run/elasticsearch/logs
+chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} /var/run/elasticsearch /var/run/elasticsearch/logs
 
 # Copy log4j files
 cp /opt/landoop/kafka/etc/kafka/log4j.properties \
@@ -280,6 +280,8 @@ cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
 cp /opt/lenses/logback.xml \
    /var/run/lenses/
 cp /opt/elasticsearch/config/{log4j2.properties,jvm.options} /var/run/elasticsearch
+sed -e 's|file=logs/gc.log|file=/var/run/elasticsearch/logs/gc.log|' \
+    -i /var/run/elasticsearch/jvm.options
 
 # Copy tests
 # This differs in that we need to adjust it later
@@ -683,11 +685,11 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
-chown nobody:nobody "$LENSES_LICENSE_FILE"
+chown nobody:nogroup "$LENSES_LICENSE_FILE"
 mkdir -p /var/run/lenses/logs
 #chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
-chown nobody:nobody /var/run/lenses/*
+chown nobody:nogroup /var/run/lenses/*
 rm -rf /var/www-lenses
 mkdir /var/www-lenses
 ln -s /var/www /var/www-lenses/fdd

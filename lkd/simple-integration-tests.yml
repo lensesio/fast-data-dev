@@ -234,7 +234,7 @@
                                --topic coyote_cd-%UNIQUE_CD%
                                --from-beginning
                                --timeout-ms 5000
-      stdout_has: [ 'cdrom' ]
+      stdout_has: [ 'FSTAB' ]
       ignore_exit_code: true
     - name: Delete connector
       command:  curl -vs --stderr - -XDELETE "http://127.0.0.1:8083/connectors/coyote_test_console_source-%UNIQUE_CD%"
