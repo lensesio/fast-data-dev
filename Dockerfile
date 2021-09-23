@@ -1,4 +1,4 @@
-FROM debian as compile-lkd
+FROM debian:bullseye as compile-lkd
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
 RUN apt-get update \
@@ -321,34 +321,34 @@ ENV LKD_VERSION=${LKD_VERSION}
 # If this stage is run as container and you mount `/mnt`, we will create the LKD archive there.
 CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt landoop; chown --reference=/mnt /mnt/LKD-${LKD_VERSION}.tar.gz"]
 
-FROM alpine
+FROM debian:bullseye-slim
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 COPY --from=compile-lkd /opt /opt
 
 # Update, install tooling and some basic setup
-RUN apk add --no-cache \
-        bash \
+RUN apt-get update \
+    && apt-get install -y \
         bash-completion \
         bzip2 \
         coreutils \
         curl \
+        default-jre-headless \
         dumb-init \
         gettext \
         gzip \
         jq \
-        libstdc++ \
-        nss \
-        openjdk8-jre-base \
+        locales \
+        netcat \
         openssl \
-        sqlite \
+        sqlite3 \
         supervisor \
-        tar \
-        tzdata \
         wget \
+    && rm -rf /var/lib/apt/lists/* \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /opt \
     && mkdir /extra-connect-jars /connectors \
-    && mkdir /etc/supervisord.d /etc/supervisord.templates.d
+    && mkdir /etc/supervisord.d /etc/supervisord.templates.d \
+    && rm -rf /var/log/*
 
 SHELL ["/bin/bash", "-c"]
 WORKDIR /
@@ -373,11 +373,6 @@ ARG GOTTY_URL=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linu
 RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && wget "$QUICKCERT_URL" -O /usr/local/bin/quickcert \
     && chmod 0755 /usr/local/bin/quickcert /usr/local/bin/checkport \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-${GLIBC_INST_VERSION}.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-bin-${GLIBC_INST_VERSION}.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_INST_VERSION}/glibc-i18n-${GLIBC_INST_VERSION}.apk \
-    && apk add --no-cache --allow-untrusted glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
-    && rm -f glibc-${GLIBC_INST_VERSION}.apk glibc-bin-${GLIBC_INST_VERSION}.apk glibc-i18n-${GLIBC_INST_VERSION}.apk \
     && wget "$CADDY_URL" -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
@@ -386,7 +381,7 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && mkdir -p /opt/gotty \
     && tar xzf gotty.tar.gz -C /opt/gotty \
     && rm -f gotty.tar.gz \
-    && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+    && localedef -i en_US -f UTF-8 en_US.UTF-8
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 COPY /filesystem /
@@ -419,6 +414,7 @@ RUN ln -s /var/log /var/www/logs
 # Add executables, settings and configuration
 ADD setup-and-run.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/setup-and-run.sh \
+    && rm -f /root/.bashrc \
     && ln -s /usr/local/share/landoop/etc/bashrc /root/.bashrc
 
 VOLUME ["/data"]
