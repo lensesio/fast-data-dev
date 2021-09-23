@@ -281,6 +281,18 @@
           <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;overflow-y:auto;max-height:300px;">
             <ul style="padding-left:10px;">
                 <li>
+                  <h4>Switch from Alpine Linux to Debian Slim</h4>
+                  <p>
+                    As part of our plan to move to JRE11, we switched from Alpine Linux as base to Debian
+                    Slim. The JRE of Alpine Linux had a few issues with Kafka Connect from time to time and
+                    early testing of Lenses Box with JRE11 revealed more.
+
+                    Fast-Data-Dev and Lenses Box images are so big that the switch doesn't affect significantly
+                    the size, the switch may even shave off a couple megabytes. On top the glibc-based Debian
+                    will offer much better compatibility for running anything inside fast-data-dev.
+                  </p>
+                </li>
+                <li>
                   <h4>Kafka 2.6.2</h4>
                   <p>
                     Fast Data Dev with Apache Kafka 2.6.2 and Confluent components 6.0.2 is now available.
