@@ -1,24 +1,29 @@
-# Lenses for Kafka with fast-data-dev #
+# Lenses.io docker for Apache Kafka #
 
+[![slack](https://img.shields.io/badge/Slack-community-red)](https://launchpass.com/lensesio)
 [![docker](https://img.shields.io/docker/pulls/lensesio/box.svg?style=flat)](https://hub.docker.com/r/lensesio/box/)
 [![](https://images.microbadger.com/badges/image/lensesio/box.svg)](http://microbadger.com/images/lensesio/box)
 
-[Join the Slack Lenses.io Community!](https://launchpass.com/lensesio)
+A docker image for [Apache Kafka and Data Engineers](https://lenses.io/box/).
 
-[Lenses](https://lenses.io/box/) docker image with [fast-data-dev](https://hub.docker.com/r/lensesio/fast-data-dev/) technology for fast evaluation!
+Includes:
 
-Beside [Lenses](https://lenses.io/box/) we include a full fledged [Kafka](https://kafka.apache.org/) installation with Kafka Connect and Confluent Schema Registry, [Lenses SQL Engine](https://lenses.io/product/sql/), Landoop’s open-source connector collection [Stream Reactor](https://lenses.io/connect/) and data generators to experiment with.
-=======
-> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/box/)**
+- Apache Kafka v2.5.1
+- Kafka Connect and open source collection of [Kafka Connect](https://lenses.io/connect/) connectors
+- KStreams via SQL (Lenses SQL)
+- Elasticsearch v6.8.7
+- Schema Registry
 
-[Get your free license now](https://www.landoop.com/downloads/lenses/) and discover how easy streaming can get!
+and synthetic generated data for quick experimentation.
 
 ### Quick Run
 
-Once you get your license, run our image with:
+Just run:
 
+```
     docker run -e ADV_HOST=127.0.0.1 -e LICENSE_URL="[CHECK_YOUR_EMAIL_FOR_PERSONAL_ID]" \
-               -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses lensesio/box
+               -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses lensesio/box:latest
+```
 
 Once the services are loaded (it usually takes 30-45 seconds), visit
 http://localhost:3030 and login with `admin` / `admin` for full access or
@@ -28,7 +33,7 @@ macOS, depending on how you installed docker, you may have to set ADV_HOST to
 
 Once logged in, you should be greeted by a screen like below.
 
-![lenses screenshot](https://storage.googleapis.com/wch/lenses-1.0.0.png)
+![lenses screenshot](https://help.lenses.io/using-lenses/basics/images/lensesio-dashboard.png)
 
 When finished, press CTRL+C to turn it off. You can either remove the test environment:
 
@@ -38,29 +43,25 @@ Or use it at a later time, continuing from where you left of:
 
     docker start -a lenses
 
-Please read the advanced run section for information on more advanced use cases, like accessing from external kafka clients.
-
+Please read the advanced section for more configuration options and use cases.
 
 ### What is Lenses
 
-Lenses for Apache Kafka is _the_ management platform for streaming data.
+Lenses is for the Data Engineer working with  Apache Kafka and streaming data and offers:
 
-It upgrades your Kafka cluster with:
-
-- A powerful interface: live views of your data, topics, schema, connectors, ACLs management and more.
-- A scalable SQL engine to implement, test and deploy business logic fast.
-- Vital enterprise capabilities such as audits, monitoring and alerts.
+- Observability and visibility into events, topics, data pipelines, schemas, acls, quotas, connectors.
+- Monitoring, insights and notifications for end-to-end data pipelines.
+- A data-centric security model, for secure data policies around sensitive data.
+- Integrations for auditing, compliance, authentication and data container systems.
 
 ### Requirements
 
-Apart from docker, the only requirement is you have at least 4GB of memory available to docker. For Linux machines this is the available free memory in your system. For macOS and Windows this is the amount of memory you assign to docker’s configuration plus some little extra for the docker Virtual Machines’s operating system. Our recommendation is to have at least 5GB of free memory, so that your system's performance won’t suffer. Operating systems tend to get slower when the free RAM approaches zero.
+Docker installed, and at least 4GB of memory available to docker.
 
-## Quick Start
+### Configuration options
 
-It is hard to cover the whole surface of Lenses capabilities in a few lines, to learn more please visit our [quickstart documentation](https://docs.lenses.io/dev/lenses-box/).
+For advanced configuration options, refer to [quickstart documentation](https://docs.lenses.io/dev/lenses-box/).
 
-In addition, all options of [fast-data-dev](https://github.com/Landoop/fast-data-dev) are available for this image as well.
+We hope that Data Engineers will enjoy the productivity of this docker,
 
-Hope you will enjoy our product,
-
-The Lenses.io team.
+The Lenses.io team
