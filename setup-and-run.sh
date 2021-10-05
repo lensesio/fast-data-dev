@@ -293,7 +293,7 @@ envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js     > /var/www/e
 
 # Set ADV_HOST if needed
 if [[ -n ${ADV_HOST} ]]; then
-    echo -e "\e[92mSetting advertised host to \e[96m${ADV_HOST}\e[34m\e[92m.\e[34m"
+    echo -e "\e[92mSetting Kafka advertised host to \e[96m${ADV_HOST}\e[34m\e[92m\e[34m"
     if [[ -z ${KAFKA_ADVERTISED_LISTENERS} ]]; then
         export KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://${ADV_HOST}:${BROKER_PORT}"
         # If SSL is enabled we need to know if we should update the advertised.listeners
@@ -615,9 +615,10 @@ WEB_TERMINAL_CREDS=${WEB_TERMINAL_CREDS:-admin:admin}
 export WEB_TERMINAL_CREDS
 # shellcheck disable=SC1091
 [[ -f /build.info ]] && source /build.info
-echo -e "\e[92mStarting services.\e[39m"
-echo -e "\e[92mThis is Lenses.io's Box. Lenses $FDD_LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Lenses.io's Kafka Distribution).\e[39m"
-echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some time to start up.\e[39m"
+echo -e "\e[92mStarting services\e[39m"
+echo -e "\e[92mLenses.io version $FDD_LENSES_VERSION, Apache Kafka ${FDD_KAFKA_VERSION}\e[39m"
+echo -e ""
+echo -e "\e[92mAccess \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m (login with \e[96madmin/admin\e[92m)\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://docs.lenses.io/dev/lenses-box/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://launchpass.com/lensesio \e[39m"
