@@ -44,23 +44,31 @@
       # Please do not change the formatting (e.g. add new lines) of the JSON message below, REST Proxy is very sensitive.
       command: |
         curl -vs --stderr - -XPOST
-             -H "Content-Type: application/vnd.kafka.avro.v1+json"
+             -H "Content-Type: application/vnd.kafka.avro.v2+json"
              --data '{"value_schema": "{\"type\": \"record\", \"name\": \"User\", \"fields\": [{\"name\": \"name\", \"type\": \"string\"}]}",
                       "records": [{"value": {"name": "testUser"}}]}'
              "http://127.0.0.1:8082/topics/coyote-test-avro"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Create Consumer for Avro data (rest proxy, schema registry)
       command: |
-        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v1+json"
-             --data '{"name": "a-consumer", "format": "avro", "auto.offset.reset": "smallest"}'
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v2+json"
+             --data '{"name": "a-consumer", "format": "avro", "auto.offset.reset": "earliest"}'
              "http://127.0.0.1:8082/consumers/coyote-avro"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
-    - command: sleep 5
+    - command: sleep 3
+      nolog: true
+    - name: Subscribe Consumer for Avro data (rest proxy, schema registry)
+      command: |
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v2+json"
+             --data '{"topics": ["coyote-test-avro"]}'
+             "http://127.0.0.1:8082/consumers/coyote-avro/instances/a-consumer/subscription"
+             stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - command: sleep 3
       nolog: true
     - name: Consume Avro Message (rest proxy, schema registry)
       command: |
-        curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.avro.v1+json"
-             "http://127.0.0.1:8082/consumers/coyote-avro/instances/a-consumer/topics/coyote-test-avro?max_bytes=30"
+        curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.avro.v2+json"
+             "http://127.0.0.1:8082/consumers/coyote-avro/instances/a-consumer/records?max_bytes=30"
       stdout_has: [ 'testUser' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Avro Consumer (rest proxy, schema registry)
@@ -76,21 +84,27 @@
 
     - name: Produce JSON Message (rest proxy)
       command: |
-        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.json.v1+json"
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.json.v2+json"
               --data '{"records":[{"value":{"foo":"bar"}}]}' "http://127.0.0.1:8082/topics/coyote-test-json"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Create Consumer for JSON data (rest proxy)
       command: |
-        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v1+json"
-              --data '{"name": "a-consumer", "format": "json", "auto.offset.reset": "smallest"}'
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v2+json"
+              --data '{"name": "a-consumer", "format": "json", "auto.offset.reset": "earliest"}'
               "http://127.0.0.1:8082/consumers/coyote-json"
+      stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - name: Subscribe Consumer for JSON data (rest proxy)
+      command: |
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v2+json"
+             --data '{"topics": ["coyote-test-json"]}'
+              "http://127.0.0.1:8082/consumers/coyote-json/instances/a-consumer/subscription"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - command: sleep 2
       nolog: true
     - name: Consume JSON Message (rest proxy)
       command: |
-        curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.json.v1+json"
-              "http://127.0.0.1:8082/consumers/coyote-json/instances/a-consumer/topics/coyote-test-json?max_bytes=15"
+        curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.json.v2+json"
+              "http://127.0.0.1:8082/consumers/coyote-json/instances/a-consumer/records?max_bytes=15"
       stdout_has: [ 'foo.*bar' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete JSON Consumer (rest proxy)
@@ -106,21 +120,29 @@
 
     - name: Produce Binary Message (rest proxy)
       command: |
-        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.binary.v1+json"
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.binary.v2+json"
             --data '{"records":[{"value":"S2Fma2E="}]}' "http://127.0.0.1:8082/topics/coyote-test-binary"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Create Consumer for Binary data (rest proxy)
       command: |
-        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v1+json"
-              --data '{"name": "a-consumer", "format": "binary", "auto.offset.reset": "smallest"}'
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v2+json"
+              --data '{"name": "a-consumer", "format": "binary", "auto.offset.reset": "earliest"}'
               "http://127.0.0.1:8082/consumers/coyote-binary"
+      stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
+    - command: sleep 2
+      nolog: true
+    - name: Subscribe Consumer for Binary data (rest proxy)
+      command: |
+        curl -vs --stderr - -XPOST -H "Content-Type: application/vnd.kafka.v2+json"
+             --data '{"topics": ["coyote-test-binary"]}'
+              "http://127.0.0.1:8082/consumers/coyote-binary/instances/a-consumer/subscription"
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - command: sleep 2
       nolog: true
     - name: Consume Binary Message (rest proxy)
       command: |
-        curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.binary.v1+json"
-              "http://127.0.0.1:8082/consumers/coyote-binary/instances/a-consumer/topics/coyote-test-binary?max_bytes=10"
+        curl -vs --stderr - -XGET -H "Accept: application/vnd.kafka.binary.v2+json"
+              "http://127.0.0.1:8082/consumers/coyote-binary/instances/a-consumer/records?max_bytes=10"
       stdout_has: [ 'S2Fma2E=' ]
       stdout_not_has: [ 'error_code":[0-9]', 'Unexpected', 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Binary Consumer (rest proxy)

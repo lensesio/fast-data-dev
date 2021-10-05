@@ -28,9 +28,24 @@ for ((i=0;i<60;i++)); do
     fi
 done
 
+_PROCESSOR_NAME=filter_fast_vessels
+
 lenses-cli \
     --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
     processor \
     create \
-    --name=filter_fast_vessels \
+    --name="$_PROCESSOR_NAME" \
     --sql="${PROC_SQL}"
+
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    processor \
+    start \
+    --name="$_PROCESSOR_NAME"
+
+
+sleep 3
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=fast_vessel_processor \
+    --tag transport

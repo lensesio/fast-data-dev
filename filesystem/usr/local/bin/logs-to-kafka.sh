@@ -28,3 +28,11 @@ EOF
 done
 
 rm /tmp/connector
+
+USER=${USER:-admin}
+PASSWORD=${PASSWORD:-admin}
+sleep 20
+lenses-cli \
+    --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
+    dataset update-tags --connection=kafka --name=logs_broker \
+    --tag dev

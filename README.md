@@ -20,13 +20,16 @@ and synthetic generated data for quick experimentation.
 
 Just run:
 
-    docker run -e ADV_HOST=127.0.0.1 -p 9092:9092 -p 3030:3030 \
-               -p 8081:8081 --name=lenses lensesio/box:latest
+```
+    docker run -e ADV_HOST=127.0.0.1 -e LICENSE_URL="[CHECK_YOUR_EMAIL_FOR_PERSONAL_ID]" \
+               -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses lensesio/box:latest
+```
 
-Then visit `http://localhost:3030` and login with `admin` / `admin`
-
-> Notes: If using an old version of Docker you may have to set ADV_HOST to 192.168.99.100
-and visit http://192.168.99.100:3030 instead
+Once the services are loaded (it usually takes 30-45 seconds), visit
+http://localhost:3030 and login with `admin` / `admin` for full access or
+`logviewer` / `logviewer` for limited access to certain topics.  If you are on
+macOS, depending on how you installed docker, you may have to set ADV_HOST to
+192.168.99.100 and visit http://192.168.99.100:3030 instead.
 
 Once logged in, you should be greeted by a screen like below.
 
