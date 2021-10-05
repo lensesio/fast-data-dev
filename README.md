@@ -24,7 +24,7 @@ Just run:
                -p 8081:8081 --name=lenses lensesio/box:latest
 
 Then visit `http://localhost:3030` and login with `admin` / `admin`
- 
+
 > Notes: If using an old version of Docker you may have to set ADV_HOST to 192.168.99.100
 and visit http://192.168.99.100:3030 instead
 
