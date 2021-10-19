@@ -1,4 +1,4 @@
-FROM debian:bullseye as compile-lkd
+FROM golang:bullseye as compile-lkd
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 
 RUN apt-get update \
@@ -9,8 +9,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /mnt /opt /data \
-    && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /bin/duphard \
-    && chmod +x /bin/duphard
+    && go install github.com/andmarios/duphard@latest \
+    && go install gitlab.com/andmarios/checkport@latest \
+    && go install github.com/andmarios/quickcert@latest \
+    && ln -s  /go/bin/duphard /bin/duphard
 
 SHELL ["/bin/bash", "-c"]
 WORKDIR /
@@ -324,6 +326,9 @@ CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt landoop; cho
 FROM debian:bullseye-slim
 MAINTAINER Marios Andreopoulos <marios@landoop.com>
 COPY --from=compile-lkd /opt /opt
+COPY --from=compile-lkd /go/bin/checkport /usr/local/bin/checkport
+COPY --from=compile-lkd /go/bin/quickcert /usr/local/bin/quickcert
+
 
 # Update, install tooling and some basic setup
 RUN apt-get update \
@@ -365,15 +370,10 @@ WORKDIR /
 # caddy    : an excellent web server we use to serve fast-data-dev UI, proxy various REST
 #            endpoints, etc
 #            https://github.com/mholt/caddy
-ARG CHECKPORT_URL="https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport"
-ARG QUICKCERT_URL="https://github.com/andmarios/quickcert/releases/download/1.0/quickcert-1.0-linux-amd64-alpine"
 ARG GLIBC_INST_VERSION="2.32-r0"
-ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_amd64.tar.gz
-ARG GOTTY_URL=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
-RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
-    && wget "$QUICKCERT_URL" -O /usr/local/bin/quickcert \
-    && chmod 0755 /usr/local/bin/quickcert /usr/local/bin/checkport \
-    && wget "$CADDY_URL" -O /caddy.tgz \
+ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_arm64.tar.gz
+ARG GOTTY_URL=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz
+RUN wget "$CADDY_URL" -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz \
