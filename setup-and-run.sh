@@ -494,7 +494,8 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
                         -alias "$cert" \
                         -deststorepass fastdata \
                         -destkeypass fastdata \
-                        -destkeystore "$cert.jks"
+                        -destkeystore "$cert.jks" \
+                        -deststoretype JKS
             done
 
             keytool -importcert \
@@ -502,7 +503,8 @@ if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
                     -keystore truststore.jks \
                     -alias LensesioFastDataDevCA \
                     -file lfddca.crt.pem \
-                    -storepass fastdata
+                    -storepass fastdata \
+                    -storetype JKS
 
             mkdir -p /var/www/certs/
             cp client.jks clientA.jks clientB.jks truststore.jks /var/www/certs/
