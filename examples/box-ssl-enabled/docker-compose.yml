@@ -1,0 +1,19 @@
+version: '3'
+services:
+  lenses:
+    image: lensesio/box
+    ports:
+      - "3030:3030"
+      - "9092:9092"
+      - "9093:9093"
+      - "8081:8081"
+    environment:
+      - EULA=https://licenses.lenses.io/d/?id=<PERSONAL_ID>
+      - ENABLE_SSL=true
+      - LENSES_KAFKA_BROKERS=SSL://localhost:9093
+      - LENSES_KAFKA_SETTINGS_CLIENT_SECURITY_PROTOCOL=SSL
+      - LENSES_KAFKA_SETTINGS_CLIENT_SSL_PROTOCOL=TLS
+      - LENSES_KAFKA_SETTINGS_CLIENT_SSL_TRUSTSTORE_LOCATION=/var/www/certs/truststore.jks
+      - LENSES_KAFKA_SETTINGS_CLIENT_SSL_TRUSTSTORE_PASSWORD=fastdata
+      - LENSES_KAFKA_SETTINGS_CLIENT_SSL_KEYSTORE_LOCATION=/var/www/certs/client.jks
+      - LENSES_KAFKA_SETTINGS_CLIENT_SSL_KEYSTORE_PASSWORD=fastdata
