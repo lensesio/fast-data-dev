@@ -21,9 +21,9 @@ and synthetic generated data for quick experimentation.
 
 ### Quick Run
 
-Just run:
+Once you get your license, just run:
 
-```
+```bash
     docker run -e ADV_HOST=127.0.0.1 -e EULA="[CHECK_YOUR_EMAIL_FOR_PERSONAL_ID]" \
                -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses lensesio/box:latest
 ```
@@ -46,10 +46,6 @@ Or use it at a later time, continuing from where you left of:
 
     docker start -a lenses
 
-Please read the [advanced section](https://docs.lenses.io/4.2/tools/box/#advanced-options) for more configuration options and use cases, 
-or take a look at the [examples](examples/) folder.
-
-
 ### What is Lenses
 
 Lenses is for the Data Engineer working with  Apache Kafka and streaming data and offers:
@@ -67,7 +63,7 @@ For Linux machines this is the available free memory in your system. For macOS a
 
 ### Configuration options
 
-For advanced configuration options, refer to [quickstart documentation](https://docs.lenses.io/dev/lenses-box/).
+For advanced configuration options, refer to [quickstart documentation](https://docs.lenses.io/dev/lenses-box/) and check the [examples](examples/) folder for different use cases.
 
 We hope that Data Engineers will enjoy the productivity of this docker,
 
