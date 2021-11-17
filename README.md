@@ -23,9 +23,10 @@ and synthetic generated data for quick experimentation.
 
 Once you get your license, just run:
 
-```bash
-    docker run -e ADV_HOST=127.0.0.1 -e EULA="[CHECK_YOUR_EMAIL_FOR_PERSONAL_ID]" \
-               -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 --name=lenses lensesio/box:latest
+```
+docker run -e ADV_HOST=127.0.0.1 -e EULA="[CHECK_YOUR_EMAIL_FOR_PERSONAL_ID]" \
+            -p 3030:3030 -p 9092:9092 -p 2181:2181 -p 8081:8081 \ 
+            --name=lenses lensesio/box:latest
 ```
 
 Once the services are loaded (it usually takes 30-45 seconds), visit
@@ -65,6 +66,7 @@ For Linux machines this is the available free memory in your system. For macOS a
 
 For advanced configuration options, refer to [quickstart documentation](https://docs.lenses.io/dev/lenses-box/) and check the [examples](examples/) folder for different use cases.
 
-We hope that Data Engineers will enjoy the productivity of this docker,
+
+Hope you will enjoy our product,
 
 The Lenses.io team
