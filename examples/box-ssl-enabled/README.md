@@ -1,6 +1,6 @@
 # Lenses Box with SSL Enabled
 
-Example of enabling Lenses with SSL.
+Example of enabling [Lenses with SSL](https://docs.lenses.io/4.3/configuration/kafka-brokers/).
 
 ## Usage
 
@@ -10,7 +10,7 @@ Then, we need to configure lenses to connect to the new url: `LENSES_KAFKA_BROKE
 
 A more personalized configuration can mean changing the IP. For that, configure `SSL_EXTRA_HOSTS` with an extra IP.
 
-To test this configuration just run:
+To test the configuration just run:
 
 ```bash
 docker run -e ADV_HOST=127.0.0.1 \
