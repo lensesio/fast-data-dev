@@ -178,14 +178,14 @@ export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -
 # Set env var for Lenses
 #export LENSES_PORT=${LENSES_PORT:-9991}
 ## These settings are deprecated with Lenses 5.0 and will prevent the software from booting
-# LEN_ZOOKEEPER_HOSTS="[{url:\"0.0.0.0:$ZK_PORT\",jmx:\"0.0.0.0:$ZK_JMX_PORT\"}]"
-# export LENSES_ZOOKEEPER_HOSTS=${LENSES_ZOOKEEPER_HOSTS:-$LEN_ZOOKEEPER_HOSTS}
-# export LENSES_KAFKA_BROKERS=${LENSES_KAFKA_BROKERS:-"PLAINTEXT://0.0.0.0:$BROKER_PORT"}
-# LEN_SCHEMA_REGISTRY_URLS="[{url:\"http://0.0.0.0:$REGISTRY_PORT\",jmx:\"0.0.0.0:$REGISTRY_JMX_PORT\"}]"
-# export LENSES_SCHEMA_REGISTRY_URLS=${LENSES_SCHEMA_REGISTRY_URLS:-$LEN_SCHEMA_REGISTRY_URLS}
-# LEN_KAFKA_CONNECT_CLUSTERS="[{name:\"dev\",urls:[{url:\"http://0.0.0.0:$CONNECT_PORT\",jmx:\"0.0.0.0:$CONNECT_JMX_PORT\"}],statuses:\"connect-statuses\",configs:\"connect-configs\",offsets:\"connect-offsets\",aes256.key:\"0123456789abcdef0123456789abcdef\"}]"
-# export LENSES_KAFKA_CONNECT_CLUSTERS=${LENSES_KAFKA_CONNECT_CLUSTERS:-$LEN_KAFKA_CONNECT_CLUSTERS}
-# export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
+LEN_ZOOKEEPER_HOSTS="[{url:\"0.0.0.0:$ZK_PORT\",jmx:\"0.0.0.0:$ZK_JMX_PORT\"}]"
+export LENSES_ZOOKEEPER_HOSTS=${LENSES_ZOOKEEPER_HOSTS:-$LEN_ZOOKEEPER_HOSTS}
+export LENSES_KAFKA_BROKERS=${LENSES_KAFKA_BROKERS:-"PLAINTEXT://0.0.0.0:$BROKER_PORT"}
+LEN_SCHEMA_REGISTRY_URLS="[{url:\"http://0.0.0.0:$REGISTRY_PORT\",jmx:\"0.0.0.0:$REGISTRY_JMX_PORT\"}]"
+export LENSES_SCHEMA_REGISTRY_URLS=${LENSES_SCHEMA_REGISTRY_URLS:-$LEN_SCHEMA_REGISTRY_URLS}
+LEN_KAFKA_CONNECT_CLUSTERS="[{name:\"dev\",urls:[{url:\"http://0.0.0.0:$CONNECT_PORT\",jmx:\"0.0.0.0:$CONNECT_JMX_PORT\"}],statuses:\"connect-statuses\",configs:\"connect-configs\",offsets:\"connect-offsets\",aes256.key:\"0123456789abcdef0123456789abcdef\"}]"
+export LENSES_KAFKA_CONNECT_CLUSTERS=${LENSES_KAFKA_CONNECT_CLUSTERS:-$LEN_KAFKA_CONNECT_CLUSTERS}
+export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
 ##
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
 LEN_USER=${USER:-admin}
@@ -660,13 +660,12 @@ fi
 LICENSE_URL=${LICENSE_URL:-}
 EULA=${EULA:-$LICENSE_URL}
 LICENSE=${LICENSE:-}
-LICENSE_FILE="/tmp/license.json"
 # Configure lenses
 if [[ -f /license.json ]]; then
-    cp /license.json "$LICENSE_FILE"
-elif [[ ! -z $LICENSE ]] && [[ ! -f $LICENSE_FILE ]]; then
-    echo "$LICENSE" >> "$LICENSE_FILE"
-elif [[ ! -z $EULA ]] && [[ ! -f $LICENSE_FILE ]]; then
+    cp /license.json "$LENSES_LICENSE_FILE"
+elif [[ ! -z $LICENSE ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
+    echo "$LICENSE" >> "$LENSES_LICENSE_FILE"
+elif [[ ! -z $EULA ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
     if [[ $EULA =~ CHECK_YOUR_EMAIL_FOR_KEY ]]; then
         echo
         echo "Oops! It seems you just ran the sample command provided in the website."
@@ -675,14 +674,14 @@ elif [[ ! -z $EULA ]] && [[ ! -f $LICENSE_FILE ]]; then
     fi
     set +o errexit
     wget --user-agent="Lenses Box (Lenses $FDD_LENSES_VERSION; Kafka $FDD_KAFKA_VERSION; Commit: ${BUILD_COMMIT::8})" \
-         -q "$EULA" -O "$LICENSE_FILE"
+         -q "$EULA" -O "$LENSES_LICENSE_FILE"
     if [[ $? -ne 0 ]]; then
         echo -e "\e[91mCould not download license. Maybe the link was wrong or the license expired?"
         echo -e "Please check and try again. If the problem persists please contact us.\e[39m"
         exit 1
     fi
     if [[ $STRICT_SCRIPT =~ $TRUE_REG ]]; then set -o errexit; fi
-elif [[ -f $LICENSE_FILE ]]; then
+elif [[ -f $LENSES_LICENSE_FILE ]]; then
     echo
 else
     echo -e "\e[91mNo license was provided. Lenses will not work."
@@ -690,7 +689,7 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
-chown nobody:nogroup "$LICENSE_FILE"
+chown nobody:nogroup "$LENSES_LICENSE_FILE"
 mkdir -p /var/run/lenses/logs
 #chmod 777 /var/run/lenses/logs
 rm -rf /tmp/vlxjre
