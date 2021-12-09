@@ -54,6 +54,7 @@ export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
 export LENSES_PORT=${LENSES_PORT:-9991}
 export LENSES_JMX_PORT=${LENSES_JMX_PORT:-9586}
+PROVISION_LENSES=${PROVISION_LENSES:-true}
 export ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT:-9200}
 export ELASTICSEARCH_TRASNPORT_PORT=${ELASTICSEARCH_TRANSPORT_PORT:-9300}
 export FDD_PORT=${FDD_PORT:-28371}
@@ -87,6 +88,7 @@ export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/landoop/wai
 export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
 export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
 export WAIT_SCRIPT_LENSES=${WAIT_SCRIPT_LENSES:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_LENSES_PROVISION=${WAIT_SCRIPT_LENSES_PROVISION:-/usr/local/share/landoop/wait-scripts/wait-for-lenses.sh}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT $ELASTICSEARCH_PORT $ELASTICSEARCH_TRASNPORT_PORT"
@@ -177,15 +179,13 @@ export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -
 
 # Set env var for Lenses
 #export LENSES_PORT=${LENSES_PORT:-9991}
-## These settings are deprecated with Lenses 5.0 and will prevent the software from booting
-LEN_ZOOKEEPER_HOSTS="[{url:\"0.0.0.0:$ZK_PORT\",jmx:\"0.0.0.0:$ZK_JMX_PORT\"}]"
-export LENSES_ZOOKEEPER_HOSTS=${LENSES_ZOOKEEPER_HOSTS:-$LEN_ZOOKEEPER_HOSTS}
-export LENSES_KAFKA_BROKERS=${LENSES_KAFKA_BROKERS:-"PLAINTEXT://0.0.0.0:$BROKER_PORT"}
-LEN_SCHEMA_REGISTRY_URLS="[{url:\"http://0.0.0.0:$REGISTRY_PORT\",jmx:\"0.0.0.0:$REGISTRY_JMX_PORT\"}]"
-export LENSES_SCHEMA_REGISTRY_URLS=${LENSES_SCHEMA_REGISTRY_URLS:-$LEN_SCHEMA_REGISTRY_URLS}
-LEN_KAFKA_CONNECT_CLUSTERS="[{name:\"dev\",urls:[{url:\"http://0.0.0.0:$CONNECT_PORT\",jmx:\"0.0.0.0:$CONNECT_JMX_PORT\"}],statuses:\"connect-statuses\",configs:\"connect-configs\",offsets:\"connect-offsets\",aes256.key:\"0123456789abcdef0123456789abcdef\"}]"
-export LENSES_KAFKA_CONNECT_CLUSTERS=${LENSES_KAFKA_CONNECT_CLUSTERS:-$LEN_KAFKA_CONNECT_CLUSTERS}
-export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/license.conf}
+## These settings are deprecated with Lenses 5.0 and will prevent the software
+## from booting, but now we use them for provision.yaml
+export LENSES_ZOOKEEPER_HOSTS=[${LENSES_ZOOKEEPER_HOSTS:-0.0.0.0:$ZK_PORT}]
+export LENSES_KAFKA_BROKERS=[${LENSES_KAFKA_BROKERS:-PLAINTEXT://0.0.0.0:$BROKER_PORT}]
+export LENSES_SCHEMA_REGISTRY_URLS=[${LENSES_SCHEMA_REGISTRY_URLS:-http://0.0.0.0:$REGISTRY_PORT}]
+export LENSES_KAFKA_CONNECT_CLUSTERS=[${LENSES_KAFKA_CONNECT_CLUSTERS:-http://0.0.0.0:$CONNECT_PORT}]
+export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses-provision/license.conf}
 ##
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
 LEN_USER=${USER:-admin}
@@ -198,7 +198,7 @@ export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
 export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
 export LENSES_PLUGINS_CLASSPATH_OPTS=${LENSES_PLUGINS_CLASSPATH_OPTS:-/plugins}
 
-# Set env vars for generator
+# Set env vars for generator (also used in provision unit)
 export GENERATOR_BROKER=${GENERATOR_BROKER:-127.0.0.1:$BROKER_PORT}
 export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-127.0.0.1}
 export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
@@ -265,6 +265,7 @@ mkdir -p \
       /var/run/caddy \
       /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} \
       /var/run/lenses \
+      /var/run/lenses-provision \
       /var/run/elasticsearch/logs
 chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} /var/run/elasticsearch /var/run/elasticsearch/logs
 
@@ -336,6 +337,7 @@ if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
 if [[ $LENSES_PORT == 0 ]];   then rm /etc/supervisord.d/*lenses.conf; fi
 if [[ $ELASTICSEARCH_PORT == 0 ]]; then rm /etc/supervisord.d/*elasticsearch.conf; fi
 if [[ $WEB_TERMINAL_PORT == 0 ]];      then rm /etc/supervisord.d/*gotty-web-terminal.conf; fi
+if [[ $PROVISION_LENSES =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*provision-lenses.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
 if [[ $RUNTESTS =~ $FALSE_REG ]]; then
     rm /etc/supervisord.d/*smoke-tests.conf
@@ -660,7 +662,8 @@ fi
 LICENSE_URL=${LICENSE_URL:-}
 EULA=${EULA:-$LICENSE_URL}
 LICENSE=${LICENSE:-}
-# Configure lenses
+# Configure lenses provisioning
+## License
 if [[ -f /license.json ]]; then
     cp /license.json "$LENSES_LICENSE_FILE"
 elif [[ ! -z $LICENSE ]] && [[ ! -f $LENSES_LICENSE_FILE ]]; then
@@ -689,6 +692,69 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
+cat <<EOF > /var/run/lenses-provision/provision.yaml
+license:
+  fileRef:
+    filePath: $LENSES_LICENSE_FILE
+EOF
+## Conections
+cat <<EOF >> /var/run/lenses-provision/provision.yaml
+connections:
+EOF
+if [[ $ZK_PORT != 0 ]]; then
+    cat <<EOF >> /var/run/lenses-provision/provision.yaml
+  zookeeper:
+    tags: []
+    templateName: Zookeeper
+    configurationObject:
+      zookeeperUrls: $LENSES_ZOOKEEPER_HOSTS
+      metricsPort: $ZK_JMX_PORT
+      metricsType: JMX
+      zookeeperSecurityEnabled: false
+      zookeeperSessionTimeout: 18000
+      zookeeperConnectionTimeout: 18000
+EOF
+fi
+if [[ $BROKER_PORT != 0 ]];   then
+    cat <<EOF >> /var/run/lenses-provision/provision.yaml
+  kafka:
+    tags: []
+    templateName: Kafka
+    configurationObject:
+      kafkaBootstrapServers: $LENSES_KAFKA_BROKERS
+      protocol: PLAINTEXT
+      metricsPort: $BROKER_JMX_PORT
+      metricsType: JMX
+EOF
+fi
+if [[ $REGISTRY_PORT != 0 ]]; then
+    cat <<EOF >> /var/run/lenses-provision/provision.yaml
+  schema-registry:
+    templateName: SchemaRegistries
+    tags: []
+    configurationObject:
+      schemaRegistryUrls: $LENSES_SCHEMA_REGISTRY_URLS
+      metricsPort: $REGISTRY_JMX_PORT
+      metricsType: JMX
+EOF
+fi
+if [[ $CONNECT_PORT != 0 ]]; then
+   cat <<EOF >> /var/run/lenses-provision/provision.yaml
+  dev:
+    templateName: KafkaConnectCluster
+    tags: []
+    configurationObject:
+      workers: $LENSES_KAFKA_CONNECT_CLUSTERS
+      aes256Key: 0123456789abcdef0123456789abcdef
+      metricsPort: $CONNECT_JMX_PORT
+      metricsType: JMX
+EOF
+fi
+if [ -f /provision.yaml ]; then
+    echo "Found '/provision.yaml', appending to autocreated one. For common settings, the user provided takes precedence."
+    cat /provision.yaml >> /var/run/lenses-provision/provision.yaml
+fi
+
 chown nobody:nogroup "$LENSES_LICENSE_FILE"
 mkdir -p /var/run/lenses/logs
 #chmod 777 /var/run/lenses/logs
