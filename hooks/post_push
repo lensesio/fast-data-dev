@@ -25,14 +25,23 @@ fi
 # Note: For this to work, docker hub landoop/fast-data-dev should be set to build on push on these branches
 # So, new branch? Go fix docker hub.
 if [[ $BUILD_BRANCH =~ ^fdd/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ -n $FDD_LKD_VERSION ]]; then
-    # BUILD_BRANCH is the same as FDD_LKD_VERSION, e.g 2.2.1
+    # BUILD_BRANCH can be the same as FDD_LKD_VERSION, e.g 2.2.1
+    # Or may differ, eg branch suffix 2.6.0 and version 2.6.0-L0
     # 'landoop/fast-data-dev:$BUILD_BRANCH is pushed automatically
 
-    # Also push 'lensesio/fast-data-dev:$BUILD_BRANCH'
-    docker tag $IMAGE_NAME lensesio/fast-data-dev:$FDD_LKD_VERSION
-    docker push lensesio/fast-data-dev:$FDD_LKD_VERSION
+    PATCH_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/' <<<"$FDD_LKD_VERSION")"
 
-    MAJOR_MINOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+$/\1/' <<<"$FDD_LKD_VERSION")"
+    # If branch and version name differ, push branch as well.
+    if [[ $PATCH_VERSION != $FDD_LKD_VERSION ]]; then
+        docker tag $IMAGE_NAME lensesio/fast-data-dev:$PATCH_VERSION
+        docker push lensesio/fast-data-dev:$PATCH_VERSION
+    fi
+
+    # Also push 'lensesio/fast-data-dev:$BUILD_BRANCH'
+    docker tag $IMAGE_NAME lensesio/fast-data-dev:$PATCH_VERSION
+    docker push lensesio/fast-data-dev:$PATCH_VERSION
+
+    MAJOR_MINOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+.*$/\1/' <<<"$FDD_LKD_VERSION")"
     # Also push 'landoop/fast-data-dev:$MAJOR_MINOR_VERSION'
     docker tag $IMAGE_NAME landoop/fast-data-dev:$MAJOR_MINOR_VERSION
     docker push landoop/fast-data-dev:$MAJOR_MINOR_VERSION
