@@ -54,7 +54,7 @@ export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
 export LENSES_PORT=${LENSES_PORT:-9991}
 export LENSES_JMX_PORT=${LENSES_JMX_PORT:-9586}
-export ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT:-9200}
+export ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT:-0} # Disable until CVE-2021-44228 is addressed
 export ELASTICSEARCH_TRASNPORT_PORT=${ELASTICSEARCH_TRANSPORT_PORT:-9300}
 export FDD_PORT=${FDD_PORT:-28371}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
@@ -279,9 +279,10 @@ cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
    /var/run/rest-proxy/
 cp /opt/lenses/logback.xml \
    /var/run/lenses/
-cp /opt/elasticsearch/config/{log4j2.properties,jvm.options} /var/run/elasticsearch
-sed -e 's|file=logs/gc.log|file=/var/run/elasticsearch/logs/gc.log|' \
-    -i /var/run/elasticsearch/jvm.options
+# Disable until CVE-2021-44228 is addressed
+# cp /opt/elasticsearch/config/{log4j2.properties,jvm.options} /var/run/elasticsearch
+# sed -e 's|file=logs/gc.log|file=/var/run/elasticsearch/logs/gc.log|' \
+#     -i /var/run/elasticsearch/jvm.options
 
 # Copy tests
 # This differs in that we need to adjust it later
