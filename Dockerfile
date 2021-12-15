@@ -95,10 +95,8 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
        done \
     && rm -f /opt/landoop/connectors/stream-reactor/*/*{javadoc,scaladoc,sources}.jar \
     && echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
-            >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
-# RUN echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
-#        >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
-#     && mkdir -p /opt/landoop/connectors/stream-reactor
+            >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
+    && rm -rf /opt/landoop/connectors/stream-reactor/kafka-connect-{elastic6,elastic7,hive} # Temporary mitigation for log4shell (removing connectors with offending libs)
 
 # Add Secrets Provider
 ARG SECRET_PROVIDER_VERSION=2.1.6
@@ -134,14 +132,15 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
 
 ## Kafka Connect HDFS
-ARG KAFKA_CONNECT_HDFS_VERSION=10.0.2-lkd-r0
-ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
-         -O /opt/kafka-connect-hdfs.tar.gz \
-    && mkdir -p /opt/landoop/connectors/third-party/ \
-    && tar --no-same-owner -xf /opt/kafka-connect-hdfs.tar.gz \
-           -C /opt/landoop/connectors/third-party/ \
-    && rm -rf /opt/kafka-connect-hdfs.tar.gz
+# Disable until CVE-2021-44228 is addressed
+# ARG KAFKA_CONNECT_HDFS_VERSION=10.0.2-lkd-r0
+# ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
+# RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
+#          -O /opt/kafka-connect-hdfs.tar.gz \
+#     && mkdir -p /opt/landoop/connectors/third-party/ \
+#     && tar --no-same-owner -xf /opt/kafka-connect-hdfs.tar.gz \
+#            -C /opt/landoop/connectors/third-party/ \
+#     && rm -rf /opt/kafka-connect-hdfs.tar.gz
 
 # Kafka Connect S3
 ARG KAFKA_CONNECT_S3_VERSION=10.0.0-lkd-r0
@@ -197,7 +196,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
     && rm -rf /debezium-{mongodb,mysql,postgres,sqlserver}.tgz
 
 # Kafka Connect Splunk
-ARG KAFKA_CONNECT_SPLUNK_VERSION="1.1.0"
+ARG KAFKA_CONNECT_SPLUNK_VERSION="2.0.4"
 ARG KAFKA_CONNECT_SPLUNK_URL="https://github.com/splunk/kafka-connect-splunk/releases/download/v${KAFKA_CONNECT_SPLUNK_VERSION}/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
     && wget "$KAFKA_CONNECT_SPLUNK_URL" \
