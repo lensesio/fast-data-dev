@@ -205,17 +205,17 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
 ###################
 # Add ElasticSearch
 ###################
-
-ARG ELASTICSEARCH_VERSION="6.8.7"
-ARG ELASTICSEARCH_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTICSEARCH_VERSION}.tar.gz"
-#ARG ELASTICSEARCH_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTICSEARCH_VERSION}-no-jdk-linux-x86_64.tar.gz" # For 7.x ES
-RUN wget "${ELASTICSEARCH_URL}" -O /elasticsearch.tar.gz \
-    && mkdir -p /opt/elasticsearch \
-    && tar -xzf /elasticsearch.tar.gz \
-           --owner=root --group=root --strip-components=1 \
-           -C  /opt/elasticsearch \
-    && rm -f /elasticsearch.tar.gz \
-    && chmod o+r /opt/elasticsearch/config/*
+# Disable until CVE-2021-44228 is addressed
+# ARG ELASTICSEARCH_VERSION="6.8.7"
+# ARG ELASTICSEARCH_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTICSEARCH_VERSION}.tar.gz"
+# #ARG ELASTICSEARCH_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTICSEARCH_VERSION}-no-jdk-linux-x86_64.tar.gz" # For 7.x ES
+# RUN wget "${ELASTICSEARCH_URL}" -O /elasticsearch.tar.gz \
+#     && mkdir -p /opt/elasticsearch \
+#     && tar -xzf /elasticsearch.tar.gz \
+#            --owner=root --group=root --strip-components=1 \
+#            -C  /opt/elasticsearch \
+#     && rm -f /elasticsearch.tar.gz \
+#     && chmod o+r /opt/elasticsearch/config/*
 
 ############
 # Add tools/
@@ -323,8 +323,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/landoop/build.info \
     && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/landoop/build.info \
     && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/landoop/build.info \
-    && echo "CONNECT_CLI_VERSION=${CONNECT_CLI_VERSION}"               | tee -a /opt/landoop/build.info \
-    && echo "ELASTICSEARCH_VERSION=${ELASTICSEARCH_VERSION}"           | tee -a /opt/elasticsearch/build.info
+    && echo "CONNECT_CLI_VERSION=${CONNECT_CLI_VERSION}"               | tee -a /opt/landoop/build.info
+#    && echo "ELASTICSEARCH_VERSION=${ELASTICSEARCH_VERSION}"           | tee -a /opt/elasticsearch/build.info # Disable until CVE-2021-44228 is addressed
 
 # duphard (replace duplicates with hard links) and create archive
 # We run as two separate commands because otherwise the build fails in docker hub (but not locally)
@@ -538,7 +538,7 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
     && echo "FDD_LENSES_CLI_VERSION=${LC_VERSION}" | tee -a /build.info \
     && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info \
-    && sed -e 's/^/FDD_/' /opt/elasticsearch/build.info  | tee -a /build.info
+#    && sed -e 's/^/FDD_/' /opt/elasticsearch/build.info  | tee -a /build.info # Disable until CVE-2021-44228 is addressed
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
