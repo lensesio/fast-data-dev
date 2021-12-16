@@ -731,7 +731,7 @@ fi
 if [[ $REGISTRY_PORT != 0 ]]; then
     cat <<EOF >> /var/run/lenses-provision/provision.yaml
   schema-registry:
-    templateName: SchemaRegistries
+    templateName: SchemaRegistry
     tags: []
     configurationObject:
       schemaRegistryUrls: $LENSES_SCHEMA_REGISTRY_URLS
@@ -742,7 +742,7 @@ fi
 if [[ $CONNECT_PORT != 0 ]]; then
    cat <<EOF >> /var/run/lenses-provision/provision.yaml
   dev:
-    templateName: KafkaConnectCluster
+    templateName: KafkaConnect
     tags: []
     configurationObject:
       workers: $LENSES_KAFKA_CONNECT_CLUSTERS
