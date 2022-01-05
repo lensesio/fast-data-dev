@@ -565,6 +565,29 @@ if [[ $WEB_ONLY =~ $TRUE_REG ]]; then
     export RUNTESTS="${RUNTESTS:-0}"
 fi
 
+# Enable userlane if needed
+USERLANE=${USERLANE:-false}
+if [[ $USERLANE =~ $TRUE_REG ]]; then
+    cat <<EOF >> /var/www/env.js
+
+// load Userlane
+(function (i, s, o, g, r, a, m) {
+  i['UserlaneCommandObject'] = r;
+  i[r] =
+    i[r] ||
+    function () {
+      (i[r].q = i[r].q || []).push(arguments);
+    };
+  (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+  a.async = 1;
+  a.src = g;
+  m.parentNode.insertBefore(a, m);
+})(window, document, 'script', 'https://cdn.userlane.com/userlane.js', 'Userlane');
+// initialize Userlane with your Property ID
+Userlane('init', 'q2mmy');
+EOF
+fi
+
 # Set supervisord to output all logs to stdout
 if [[ $DEBUG =~ $TRUE_REG ]]; then
     sed -e 's/loglevel=info/loglevel=debug/' -i /etc/supervisord.d/*
