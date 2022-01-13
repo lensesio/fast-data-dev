@@ -734,7 +734,6 @@ if [[ $ZK_PORT != 0 ]]; then
       zookeeperUrls: $LENSES_ZOOKEEPER_HOSTS
       metricsPort: $ZK_JMX_PORT
       metricsType: JMX
-      zookeeperSecurityEnabled: false
       zookeeperSessionTimeout: 18000
       zookeeperConnectionTimeout: 18000
 EOF
