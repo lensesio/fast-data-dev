@@ -371,9 +371,27 @@ WORKDIR /
 #            endpoints, etc
 #            https://github.com/mholt/caddy
 ARG GLIBC_INST_VERSION="2.32-r0"
-ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_arm64.tar.gz
-ARG GOTTY_URL=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz
-RUN wget "$CADDY_URL" -O /caddy.tgz \
+ARG CADDY_URL_AMD64=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_amd64.tar.gz
+ARG GOTTY_URL_AMD64=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
+ARG CADDY_URL_ARM64=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_arm64.tar.gz
+ARG GOTTY_URL_ARM64=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz
+RUN set -eux; \
+    dpkgArch="$(dpkg --print-architecture)"; \
+    	dir=/usr/local/src; \
+    	CADDY_URL=; \
+    	GOTTY_URL=; \
+    	case "${dpkgArch##*-}" in \
+    		'amd64') \
+    			CADDY_URL="$CADDY_URL_AMD64"; \
+    			GOTTY_URL="$GOTTY_URL_AMD64"; \
+    			;; \
+    		'arm64') \
+    			CADDY_URL="$CADDY_URL_ARM64"; \
+    			GOTTY_URL="$GOTTY_URL_ARM64"; \
+    			;; \
+    		*) echo >&2 "error: unsupported architecture '$dpkgArch' (likely packaging update needed)"; exit 1 ;; \
+    	esac; \
+    wget "$CADDY_URL" -O /caddy.tgz \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz \
