@@ -19,14 +19,14 @@ WORKDIR /
 ARG DEVARCH_USER
 ARG DEVARCH_PASS
 ARG ARCHIVE_SERVER=https://archive.lenses.io
-ARG LKD_VERSION=2.6.2-L0
+ARG LKD_VERSION=3.3.1-L0
 
 ############
 # Add kafka/
 ############
 
 # Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION=2.6.2
+ARG KAFKA_VERSION=3.3.1
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
 ARG KAFKA_URL="${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.13-${KAFKA_LVERSION}-lkd.tar.gz"
 
@@ -36,13 +36,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry and REST Proxy
-ARG REGISTRY_VERSION=6.0.2-lkd-r0
+ARG REGISTRY_VERSION=7.3.0-lkd-r0
 ARG REGISTRY_URL="${ARCHIVE_SERVER}/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
     && rm -rf /opt/registry.tar.gz
 
-ARG REST_VERSION=6.0.2-lkd-r0
+ARG REST_VERSION=7.3.0-lkd-r0
 ARG REST_URL="${ARCHIVE_SERVER}/lkd/packages/rest-proxy/rest-proxy-${REST_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
     && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
@@ -60,7 +60,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=2.1.3
+ARG STREAM_REACTOR_VERSION=3.0.0
 ARG KAFKA_VERSION_4SR=2.5.0
 ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
 ARG ACTIVEMQ_VERSION=5.12.3
@@ -98,13 +98,17 @@ RUN mkdir -p /opt/landoop/connectors/stream-reactor/kafka-connect-secret-provide
 
 # Add Third Party Connectors
 
+## Filesource
+RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-file \
+    && ln -s /opt/landoop/kafka/share/java/kafka/connect-file-${KAFKA_LVERSION}.jar /opt/landoop/connectors/third-party/kafka-connect-file/connect-file-${KAFKA_LVERSION}.jar
+
 ## Twitter
 ARG TWITTER_CONNECTOR_URL="https://archive.lenses.io/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-twitter \
     && wget "$TWITTER_CONNECTOR_URL" -P /opt/landoop/connectors/third-party/kafka-connect-twitter
 
 ## Kafka Connect JDBC
-ARG KAFKA_CONNECT_JDBC_VERSION=10.0.2-lkd-r0
+ARG KAFKA_CONNECT_JDBC_VERSION=10.6.0-lkd-r0
 ARG KAFKA_CONNECT_JDBC_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-jdbc/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
          -O /opt/kafka-connect-jdbc.tar.gz \
@@ -114,7 +118,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
     && rm -rf /opt/kafka-connect-jdbc.tar.gz
 
 ## Kafka Connect ELASTICSEARCH
-ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=10.0.2-lkd-r0
+ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=14.0.2-lkd-r0
 ARG KAFKA_CONNECT_ELASTICSEARCH_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-elasticsearch/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
          -O /opt/kafka-connect-elasticsearch.tar.gz \
@@ -124,18 +128,17 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
     && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
 
 ## Kafka Connect HDFS
-# Disable until CVE-2021-44228 is addressed
-# ARG KAFKA_CONNECT_HDFS_VERSION=10.0.2-lkd-r0
-# ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
-# RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
-#          -O /opt/kafka-connect-hdfs.tar.gz \
-#     && mkdir -p /opt/landoop/connectors/third-party/ \
-#     && tar --no-same-owner -xf /opt/kafka-connect-hdfs.tar.gz \
-#            -C /opt/landoop/connectors/third-party/ \
-#     && rm -rf /opt/kafka-connect-hdfs.tar.gz
+ARG KAFKA_CONNECT_HDFS_VERSION=10.1.14-lkd-r0
+ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
+RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
+         -O /opt/kafka-connect-hdfs.tar.gz \
+    && mkdir -p /opt/landoop/connectors/third-party/ \
+    && tar --no-same-owner -xf /opt/kafka-connect-hdfs.tar.gz \
+           -C /opt/landoop/connectors/third-party/ \
+    && rm -rf /opt/kafka-connect-hdfs.tar.gz
 
 # Kafka Connect S3
-ARG KAFKA_CONNECT_S3_VERSION=10.0.0-lkd-r0
+ARG KAFKA_CONNECT_S3_VERSION=10.2.3-lkd-r0
 ARG KAFKA_CONNECT_S3_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-s3/kafka-connect-s3-${KAFKA_CONNECT_S3_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
          -O /opt/kafka-connect-s3.tar.gz \
@@ -145,25 +148,25 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_S3_URL" \
     && rm -rf /opt/kafka-connect-s3.tar.gz
 
 # Kafka Connect Couchbase
-ARG KAFKA_CONNECT_COUCHBASE_VERSION=3.2.2
-ARG KAFKA_CONNECT_COUCHBASE_URL="http://packages.couchbase.com/clients/kafka/${KAFKA_CONNECT_COUCHBASE_VERSION}/kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}.zip"
+ARG KAFKA_CONNECT_COUCHBASE_VERSION=4.1.9
+ARG KAFKA_CONNECT_COUCHBASE_URL="http://packages.couchbase.com/clients/kafka/${KAFKA_CONNECT_COUCHBASE_VERSION}/couchbase-kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}.zip"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
          -O /couchbase.zip \
     && mkdir -p /couchbase /opt/landoop/connectors/third-party/kafka-connect-couchbase \
     && unzip /couchbase.zip -d /couchbase \
-    && cp -ax /couchbase/kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}/* \
+    && cp -ax /couchbase/couchbase-kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}/* \
           /opt/landoop/connectors/third-party/kafka-connect-couchbase \
     && chown -R root:root /opt/landoop/connectors/third-party/kafka-connect-couchbase \
     && rm -rf /couchbase.zip /couchbase
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres / MsSQL
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=1.0.1.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=2.0.0.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=1.0.1.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=2.0.0.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=1.0.1.Final
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=2.0.0.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=1.0.1.Final
+ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=2.0.0.Final
 ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-sqlserver/${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}/debezium-connector-sqlserver-${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,sqlserver} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
