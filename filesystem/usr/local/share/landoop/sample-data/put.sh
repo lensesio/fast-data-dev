@@ -7,7 +7,7 @@ source variables.env
 for key in 0 1 2 3 4; do
     # Create topic with x partitions and a retention time of 10 years.
     kafka-topics \
-        --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
+        --bootstrap-server "${GENERATOR_BROKER}" \
          ${GENERATOR_PRODUCER_PROPERTIES} \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
