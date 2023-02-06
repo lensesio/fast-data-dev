@@ -9,7 +9,7 @@ for key in 5; do
     # Create topic with x partitions and a retention size of 50MB, log segment
     # size of 20MB and compression type y.
     kafka-topics \
-        --zookeeper "${GENERATOR_ZK_HOST}:${ZK_PORT}" \
+        --bootstrap-server "${GENERATOR_BROKER}" \
         --topic "${TOPICS[key]}" \
         --partitions "${PARTITIONS[key]}" \
         --replication-factor "${REPLICATION[key]}" \
