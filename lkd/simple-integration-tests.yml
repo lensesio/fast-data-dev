@@ -11,10 +11,10 @@
 
     - name: Create Topic (basic kafka)
       command: |
-        kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote_basic_%UNIQUE_BASIC% --partitions 1 --replication-factor 1
+        kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote_basic_%UNIQUE_BASIC% --partitions 1 --replication-factor 1
                      --create --config retention.ms=60000 --config retention.bytes=52428800
     - name: List Topics (basic kafka)
-      command: kafka-topics --zookeeper 127.0.0.1:2181 --list
+      command: kafka-topics --bootstrap-server 127.0.0.1:9092 --list
     - name: Performance Test (basic kafka)
       command: |
         kafka-producer-perf-test --topic coyote_basic_%UNIQUE_BASIC% --throughput 100000 --record-size 1000 --num-records 500000
@@ -39,7 +39,7 @@
       command: curl -vs --stderr - "http://127.0.0.1:8082/topics/coyote_basic_%UNIQUE_BASIC%/partitions"
       stdout_not_has: [ 'HTTP/1.1 [45][0-9][0-9] ' ]
     - name: Delete Topic (basic kafka)
-      command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote_basic_%UNIQUE_BASIC% --delete
+      command: kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote_basic_%UNIQUE_BASIC% --delete
     - name: Produce Avro Message (rest proxy, schema registry)
       # Please do not change the formatting (e.g. add new lines) of the JSON message below, REST Proxy is very sensitive.
       command: |
@@ -79,7 +79,7 @@
     #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 5
       nolog: true
-    - command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-test-avro --delete
+    - command: kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote-test-avro --delete
       nolog: true
 
     - name: Produce JSON Message (rest proxy)
@@ -115,7 +115,7 @@
     #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 2
       nolog: true
-    - command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-test-json --delete
+    - command: kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote-test-json --delete
       nolog: true
 
     - name: Produce Binary Message (rest proxy)
@@ -153,7 +153,7 @@
     #   stdout_not_has: [ 'Error', 'failed' ]
     - command: sleep 5
       nolog: true
-    - command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-test-binary --delete
+    - command: kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote-test-binary --delete
       nolog: true
 
 - name: Schema Registry
@@ -242,7 +242,7 @@
     - command: sleep 5
       nolog: true
     - name: Delete Connect Distributes Test Topic (basic kafka)
-      command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote_cd-%UNIQUE_CD% --delete
+      command: kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote_cd-%UNIQUE_CD% --delete
 
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset
       nolog: true
@@ -295,6 +295,6 @@
       stdout_has: [ 'alice', 'bob' ]
       ignore_exit_code: true
     - name: Delete Connect Standalone Test Topic (basic kafka)
-      command: kafka-topics --zookeeper 127.0.0.1:2181 --topic coyote-ca-accounts --delete
+      command: kafka-topics --bootstrap-server 127.0.0.1:9092 --topic coyote-ca-accounts --delete
     - command: rm -rf coyote_test.sqlite coyote_sqlite_connector.properties coyote_connect_standalone.properties coyote_connect.offset
       nolog: true
