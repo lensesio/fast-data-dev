@@ -462,3 +462,16 @@ environment variable:
 JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
 `9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
 at `9585`.
+
+## Development Notes
+
+**NOTE**: Not sure where this would go in an accepted PR.
+
+Building a multiple-architecture image requires using the Docker `buildx` plugin:
+
+```shell
+docker buildx create --name builder-fast-data-dev
+docker buildx build --platform linux/amd64,linux/arm64 \
+   --tag your-docker-repo/fast-data-dev:latest \
+   --pull --push --builder builder-fast-data-dev .
+```
