@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "Push is taken care of by buildx, during the build phase"

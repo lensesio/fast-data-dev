@@ -213,19 +213,21 @@ cluster with > 3 Kafka nodes, you should contact us.
 
 ### Building it
 
-Fast-data-dev/kafka-lenses-dev require a recent version of docker which supports
-multistage builds.
+Fast-data-dev and Lenses Box require a recent version of docker which supports
+multistage builds. Optionally you should also enable the buildx plugin to enable
+multi-arch builds, even if you just use the default builder.
 
 To build it just run:
 
-    docker build -t lensesio/fast-data-dev .
+    docker build -t lensesio-local/fast-data-dev .
 
 Periodically pull from docker hub to refresh your cache.
 
-If you have an older version installed, try the single-stage build at the expense
-of the extra size:
+If your docker version does not support multi-arch builds, or you don't have the
+buildx plugin installed, use the build args demonstrated below to emulate
+multi-arch support:
 
-    docker build -t lensesio/fast-data-dev -f Dockerfile-singlestage .
+    docker build --build-arg TARGETOS=linux --build-arg TARGETARCH=amd64 -t lensesio-local/fast-data-dev .
 
 
 ### Advanced Features and Settings
@@ -462,16 +464,3 @@ environment variable:
 JMX ports are hardcoded to `9581` for the broker, `9582` for schema registry,
 `9583` for REST proxy and `9584` for connect distributed. Zookeeper is exposed
 at `9585`.
-
-## Development Notes
-
-**NOTE**: Not sure where this would go in an accepted PR.
-
-Building a multiple-architecture image requires using the Docker `buildx` plugin:
-
-```shell
-docker buildx create --name builder-fast-data-dev
-docker buildx build --platform linux/amd64,linux/arm64 \
-   --tag your-docker-repo/fast-data-dev:latest \
-   --pull --push --builder builder-fast-data-dev .
-```
