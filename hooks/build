@@ -55,7 +55,8 @@ fi
 
 ## Lenses should publish kafka-lenses-dev:latest and box:latest
 if [[ $SOURCE_BRANCH == box/main ]]; then
-    TAGS_CMD+="--tag landoop/kafka-lenses-dev:latest "
+    # Build by default ($IMAGE_NAME)
+    # TAGS_CMD+="--tag landoop/kafka-lenses-dev:latest "
     TAGS_CMD+="--tag lensesio/box:latest "
 fi
 
@@ -63,7 +64,8 @@ fi
 ## Note: For this to work, docker hub landoop/kafka-lenses-dev should be set to build on push on these branches
 ## So, new branch? Go fix docker hub.
 if [[ $SOURCE_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; then
-    TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_VERSION "
+    # Build by default ($IMAGE_NAME)
+    # TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_VERSION "
     TAGS_CMD+="--tag lensesio/box:$LENSES_VERSION "
 
     LENSES_MAJOR_MINOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+$/\1/' <<<"$LENSES_VERSION")"
