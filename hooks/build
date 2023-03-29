@@ -11,13 +11,21 @@ echo "DOCKER_REPO: ${DOCKER_REPO}"
 # Load build information
 LKD_VERSION=$(grep "ARG LKD_VERSION" Dockerfile | cut -d'=' -f2)
 LENSES_VERSION=$(grep "ARG LENSES_VERSION" Dockerfile | cut -d'=' -f2)
-
-TAGS_CMD="--tag $IMAGE_NAME "
+if [[ -z $SOURCE_BRANCH ]]; then
+    if [[ -z $GIT_BRANCH ]]; then
+        echo "GIT_BRANCH not set"
+        exit 1
+    fi
+    echo "SOURCE_BRANCH not set. Setting it to GIT_BRANCH: $GIT_BRANCH"
+    export SOURCE_BRANCH=$GIT_BRANCH
+fi
 
 # Set the tags (image names) for this build
 
+TAGS_CMD="--tag $IMAGE_NAME "
+
 ## Master should publish fast-data-dev:latest
-if [[ $BUILD_BRANCH == fdd/main ]]; then
+if [[ $SOURCE_BRANCH == fdd/main ]]; then
     TAGS_CMD+="--tag landooop/fast-data-dev:latest "
     TAGS_CMD+="--tag lensesio/fast-data-dev:latest "
 fi
@@ -25,8 +33,8 @@ fi
 ## FDD branches should publish minor and major version tags
 ## Note: For this to work, docker hub landoop/fast-data-dev should be set to build on push on these branches
 ## So, new branch? Go fix docker hub.
-if [[ $BUILD_BRANCH =~ ^fdd/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ -n $LKD_VERSION ]]; then
-    # BUILD_BRANCH can be the same as FDD_LKD_VERSION, e.g 2.2.1
+if [[ $SOURCE_BRANCH =~ ^fdd/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ -n $LKD_VERSION ]]; then
+    # SOURCE_BRANCH can be the same as FDD_LKD_VERSION, e.g 2.2.1
     # Or may differ, eg branch suffix 2.6.0 and version 2.6.0-L0
 
     PATCH_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/' <<<"$LKD_VERSION")"
@@ -46,7 +54,7 @@ if [[ $BUILD_BRANCH =~ ^fdd/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ -n $LKD_VERSION ]];
 fi
 
 ## Lenses should publish kafka-lenses-dev:latest and box:latest
-if [[ $BUILD_BRANCH == box/main ]]; then
+if [[ $SOURCE_BRANCH == box/main ]]; then
     TAGS_CMD+="--tag landoop/kafka-lenses-dev:latest "
     TAGS_CMD+="--tag lensesio/box:latest "
 fi
@@ -54,7 +62,7 @@ fi
 ## Lenses Box branches should publish minor and major version tags
 ## Note: For this to work, docker hub landoop/kafka-lenses-dev should be set to build on push on these branches
 ## So, new branch? Go fix docker hub.
-if [[ $BUILD_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; then
+if [[ $SOURCE_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; then
     TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_VERSION "
     TAGS_CMD+="--tag lensesio/box:$LENSES_VERSION "
 
@@ -69,7 +77,8 @@ if [[ $BUILD_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; then
     TAGS_CMD+="--tag lensesio/box:$LENSES_MAJOR_MINOR_VERSION "
 fi
 
-echo "This build will push the following tags: ${TAGS_CMD//--tag /}"
+echo "This build will push the following tags:"
+echo "  ${TAGS_CMD//--tag /}" | fmt -w 10
 
 # Build and push the images
 
