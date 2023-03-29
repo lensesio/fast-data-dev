@@ -8,8 +8,10 @@ ARG LC_URL="https://archive.lenses.io/lenses/5.0/cli/lenses-cli-linux-amd64-$LC_
 
 FROM debian:bullseye as compile-lkd
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
+ARG TARGETARCH TARGETOS
 
-RUN apt-get update \
+RUN printenv \
+    && apt-get update \
     && apt-get install -y \
          unzip \
          wget \
@@ -17,7 +19,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && echo "progress = dot:giga" | tee /etc/wgetrc \
     && mkdir -p /mnt /opt /data \
-    && wget https://github.com/andmarios/duphard/releases/download/v1.0/duphard -O /bin/duphard \
+    && wget https://github.com/andmarios/duphard/releases/download/v1.1/duphard-${TARGETOS}-${TARGETARCH} -O /bin/duphard \
     && chmod +x /bin/duphard
 
 SHELL ["/bin/bash", "-c"]
@@ -226,15 +228,10 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
 
 # Add Coyote
 ARG COYOTE_VERSION=1.5
-ARG COYOTE_URL="https://github.com/Landoop/coyote/releases/download/v${COYOTE_VERSION}/coyote-${COYOTE_VERSION}"
-RUN mkdir -p /opt/landoop/tools/bin/win \
-             /opt/landoop/tools/bin/mac \
-             /opt/landoop/tools/share/coyote/examples \
-    && wget "$COYOTE_URL"-linux-amd64 -O /opt/landoop/tools/bin/coyote \
-    && wget "$COYOTE_URL"-darwin-amd64 -O /opt/landoop/tools/bin/mac/coyote \
-    && wget "$COYOTE_URL"-windows-amd64.exe -O /opt/landoop/tools/bin/win/coyote \
-    && chmod +x /opt/landoop/tools/bin/coyote \
-                /opt/landoop/tools/bin/mac/coyote
+ARG COYOTE_URL="https://github.com/Landoop/coyote/releases/download/v${COYOTE_VERSION}/coyote-${COYOTE_VERSION}-${TARGETOS}-${TARGETARCH}"
+RUN mkdir -p /opt/landoop/tools/bin /opt/landoop/tools/share/coyote/examples \
+    && wget "$COYOTE_URL" -O /opt/landoop/tools/bin/coyote \
+    && chmod +x /opt/landoop/tools/bin/coyote
 ADD lkd/simple-integration-tests.yml /opt/landoop/tools/share/coyote/examples/
 
 # Add Kafka Topic UI, Schema Registry UI, Kafka Connect UI
@@ -274,18 +271,11 @@ RUN TJLINE="$(find /opt/landoop/kafka -name "jline-0*.jar" | head -n1)" \
 
 # Add normcat
 ARG NORMCAT_VERSION=1.1.1
-ARG NORMCAT_URL="https://github.com/andmarios/normcat/releases/download/${NORMCAT_VERSION}/normcat-${NORMCAT_VERSION}"
-RUN mkdir -p /opt/landoop/tools/bin/win \
-             /opt/landoop/tools/bin/mac \
-    && wget "$NORMCAT_URL"-linux-amd64-lowmem.tar.gz -O /normcat-linux.tgz \
+ARG NORMCAT_URL="https://github.com/andmarios/normcat/releases/download/${NORMCAT_VERSION}/normcat-${NORMCAT_VERSION}-${TARGETOS}-${TARGETARCH}"
+RUN wget "$NORMCAT_URL"-lowmem.tar.gz -O /normcat-linux.tgz \
     && tar -xf /normcat-linux.tgz -C /opt/landoop/tools/bin \
-    && wget "$NORMCAT_URL"-darwin-amd64.zip -O /normcat-mac.zip \
-    && unzip /normcat-mac.zip -d /opt/landoop/tools/bin/mac \
-    && wget "$NORMCAT_URL"-windows-amd64.zip -O /normcat-win.zip \
-    && unzip /normcat-win.zip -d /opt/landoop/tools/bin/win \
-    && chmod +x /opt/landoop/tools/bin/coyote \
-                /opt/landoop/tools/bin/mac/coyote \
-    && rm -f /normcat-linux.tg /normcat-mac.zip /normcat-win.zip
+    && chmod +x /opt/landoop/tools/bin/normcat \
+    && rm -f /normcat-linux.tgz
 
 # Add connect-cli
 ARG CONNECT_CLI_VERSION=1.0.9
@@ -416,6 +406,7 @@ FROM debian:bullseye-slim
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
 
 COPY --from=compile-lkd /opt /opt
+ARG TARGETOS TARGETARCH
 
 # Update, install tooling and some basic setup
 RUN apt-get update \
@@ -457,11 +448,12 @@ WORKDIR /
 # caddy    : an excellent web server we use to serve fast-data-dev UI, proxy various REST
 #            endpoints, etc
 #            https://github.com/mholt/caddy
-ARG CHECKPORT_URL="https://gitlab.com/andmarios/checkport/uploads/3903dcaeae16cd2d6156213d22f23509/checkport"
-ARG QUICKCERT_URL="https://github.com/andmarios/quickcert/releases/download/1.1/quickcert-1.1-linux-amd64"
-ARG GLIBC_INST_VERSION="2.32-r0"
-ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_linux_amd64.tar.gz
-ARG GOTTY_URL=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
+# gotty    : a small tool that allows us to run a shell in a web browser
+ARG CHECKPORT_URL="https://github.com/andmarios/checkport/releases/download/0.1/checkport-${TARGETOS}-${TARGETARCH}"
+ARG QUICKCERT_URL="https://github.com/andmarios/quickcert/releases/download/1.1/quickcert-1.1-${TARGETOS}-${TARGETARCH}"
+ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_${TARGETOS}_${TARGETARCH}.tar.gz
+ARG GOTTY_URL_AMD64=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
+ARG GOTTY_URL_ARM64=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz
 RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && wget "$QUICKCERT_URL" -O /usr/local/bin/quickcert \
     && chmod 0755 /usr/local/bin/quickcert /usr/local/bin/checkport \
@@ -469,6 +461,7 @@ RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && mkdir -p /opt/caddy \
     && tar xzf /caddy.tgz -C /opt/caddy \
     && rm -f /caddy.tgz \
+    && if [[ $TARGETARCH == amd64 ]]; then GOTTY_URL=$GOTTY_URL_AMD64; elif [[ $TARGETARCH == arm64 ]]; then GOTTY_URL=$GOTTY_URL_ARM64; fi \
     && wget "$GOTTY_URL" -O /gotty.tar.gz \
     && mkdir -p /opt/gotty \
     && tar xzf gotty.tar.gz -C /opt/gotty \
@@ -536,6 +529,7 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && echo "BUILD_COMMIT=${BUILD_COMMIT}" | tee -a /build.info \
     && echo "BUILD_TIME=${BUILD_TIME}"     | tee -a /build.info \
     && echo "DOCKER_REPO=${DOCKER_REPO}"   | tee -a /build.info \
+    && echo "TARGETPLATFORM=${TARGETOS}/${TARGETARCH}" | tee -a /build.info \
     && grep 'export LENSES_REVISION'   /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
     && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
     && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \

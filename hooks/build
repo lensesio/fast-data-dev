@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
 # Source commit not yet (?) supported by docker hub.
 echo "SOURCE_COMMIT: ${SOURCE_COMMIT}"
@@ -8,9 +8,91 @@ export BUILD_TIME="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 echo "BUILD_TIME: ${BUILD_TIME}"
 echo "DOCKER_REPO: ${DOCKER_REPO}"
 
-docker build \
+# Load build information
+LKD_VERSION=$(grep "ARG LKD_VERSION" Dockerfile | cut -d'=' -f2)
+LENSES_VERSION=$(grep "ARG LENSES_VERSION" Dockerfile | cut -d'=' -f2)
+if [[ -z $SOURCE_BRANCH ]]; then
+    if [[ -z $GIT_BRANCH ]]; then
+        echo "GIT_BRANCH not set"
+        exit 1
+    fi
+    echo "SOURCE_BRANCH not set. Setting it to GIT_BRANCH: $GIT_BRANCH"
+    export SOURCE_BRANCH=$GIT_BRANCH
+fi
+
+# Set the tags (image names) for this build
+
+TAGS_CMD="--tag $IMAGE_NAME "
+
+## Master should publish fast-data-dev:latest
+if [[ $SOURCE_BRANCH == fdd/main ]]; then
+    TAGS_CMD+="--tag landooop/fast-data-dev:latest "
+    TAGS_CMD+="--tag lensesio/fast-data-dev:latest "
+fi
+
+## FDD branches should publish minor and major version tags
+## Note: For this to work, docker hub landoop/fast-data-dev should be set to build on push on these branches
+## So, new branch? Go fix docker hub.
+if [[ $SOURCE_BRANCH =~ ^fdd/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ -n $LKD_VERSION ]]; then
+    # SOURCE_BRANCH can be the same as FDD_LKD_VERSION, e.g 2.2.1
+    # Or may differ, eg branch suffix 2.6.0 and version 2.6.0-L0
+
+    PATCH_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+\.[0-9]+).*$/\1/' <<<"$LKD_VERSION")"
+
+    TAGS_CMD+="--tag landoop/fast-data-dev:$LKD_VERSION "
+    TAGS_CMD+="--tag lensesio/fast-data-dev:$LKD_VERSION "
+    # If branch and version name differ, push branch as well.
+    if [[ $PATCH_VERSION != "$LKD_VERSION" ]]; then
+        TAGS_CMD+="--tag landoop/fast-data-dev:$PATCH_VERSION "
+        TAGS_CMD+="--tag lensesio/fast-data-dev:$PATCH_VERSION "
+    fi
+
+    MAJOR_MINOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+.*$/\1/' <<<"$LKD_VERSION")"
+    # Also push 'lensesio/fast-data-dev:$MAJOR_MINOR_VERSION'
+    TAGS_CMD+="--tag landoop/fast-data-dev:$MAJOR_MINOR_VERSION "
+    TAGS_CMD+="--tag lensesio/fast-data-dev:$MAJOR_MINOR_VERSION "
+fi
+
+## Lenses should publish kafka-lenses-dev:latest and box:latest
+if [[ $SOURCE_BRANCH == box/main ]]; then
+    TAGS_CMD+="--tag landoop/kafka-lenses-dev:latest "
+    TAGS_CMD+="--tag lensesio/box:latest "
+fi
+
+## Lenses Box branches should publish minor and major version tags
+## Note: For this to work, docker hub landoop/kafka-lenses-dev should be set to build on push on these branches
+## So, new branch? Go fix docker hub.
+if [[ $SOURCE_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; then
+    TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_VERSION "
+    TAGS_CMD+="--tag lensesio/box:$LENSES_VERSION "
+
+    LENSES_MAJOR_MINOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+$/\1/' <<<"$LENSES_VERSION")"
+
+    if [[ -z $LENSES_MAJOR_MINOR_VERSION ]]; then
+        echo "Lenses major version not detected: $LENSES_MAJOR_MINOR_VERSION"
+        exit 1
+    fi
+
+    TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_MAJOR_MINOR_VERSION "
+    TAGS_CMD+="--tag lensesio/box:$LENSES_MAJOR_MINOR_VERSION "
+fi
+
+echo "This build will push the following tags:"
+echo "  ${TAGS_CMD//--tag /}" | fmt -w 10
+
+# Build and push the images
+
+docker buildx create \
+       --name mybuilder \
+       --driver docker-container \
+       --bootstrap \
+       --use
+docker buildx build \
+       --platform=linux/amd64,linux/arm64 \
+       --push \
        --build-arg "BUILD_BRANCH=${SOURCE_BRANCH}" \
        --build-arg "BUILD_COMMIT=${BUILD_COMMIT}" \
        --build-arg "BUILD_TIME=${BUILD_TIME}" \
        --build-arg "DOCKER_REPO=${DOCKER_REPO}" \
-       --tag $IMAGE_NAME .
+       ${TAGS_CMD} \
+       .
