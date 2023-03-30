@@ -26,7 +26,8 @@ TAGS_CMD="--tag $IMAGE_NAME "
 
 ## Master should publish fast-data-dev:latest
 if [[ $SOURCE_BRANCH == fdd/main ]]; then
-    TAGS_CMD+="--tag landooop/fast-data-dev:latest "
+    # Build by default ($IMAGE_NAME)
+    # TAGS_CMD+="--tag landooop/fast-data-dev:latest "
     TAGS_CMD+="--tag lensesio/fast-data-dev:latest "
 fi
 
