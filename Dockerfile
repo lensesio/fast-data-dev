@@ -1,10 +1,9 @@
 ARG LENSES_VERSION=5.1.0
 ARG LENSES_ARCHIVE=remote
 ARG AD_URL=https://archive.lenses.io/lenses/5.1/lenses-5.1.0-linux64.tar.gz
-ARG TARGETARCH TARGETOS
 ARG LENSESCLI_ARCHIVE=remote
 ARG LC_VERSION="5.1.0"
-ARG LC_URL="https://archive.lenses.io/lenses/5.1/cli/lenses-cli-$TARGETOS-$TARGETARCH-$LC_VERSION.tar.gz"
+ARG LC_URL=https://archive.lenses.io/lenses/5.1/cli/lenses-cli-$TARGETOS-$TARGETARCH-$LC_VERSION.tar.gz
 
 #== Docker image that builds Lenses.io's Kafka Distributions and tools ==#
 
@@ -381,12 +380,13 @@ FROM lenses_archive_${LENSES_ARCHIVE} as lenses_archive
 
 # This is the default image we use for installing Lenses
 FROM alpine as lenses_cli_remote
+ARG TARGETARCH TARGETOS
 ONBUILD ARG CAD_UN
 ONBUILD ARG CAD_PW
 ONBUILD ARG LC_VERSION
 ONBUILD ARG LC_URL
 ONBUILD RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
-          && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-linux-amd64-$LC_VERSION/lenses-cli \
+          && tar xzf /lenses-cli.tgz --strip-components=1 -C /usr/local/bin/ lenses-cli-$TARGETOS-$TARGETARCH-$LC_VERSION/lenses-cli \
           && rm -f /lenses-cli.tgz
 
 # This image gets Lenses from a local file instead of a remote URL
@@ -400,7 +400,6 @@ ONBUILD RUN mkdir  -p /usr/local/bin && \
 # This image is here to just trigger the build of any of the above 3 images
 ARG LENSESCLI_ARCHIVE
 FROM lenses_cli_${LENSESCLI_ARCHIVE} as lenses_cli
-
 
 #= Final Docker Image =#
 
@@ -536,7 +535,7 @@ RUN echo "BUILD_BRANCH=${BUILD_BRANCH}"    | tee /build.info \
     && grep 'export LENSESUI_REVISION' /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
     && grep 'export LENSES_VERSION'    /opt/lenses/bin/lenses | sed -e 's/export /FDD_/' -e 's/"//g' | tee -a /build.info \
     && echo "FDD_LENSES_CLI_VERSION=${LC_VERSION}" | tee -a /build.info \
-    && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info \
+    && sed -e 's/^/FDD_/' /opt/landoop/build.info  | tee -a /build.info
 #    && sed -e 's/^/FDD_/' /opt/elasticsearch/build.info  | tee -a /build.info # Disable until CVE-2021-44228 is addressed
 
 EXPOSE 2181 3030 3031 8081 8082 8083 9092
