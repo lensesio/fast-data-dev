@@ -65,8 +65,7 @@ fi
 ## Note: For this to work, docker hub landoop/kafka-lenses-dev should be set to build on push on these branches
 ## So, new branch? Go fix docker hub.
 if [[ $SOURCE_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; then
-    # Build by default ($IMAGE_NAME)
-    # TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_VERSION "
+    TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_VERSION "
     TAGS_CMD+="--tag lensesio/box:$LENSES_VERSION "
 
     LENSES_MAJOR_MINOR_VERSION="$(sed -r -e 's/^([0-9]+\.[0-9]+)\.[0-9]+$/\1/' <<<"$LENSES_VERSION")"
@@ -76,7 +75,8 @@ if [[ $SOURCE_BRANCH =~ ^box/[0-9]+\.[0-9]+$ ]] && [[ -n $LENSES_VERSION ]]; the
         exit 1
     fi
 
-    TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_MAJOR_MINOR_VERSION "
+    # Build by default ($IMAGE_NAME) (yes, it's the reverse situation of fast-data-dev)
+    # TAGS_CMD+="--tag landoop/kafka-lenses-dev:$LENSES_MAJOR_MINOR_VERSION "
     TAGS_CMD+="--tag lensesio/box:$LENSES_MAJOR_MINOR_VERSION "
 fi
 
