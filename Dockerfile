@@ -102,7 +102,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
     && rm -rf /opt/landoop/connectors/stream-reactor/kafka-connect-{elastic6,elastic7,hive} # Temporary mitigation for log4shell (removing connectors with offending libs)
 
 # Add Secrets Provider
-ARG SECRET_PROVIDER_VERSION=2.1.6
+ARG SECRET_PROVIDER_VERSION=2.2.0
 ARG SECRET_PROVIDER_URL="https://github.com/lensesio/secret-provider/releases/download/${SECRET_PROVIDER_VERSION}/secret-provider-${SECRET_PROVIDER_VERSION}-all.jar"
 RUN mkdir -p /opt/landoop/connectors/stream-reactor/kafka-connect-secret-provider \
     && wget "${SECRET_PROVIDER_URL}" -P "/opt/landoop/connectors/stream-reactor/kafka-connect-secret-provider"
