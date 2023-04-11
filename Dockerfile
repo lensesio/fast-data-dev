@@ -62,9 +62,8 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=3.0.0
-ARG KAFKA_VERSION_4SR=2.5.0
-ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}_connect${KAFKA_VERSION_4SR}.tar.gz"
+ARG STREAM_REACTOR_VERSION=4.2.0
+ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}.tar.gz"
 ARG ACTIVEMQ_VERSION=5.12.3
 
 RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
@@ -79,7 +78,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
             -P /opt/landoop/connectors/stream-reactor/kafka-connect-jms \
     && mkdir -p /opt/landoop/kafka/share/java/landoop-common \
     && export _NUM_CONNECTORS=$(ls /opt/landoop/connectors/stream-reactor | wc -l) \
-    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | sort | uniq -c | grep -E "^\s+${_NUM_CONNECTORS} " | awk '{print $2}' ); do \
+    && for file in $(find /opt/landoop/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | grep jar | grep -v log4j-over-slf4j | sort | uniq -c | grep -E "^\s+${_NUM_CONNECTORS} " | awk '{print $2}' ); do \
          cp /opt/landoop/connectors/stream-reactor/kafka-connect-aws-s3/$file /opt/landoop/kafka/share/java/landoop-common/; \
          rm -f /opt/landoop/connectors/stream-reactor/kafka-connect-*/$file; \
        done \
