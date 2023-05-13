@@ -4,5 +4,5 @@
 The services (kafka and lenses) need some time to start-up.
 The broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[36m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[36m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[36m.
 For documentation please refer to -> \e[96mhttps://docs.lenses.io/dev/lenses-box/ \e[36m
-If you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://launchpass.com/lensesio \e[36m
+If you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://ask.lenses.io\e[36m or \e[96mhttps://launchpass.com/lensesio \e[36m
 You can view the logs for all running services at \e[96mhttp://${PRINT_HOST}:${WEB_PORT}/fdd/logs \e[39m

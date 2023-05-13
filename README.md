@@ -1,5 +1,6 @@
 # Lenses.io docker for Apache Kafka #
 
+[![discourse](https://img.shields.io/badge/Discourse-Ask_Marios-red)](https://ask.lenses.io)
 [![slack](https://img.shields.io/badge/Slack-community-red)](https://launchpass.com/lensesio)
 [![docker](https://img.shields.io/docker/pulls/lensesio/box.svg?style=flat)](https://hub.docker.com/r/lensesio/box/)
 [![](https://images.microbadger.com/badges/image/lensesio/box.svg)](http://microbadger.com/images/lensesio/box)
