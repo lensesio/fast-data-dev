@@ -97,8 +97,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
        done \
     && rm -f /opt/landoop/connectors/stream-reactor/*/*{javadoc,scaladoc,sources}.jar \
     && echo "plugin.path=/opt/landoop/connectors/stream-reactor,/opt/landoop/connectors/third-party" \
-            >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties \
-    && rm -rf /opt/landoop/connectors/stream-reactor/kafka-connect-{elastic6,elastic7,hive} # Temporary mitigation for log4shell (removing connectors with offending libs)
+            >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 # Add Secrets Provider
 ARG SECRET_PROVIDER_VERSION=2.2.0
