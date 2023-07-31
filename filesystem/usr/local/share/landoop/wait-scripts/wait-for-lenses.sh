@@ -10,7 +10,7 @@ W_LENSES_PORT=${W_LENSES_PORT:-$LENSES_PORT}
 
 for ((i=0;i<$W_ITERATIONS;i++)); do
     sleep $W_PERIOD_SECS
-    curl -sS http://$W_LENSES_ADDRESS:$W_LENSES_PORT \
+    curl -sS http://$W_LENSES_ADDRESS:$W_LENSES_PORT$LENSES_ROOT_PATH \
         | grep "Lenses" && exit 0
 done
 

@@ -93,4 +93,3 @@ lenses-cli \
     --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
     dataset update-tags --connection=kafka --name=cc_data \
     --tag financial
-

@@ -197,12 +197,14 @@ export LENSES_BOX=${LENSES_BOX:-true}
 export LENSES_SQL_STATE_DIR=${LENSES_SQL_STATE_DIR:-/data/lsql-state-dir}
 export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
 export LENSES_PLUGINS_CLASSPATH_OPTS=${LENSES_PLUGINS_CLASSPATH_OPTS:-/plugins}
+LENSES_ROOT_PATH=${LENSES_ROOT_PATH:-}
+export LENSES_ROOT_PATH=${LENSES_ROOT_PATH%/}
 
 # Set env vars for generator (also used in provision unit)
 export GENERATOR_BROKER=${GENERATOR_BROKER:-127.0.0.1:$BROKER_PORT}
 export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-127.0.0.1}
 export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
-export GENERATOR_LENSES=${GENERATOR_LENSES:-127.0.0.1:$LENSES_PORT}
+export GENERATOR_LENSES=${GENERATOR_LENSES:-127.0.0.1:$LENSES_PORT$LENSES_ROOT_PATH}
 if [[ "$GENERATOR_BROKER" != *"127.0.0.1"* ]]; then
     sed -e "/^brokers/ s#0\.0\.0\.0:9092#${GENERATOR_BROKER}#" \
         -e "/^schema\.registry/ s#http://0\.0\.0\.0:8081#${GENERATOR_SCHEMA_REGISTRY_URL}#" \
@@ -656,7 +658,7 @@ export WEB_TERMINAL_CREDS
 [[ -f /build.info ]] && source /build.info
 echo -e "\e[92mStarting services.\e[39m"
 echo -e "\e[92mThis is Lenses.io's Box. Lenses $FDD_LENSES_VERSION, Kafka ${FDD_KAFKA_VERSION} (Lenses.io's Kafka Distribution).\e[39m"
-echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some time to start up.\e[39m"
+echo -e "\e[92mYou may visit \e[96mhttp://${PRINT_HOST}:${WEB_PORT}${LENSES_ROOT_PATH}\e[92m in about \e[96ma minute\e[92m. Login with \e[96madmin/admin\e[92m. The services need some time to start up.\e[39m"
 echo -e "\e[92mThe broker is accessible at \e[96mPLAINTEXT://${PRINT_HOST}:${BROKER_PORT}\e[92m, Schema Registry at \e[96mhttp://${PRINT_HOST}:${REGISTRY_PORT}\e[92m and Zookeeper at \e[96m${PRINT_HOST}:${ZK_PORT}\e[92m."
 echo -e "\e[92mFor documentation please refer to -> \e[96mhttps://docs.lenses.io/dev/lenses-box/ \e[39m"
 echo -e "\e[92mIf you have trouble running the image or want to give us feedback (or a rant), come chat with us at \e[96mhttps://ask.lenses.io\e[92m or \e[96mhttps://launchpass.com/lensesio \e[39m"

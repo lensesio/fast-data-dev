@@ -19,6 +19,8 @@ if [[ $ELASTIC_SHIPS =~ $FALSE_REG ]] \
     exit 0
 fi
 
+LENSES_URL="http://$W_LENSES_ADDRESS:$W_LENSES_PORT$LENSES_ROOT_PATH"
+
 # Create index and map geo_point value
 curl -XPUT "http://${W_ELASTIC_ADDRESS}:${W_ELASTIC_PORT}/sea-vessel-position-reports?pretty" \
      -H 'Content-Type: application/json' \
@@ -70,7 +72,7 @@ rm -f /tmp/connector-elastic-ships
 curl \
     -H "Content-Type:application/json" \
     -H "x-kafka-lenses-token:$(curl -H "Content-Type:application/json" -X POST -d '{"user":"admin",  "password":"admin"}' http://$W_LENSES_ADDRESS:$W_LENSES_PORT/api/login --compressed -s)" \
-    http://$W_LENSES_ADDRESS:$W_LENSES_PORT/api/v1/connection/connections \
+    "$LENSES_URL/api/v1/connection/connections" \
     -XPOST -d "{\"name\":\"ES-1\",\"templateName\":\"Elasticsearch\",\"configuration\":[{\"key\":\"nodes\",\"value\":[\"http://${W_ELASTIC_ADDRESS}:${W_ELASTIC_PORT}\"]}],\"tags\":[\"preview\"]}"
 
 
@@ -78,6 +80,6 @@ USER=${USER:-admin}
 PASSWORD=${PASSWORD:-admin}
 sleep 20
 lenses-cli \
-    --user "${USER}" --pass "${PASSWORD}" --host "http://$W_LENSES_ADDRESS:$W_LENSES_PORT" \
+    --user "${USER}" --pass "${PASSWORD}" --host "$LENSES_URL" \
     dataset update-tags --connection=ES-1 --name=sea-vessel-position-reports \
     --tag transport --tag external --tag filtered

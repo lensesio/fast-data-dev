@@ -8,6 +8,7 @@ WEB_PORT=${WEB_PORT:-3030}
 ZK_PORT=${ZK_PORT:-2181}
 USER=${USER:-admin}
 LEN_PASSWORD=${PASSWORD:-admin}
+LENSES_ROOT_PATH=${LENSES_ROOT_PATH:-}
 
 # Preconfigure lenses-cli
 if echo ruok | nc -w 5 localhost $ZK_PORT | grep -sq imok; then
@@ -17,7 +18,7 @@ if echo ruok | nc -w 5 localhost $ZK_PORT | grep -sq imok; then
                    --user="$USER" \
                    --pass="$LEN_PASSWORD" \
                    --default-location \
-                   --host=http://127.0.0.1:${WEB_PORT}
+                   --host=http://127.0.0.1:${WEB_PORT}${LENSES_ROOT_PATH}
     fi
 fi
 

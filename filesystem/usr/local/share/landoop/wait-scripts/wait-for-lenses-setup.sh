@@ -11,7 +11,7 @@ W_LENSES_PORT=${W_LENSES_PORT:-$LENSES_PORT}
 USER=${USER:-admin}
 PASSWORD=${PASSWORD:-admin}
 
-LENSES_URL="http://$W_LENSES_ADDRESS:$W_LENSES_PORT"
+LENSES_URL="http://$W_LENSES_ADDRESS:$W_LENSES_PORT$LENSES_ROOT_PATH"
 
 # Wait for Lenses to come up
 for ((i=0;i<$W_ITERATIONS;i++)); do
@@ -21,7 +21,7 @@ for ((i=0;i<$W_ITERATIONS;i++)); do
 done
 
 # Wait for Lenses to be configured
-if [[ $W_ITERATIONS > 0 ]]; then
+if [[ $W_ITERATIONS -gt 0 ]]; then
     TOKEN=$(curl -X POST -H "Content-Type:application/json" -d "{\"user\":\"$USER\",  \"password\":\"$PASSWORD\"}" "$LENSES_URL/api/login")
     if [[ ! $TOKEN =~ ^[0-9a-f-]{36,36}$ ]]; then # Naive way to check we indeed have a token
         echo "Token '$TOKEN' does not seem like a Lenses token. Something went wrong?"

@@ -5,7 +5,7 @@
   errors {
     502 /usr/local/share/landoop/html-errors/custom_502.html
   }
-  proxy /api localhost:$LENSES_PORT {
+  proxy $LENSES_ROOT_PATH/api localhost:$LENSES_PORT {
     websocket
   }
   proxy /fdd localhost:$FDD_PORT
