@@ -62,7 +62,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=5.0.1
+ARG STREAM_REACTOR_VERSION=6.0.3
 ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}.tar.gz"
 ARG ACTIVEMQ_VERSION=5.12.3
 
@@ -91,10 +91,16 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
             >> /opt/landoop/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 # Add Secrets Provider
-ARG SECRET_PROVIDER_VERSION=2.2.0
+ARG SECRET_PROVIDER_VERSION=2.3.0
 ARG SECRET_PROVIDER_URL="https://github.com/lensesio/secret-provider/releases/download/${SECRET_PROVIDER_VERSION}/secret-provider-${SECRET_PROVIDER_VERSION}-all.jar"
 RUN mkdir -p /opt/landoop/connectors/stream-reactor/kafka-connect-secret-provider \
     && wget "${SECRET_PROVIDER_URL}" -P "/opt/landoop/connectors/stream-reactor/kafka-connect-secret-provider"
+
+# Add Kafka Connect SMTs
+ARG KAFKA_CONNECT_VERSION=1.0.2
+ARG KAFKA_CONNECT_URL="https://github.com/lensesio/kafka-connect-smt/releases/download/v${KAFKA_CONNECT_VERSION}/kafka-connect-smt-${KAFKA_CONNECT_VERSION}.jar"
+RUN mkdir -p /opt/landoop/connectors/stream-reactor/kafka-connect-smt \
+    && wget "${KAFKA_CONNECT_URL}" -P "/opt/landoop/connectors/stream-reactor/kafka-connect-smt"
 
 # Add Third Party Connectors
 
@@ -160,13 +166,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
     && rm -rf /couchbase.zip /couchbase
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres / MsSQL
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=2.0.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=2.4.2.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=2.0.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=2.4.2.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=2.0.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=2.4.2.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=2.0.0.Final
+ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=2.4.2.Final
 ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-sqlserver/${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}/debezium-connector-sqlserver-${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}-plugin.tar.gz"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,sqlserver} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
@@ -191,7 +197,7 @@ RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-debezium-{mongodb
     && rm -rf /debezium-{mongodb,mysql,postgres,sqlserver}.tgz
 
 # Kafka Connect Splunk
-ARG KAFKA_CONNECT_SPLUNK_VERSION="2.0.4"
+ARG KAFKA_CONNECT_SPLUNK_VERSION="2.2.0"
 ARG KAFKA_CONNECT_SPLUNK_URL="https://github.com/splunk/kafka-connect-splunk/releases/download/v${KAFKA_CONNECT_SPLUNK_VERSION}/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar"
 RUN mkdir -p /opt/landoop/connectors/third-party/kafka-connect-splunk \
     && wget "$KAFKA_CONNECT_SPLUNK_URL" \
