@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "Key",
-  "namespace": "com.landoop.ais",
+  "namespace": "com.lensesio.ais",
   "fields": [
     {
       "name": "MMSI",

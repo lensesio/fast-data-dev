@@ -48,7 +48,7 @@ function process_variable {
 }
 
 # This function is taken directly from Lenses docker
-# https://github.com/Landoop/lenses-docker/blob/master/setup.sh
+# https://github.com/lensesio/lenses-docker/blob/master/setup.sh
 # We just add the configuration envs from setup.sh inside this.
 function process_lenses_variable {
     #### not originally part of the function

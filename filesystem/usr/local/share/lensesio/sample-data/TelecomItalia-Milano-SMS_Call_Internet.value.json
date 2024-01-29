@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "smsCallInternet",
-  "namespace": "com.landoop.telecom.telecomitalia.telecommunications",
+  "namespace": "com.lensesio.telecom.telecomitalia.telecommunications",
   "doc": "Schema for Telecommunications Data from Telecom Italia.",
   "fields": [
     {

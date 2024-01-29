@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "trip_record",
-  "namespace": "com.landoop.transportation.nyc.trip.yellow",
+  "namespace": "com.lensesio.transportation.nyc.trip.yellow",
   "doc": "Schema for yellow taxi trip records from NYC TLC data. [http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml]",
   "fields": [
     {

@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "milanoRecord",
-  "namespace": "com.landoop.telecom.telecomitalia.grid",
+  "namespace": "com.lensesio.telecom.telecomitalia.grid",
   "doc": "Schema for Grid for Telecommunications Data from Telecom Italia.",
   "fields": [
     {

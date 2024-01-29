@@ -19,10 +19,10 @@ lenses-cli \
 
 lenses-cli \
     --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
-    groups create /usr/local/share/landoop/sample-data/group_logviewer.yaml
+    groups create /usr/local/share/lensesio/sample-data/group_logviewer.yaml
 lenses-cli \
     --user "${USER}" --pass "${PASSWORD}" --host "http://${GENERATOR_LENSES}" \
-    users create /usr/local/share/landoop/sample-data/user_logviewer.yaml
+    users create /usr/local/share/lensesio/sample-data/user_logviewer.yaml
 
 # Add data generators as application to Lenses
 TOKEN=$(curl -X POST -d '{"user":"'"${USER}"'",  "password":"'"${PASSWORD}"'"}' "http://${GENERATOR_LENSES}/api/login" -H "Content-Type:application/json")

@@ -1,4 +1,4 @@
-# Lenses.io docker for Apache Kafka #
+# Lenses Box for Apache Kafka #
 
 [![discourse](https://img.shields.io/badge/Discourse-Ask_Marios-red)](https://ask.lenses.io)
 [![slack](https://img.shields.io/badge/Slack-community-red)](https://launchpass.com/lensesio)
@@ -9,11 +9,10 @@ A docker image for [Apache Kafka and Data Engineers](https://lenses.io/box/).
 
 Includes:
 
-- Apache Kafka v2.5.1
+- Apache Kafka v3.6.1
 - Kafka Connect and open source collection of [Kafka Connect](https://lenses.io/connect/) connectors
 - Schema Registry
 - KStreams via SQL ([Lenses SQL](https://lenses.io/product/sql/))
-- Elasticsearch v6.8.7
 - Supervisor to control the services
 
 and synthetic generated data for quick experimentation.

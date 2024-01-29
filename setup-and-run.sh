@@ -83,12 +83,12 @@ export WEB_TERMINAL_PORT=${WEB_TERMINAL_PORT:-0}
 export DEBUG_AUTH=${DEBUG_AUTH:-0}
 # These are the scripts that we will use before we start each app, so the
 # WAIT_SCRIPT_BROKER is what we run before we start the broker.
-export WAIT_SCRIPT_BROKER=${WAIT_SCRIPT_BROKER:-/usr/local/share/landoop/wait-scripts/wait-for-zookeeper.sh}
-export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/landoop/wait-scripts/wait-for-kafka.sh}
-export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
-export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
-export WAIT_SCRIPT_LENSES=${WAIT_SCRIPT_LENSES:-/usr/local/share/landoop/wait-scripts/wait-for-registry.sh}
-export WAIT_SCRIPT_LENSES_PROVISION=${WAIT_SCRIPT_LENSES_PROVISION:-/usr/local/share/landoop/wait-scripts/wait-for-lenses.sh}
+export WAIT_SCRIPT_BROKER=${WAIT_SCRIPT_BROKER:-/usr/local/share/lensesio/wait-scripts/wait-for-zookeeper.sh}
+export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/lensesio/wait-scripts/wait-for-kafka.sh}
+export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_LENSES=${WAIT_SCRIPT_LENSES:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
+export WAIT_SCRIPT_LENSES_PROVISION=${WAIT_SCRIPT_LENSES_PROVISION:-/usr/local/share/lensesio/wait-scripts/wait-for-lenses.sh}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT $ELASTICSEARCH_PORT $ELASTICSEARCH_TRASNPORT_PORT"
@@ -272,15 +272,15 @@ mkdir -p \
 chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} /var/run/elasticsearch /var/run/elasticsearch/logs
 
 # Copy log4j files
-cp /opt/landoop/kafka/etc/kafka/log4j.properties \
+cp /opt/lensesio/kafka/etc/kafka/log4j.properties \
    /var/run/zookeeper/
-cp /opt/landoop/kafka/etc/kafka/log4j.properties \
+cp /opt/lensesio/kafka/etc/kafka/log4j.properties \
    /var/run/broker/
-cp /opt/landoop/kafka/etc/schema-registry/log4j.properties \
+cp /opt/lensesio/kafka/etc/schema-registry/log4j.properties \
    /var/run/schema-registry/
-cp /opt/landoop/kafka/etc/kafka/connect-log4j.properties \
+cp /opt/lensesio/kafka/etc/kafka/connect-log4j.properties \
    /var/run/connect/
-cp /opt/landoop/kafka/etc/kafka-rest/log4j.properties \
+cp /opt/lensesio/kafka/etc/kafka-rest/log4j.properties \
    /var/run/rest-proxy/
 cp /opt/lenses/logback.xml \
    /var/run/lenses/
@@ -291,7 +291,7 @@ cp /opt/lenses/logback.xml \
 
 # Copy tests
 # This differs in that we need to adjust it later
-cp /opt/landoop/tools/share/coyote/examples/simple-integration-tests.yml \
+cp /opt/lensesio/tools/share/coyote/examples/simple-integration-tests.yml \
    /var/run/coyote/simple-integration-tests.yml
 ## Fix ports for integration-tests
 sed -e "s/3030/$WEB_PORT/" \
@@ -303,8 +303,8 @@ sed -e "s/3030/$WEB_PORT/" \
     -i /var/run/coyote/simple-integration-tests.yml
 
 # Copy other templated files (caddy, logs-to-kafka, env.js)
-envsubst < /usr/local/share/landoop/etc/Caddyfile                   > /var/run/caddy/Caddyfile
-envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env.js     > /var/www/env.js
+envsubst < /usr/local/share/lensesio/etc/Caddyfile                   > /var/run/caddy/Caddyfile
+envsubst < /usr/local/share/lensesio/etc/fast-data-dev-ui/env.js     > /var/www/env.js
 
 # Set ADV_HOST if needed
 if [[ -n ${ADV_HOST} ]]; then
@@ -323,10 +323,10 @@ if [[ -n ${ADV_HOST} ]]; then
 fi
 
 # setup Kafka (and components) and Lenses
-source /usr/local/share/landoop/config_kafka.sh
+source /usr/local/share/lensesio/config_kafka.sh
 
 # setup supervisord
-for service in /usr/local/share/landoop/etc/supervisord.templates.d/*.conf; do
+for service in /usr/local/share/lensesio/etc/supervisord.templates.d/*.conf; do
     # shellcheck disable=SC2094
     envsubst < "$service" > /etc/supervisord.d/"$(basename "$service")"
 done
@@ -404,23 +404,23 @@ if [[ -z $CONNECTORS ]] && [[ -z $DISABLE ]]; then
 fi
 if [[ -n $DISABLE ]]; then
     DISABLE=" ${DISABLE//,/ } "
-    CONNECTOR_LIST="$(find /opt/landoop/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/lensesio/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
         connectorTest=" $connector "
         if [[ $DISABLE =~ $connectorTest ]]; then
             echo "Skipping connector: kafka-connect-${connector}"
         else
-            ln -s /opt/landoop/connectors/stream-reactor/kafka-connect-"${connector}" \
+            ln -s /opt/lensesio/connectors/stream-reactor/kafka-connect-"${connector}" \
                /var/run/connect/connectors/stream-reactor/kafka-connect-"${connector}"
         fi
     done
-    CONNECTOR_LIST="$(find /opt/landoop/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/lensesio/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
         connectorTest=" $connector "
         if [[ $DISABLE =~ $connectorTest ]]; then
             echo "Skipping connector: kafka-connect-${connector}"
         else
-            ln -s /opt/landoop/connectors/third-party/kafka-connect-"${connector}" \
+            ln -s /opt/lensesio/connectors/third-party/kafka-connect-"${connector}" \
                /var/run/connect/connectors/third-party/kafka-connect-"${connector}"
         fi
     done
@@ -428,21 +428,21 @@ fi
 # Enable Connectors
 if [[ -n $CONNECTORS ]]; then
     CONNECTORS=" ${CONNECTORS//,/ } "
-    CONNECTOR_LIST="$(find /opt/landoop/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/lensesio/connectors/stream-reactor -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
         connectorTest=" $connector "
         if [[ $CONNECTORS =~ $connectorTest ]]; then
             echo "Enabling connector: kafka-connect-${connector}"
-            ln -s /opt/landoop/connectors/stream-reactor/kafka-connect-"${connector}" \
+            ln -s /opt/lensesio/connectors/stream-reactor/kafka-connect-"${connector}" \
                /var/run/connect/connectors/stream-reactor/kafka-connect-"${connector}"
         fi
     done
-    CONNECTOR_LIST="$(find /opt/landoop/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
+    CONNECTOR_LIST="$(find /opt/lensesio/connectors/third-party -maxdepth 1 -name "kafka-connect-*" -type d | sed -e 's/.*kafka-connect-//' | tr '\n' ',')"
     for connector in $CONNECTOR_LIST; do
         connectorTest=" $connector "
         if [[ $CONNECTORS =~ $connectorTest ]]; then
             echo "Enabling connector: kafka-connect-${connector}"
-            ln -s /opt/landoop/connectors/third-party/kafka-connect-"${connector}" \
+            ln -s /opt/lensesio/connectors/third-party/kafka-connect-"${connector}" \
                /var/run/connect/connectors/third-party/kafka-connect-"${connector}"
         fi
     done
@@ -566,8 +566,8 @@ if [[ $WEB_ONLY =~ $TRUE_REG ]]; then
     PORTS="$WEB_PORT"
     echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
     rm -rf /etc/supervisord.d/*
-    cp /usr/local/share/etc/landoop/supervisord.d/supervisord-web-only.conf /etc/supervisord.d/
-    envsubst < /usr/local/share/landoop/etc/fast-data-dev-ui/env-webonly.js > /var/www/env.js
+    cp /usr/local/share/etc/lensesio/supervisord.d/supervisord-web-only.conf /etc/supervisord.d/
+    envsubst < /usr/local/share/lensesio/etc/fast-data-dev-ui/env-webonly.js > /var/www/env.js
     export RUNTESTS="${RUNTESTS:-0}"
 fi
 
@@ -667,16 +667,16 @@ export FDD_DHOST="http://${PRINT_HOST}:${WEB_PORT}"
 
 # Set sample data if needed
 if [[ $RUNNING_SAMPLEDATA =~ $TRUE_REG ]] && [[ $SAMPLEDATA =~ $TRUE_REG ]]; then
-    envsubst < /usr/local/share/landoop/etc/supervisord.d/99-supervisord-running-sample-data.conf \
+    envsubst < /usr/local/share/lensesio/etc/supervisord.d/99-supervisord-running-sample-data.conf \
              > /etc/supervisord.d/99-supervisord-running-sample-data.conf
-    envsubst < /usr/local/share/landoop/etc/supervisord.d/09-nullsink-connector.conf \
+    envsubst < /usr/local/share/lensesio/etc/supervisord.d/09-nullsink-connector.conf \
              > /etc/supervisord.d/09-nullsink-connector.conf
-    envsubst < /usr/local/share/landoop/etc/supervisord.d/09-elastic-ships-connector.conf \
+    envsubst < /usr/local/share/lensesio/etc/supervisord.d/09-elastic-ships-connector.conf \
              > /etc/supervisord.d/09-elastic-ships-connector.conf
 elif [[ $SAMPLEDATA =~ $TRUE_REG ]]; then
     # This should be added only if we don't have running data, because it sets
     # retention period to 10 years (as the data is so few in this case).
-    envsubst < /usr/local/share/landoop/etc/supervisord.d/99-supervisord-sample-data.conf \
+    envsubst < /usr/local/share/lensesio/etc/supervisord.d/99-supervisord-sample-data.conf \
              > /etc/supervisord.d/99-supervisord-sample-data.conf
 else
     # If SAMPLEDATA=0 and FORWARDLOGS connector not explicitly requested

@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "reddit_post",
-  "namespace": "com.landoop.social.reddit.post",
+  "namespace": "com.lensesio.social.reddit.post",
   "doc": "Schema for Reddit Posts dataset. [https://www.kaggle.com/reddit/reddit-comments-may-2015/discussion/16213]",
   "fields": [
     {

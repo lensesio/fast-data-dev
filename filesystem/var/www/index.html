@@ -41,7 +41,7 @@
 <div flex layout="row" layout-xs="column">
   <div flex="20"></div>
   <div flex="60" class="fdd-head">
-    <h3> <img ng-src="img/landoop-blue.svg" style="width:45px; float:left; padding-right:5px;">
+    <h3> <img ng-src="img/lenses-fdd-logo.png" style="width:45px; float:left; padding-right:5px;">
         Kafka Development Environment<br/>
         <code>docker container powered by <a href="https://lenses.io">Lenses.io</a></code>
     </h3>
@@ -280,6 +280,27 @@
         <md-card-content>
           <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;overflow-y:auto;max-height:300px;">
             <ul style="padding-left:10px;">
+                <li>
+                  <h4>Kafka 3.6.1 and some filesystem changes</h4>
+                  <p>
+                    Fast Data Dev with Apache Kafka 3.6.1 and Confluent
+                    components 7.5.3 is now available.
+
+                    We have also made some changes to the filesystem, where we
+                    renamed the old <code>landoop</code> directories
+                    to <code>lensesio</code>. We created a symlink to ease the
+                    transition for anyone who relies on these directories.
+                  </p>
+                </li>
+                <li>
+                  <h4>Stream Reactor 6.0.3 and Lenses.io SMT's</h4>
+                  <p>
+                    Another big update for Stream Reactor is now
+                    available. Furthermore we have added
+                    the <a href="https://github.com/lensesio/kafka-connect-smt">Lenses.io
+                    SMTs</a>.
+                  </p>
+                </li>
                 <li>
                   <h4>Stream Reactor 4.2.0</h4>
                   <p>
