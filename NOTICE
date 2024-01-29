@@ -1,5 +1,5 @@
-fast-data-dev
-Copyright 2016-2019, Lenses.io, Ltd
+Lenses Box / fast-data-dev
+Copyright 2016-2024, Lenses.io, Ltd
 
 This product includes software developed at
 Lenses.io, Ltd (https://lenses.io)
@@ -12,7 +12,7 @@ its original license.
 
 The most important software components and their license are:
 
-By Landoop:
+By Lenses.io:
 Lenses.io Stream Reactor        : Apache 2.0
 Lenses.io Kafka Connect UI      : BSL (http://www.landoop.com/bsl/)
 Lenses.io Kafka Topics UI       : BSL (http://www.landoop.com/bsl/)

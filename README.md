@@ -1,11 +1,11 @@
-# fast-data-dev / kafka-lenses-dev (Lenses Box) #
-lensesio/fast-data-dev
-[![docker](https://img.shields.io/docker/pulls/lensesio/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/lensesio/fast-data-dev/)
-[![](https://images.microbadger.com/badges/image/lensesio/fast-data-dev.svg)](http://microbadger.com/images/lensesio/fast-data-dev)
-
+# Lenses Box / fast-data-dev #
 lensesio/box (lensesio/box)
 [![docker](https://img.shields.io/docker/pulls/lensesio/box.svg?style=flat)](https://hub.docker.com/r/lensesio/box/)
 [![](https://images.microbadger.com/badges/image/lensesio/box.svg)](http://microbadger.com/images/lensesio/box)
+
+lensesio/fast-data-dev
+[![docker](https://img.shields.io/docker/pulls/lensesio/fast-data-dev.svg?style=flat)](https://hub.docker.com/r/lensesio/fast-data-dev/)
+[![](https://images.microbadger.com/badges/image/lensesio/fast-data-dev.svg)](http://microbadger.com/images/lensesio/fast-data-dev)
 
 [Join the Slack Lenses.io Community!](https://launchpass.com/lensesio)
 
@@ -19,7 +19,7 @@ a modern streaming platform (only for kafka-lenses-dev), intuitive UIs and extra
 goodies. Also includes Kafka Connect, Schema Registry, Lenses.io's Stream Reactor
 25+ Connectors and more.
 
-> View latest **[demo on-line](https://fast-data-dev.demo.landoop.com)** or **[get a free license for Lenses Box](https://lenses.io/box/)**
+> **[Get a free license for Lenses Box](https://lenses.io/box/)**
 
 ### Introduction
 
@@ -142,7 +142,7 @@ jdbc, s3, twitter.
 To programmatically get a list, run:
 
     docker run --rm -it lensesio/fast-data-dev \
-           find /opt/landoop/connectors -type d -maxdepth 2 -name "kafka-connect-*"
+           find /opt/lensesio/connectors -type d -maxdepth 2 -name "kafka-connect-*"
 
 Optional Parameters (unsupported) | Description
 ----------------------------------|---------------------------------------------------------------------------------------------------------
@@ -176,15 +176,15 @@ the broker and `CONNECT_OPTS`, etc for the connect worker. Of course
 embedded zookeeper).
 
 Another LKD addition are the `VANILLA_CONNECT`, `SERDE_TOOLS` and
-`LANDOOP_COMMON` flags for Kafka Connect.  By default we load into the Connect
+`LENSESIO_COMMON` flags for Kafka Connect.  By default we load into the Connect
 Classpath the Schema Registry and Serde Tools by Confluent in order to support
 avro and our own base jars in order to support avro and our connectors. You can
 choose to run a completely vanilla kafka connect, the same that comes from the
 official distribution, without avro support by setting `VANILLA_CONNECT=1`.
 Please note that most if not all the connectors will fail to load, so it would
 be wise to disable them.  `SERDE_TOOLS=0` will disable Confluent's jars and
-`LANDOOP_COMMON=0` will disable our jars. Any of these is enough to support
-avro, but disabling `LANDOOP_COMMON` will render Stream Reactor inoperable.
+`LENSESIO_COMMON=0` will disable our jars. Any of these is enough to support
+avro, but disabling `LENSESIO_COMMON` will render Stream Reactor inoperable.
 
 ### Versions
 
@@ -192,17 +192,22 @@ The latest version of this docker image tracks our latest stable tag (1.0.1). Ou
 images include:
 
  Version                       | Kafka Distro  | Lensesio tools | Apache Kafka  | Connectors
--------------------------------| ------------- | ------------- | ------------- | --------------
-lensesio/fast-data-dev:2.3.0   | LKD 2.3.0-L0  |       ✓       |    2.3.0      | 30+ connectors
-lensesio/fast-data-dev:2.2.1   | LKD 2.2.1-L0  |       ✓       |    2.2.1      | 30+ connectors
-lensesio/fast-data-dev:2.1.1   | LKD 2.1.1-L0  |       ✓       |    2.1.1      | 30+ connectors
-lensesio/fast-data-dev:2.0.1   | LKD 2.0.1-L0  |       ✓       |    2.0.1      | 30+ connectors
-landoop/fast-data-dev:1.1.1    | LKD 1.1.1-L0  |       ✓       |    1.1.1      | 30+ connectors
-landoop/fast-data-dev:1.0.1    | LKD 1.0.1-L0  |       ✓       |    1.0.1      | 30+ connectors
-landoop/fast-data-dev:cp3.3.0  | CP 3.3.0 OSS  |       ✓       |    0.11.0.0   | 30+ connectors
-landoop/fast-data-dev:cp3.2.2  | CP 3.2.2 OSS  |       ✓       |    0.10.2.1   | 24+ connectors
-landoop/fast-data-dev:cp3.1.2  | CP 3.1.2 OSS  |       ✓       |    0.10.1.1   | 20+ connectors
-landoop/fast-data-dev:cp3.0.1  | CP 3.0.1 OSS  |       ✓       |    0.10.0.1   | 20+ connectors
+-------------------------------| ------------- | -------------- | ------------- | --------------
+lensesio/fast-data-dev:3.6.1   | LKD 3.6.1-L0  |       ✓        |    3.6.1      | 20+ connectors
+lensesio/fast-data-dev:3.3.1   | LKD 3.3.1-L0  |       ✓        |    3.3.1      | 20+ connectors
+lensesio/fast-data-dev:2.6.2   | LKD 2.6.2-L0  |       ✓        |    2.6.2      | 30+ connectors
+lensesio/fast-data-dev:2.5.1   | LKD 2.5.1-L0  |       ✓        |    2.5.1      | 30+ connectors
+lensesio/fast-data-dev:2.4.1   | LKD 2.4.1-L0  |       ✓        |    2.4.1      | 30+ connectors
+lensesio/fast-data-dev:2.3.2   | LKD 2.3.2-L0  |       ✓        |    2.3.2      | 30+ connectors
+lensesio/fast-data-dev:2.2.1   | LKD 2.2.1-L0  |       ✓        |    2.2.1      | 30+ connectors
+lensesio/fast-data-dev:2.1.1   | LKD 2.1.1-L0  |       ✓        |    2.1.1      | 30+ connectors
+lensesio/fast-data-dev:2.0.1   | LKD 2.0.1-L0  |       ✓        |    2.0.1      | 30+ connectors
+landoop/fast-data-dev:1.1.1    | LKD 1.1.1-L0  |       ✓        |    1.1.1      | 30+ connectors
+landoop/fast-data-dev:1.0.1    | LKD 1.0.1-L0  |       ✓        |    1.0.1      | 30+ connectors
+landoop/fast-data-dev:cp3.3.0  | CP 3.3.0 OSS  |       ✓        |    0.11.0.0   | 30+ connectors
+landoop/fast-data-dev:cp3.2.2  | CP 3.2.2 OSS  |       ✓        |    0.10.2.1   | 24+ connectors
+landoop/fast-data-dev:cp3.1.2  | CP 3.1.2 OSS  |       ✓        |    0.10.1.1   | 20+ connectors
+landoop/fast-data-dev:cp3.0.1  | CP 3.0.1 OSS  |       ✓        |    0.10.0.1   | 20+ connectors
 
 *LKD stands for Lenses.io's Kafka Distribution. We build and package Apache Kafka with Kafka Connect
 and Apache Zookeeper, Confluent Schema Registry and REST Proxy and a collection of third party
@@ -347,24 +352,6 @@ directory and any multi-jar connectors it will find in subdirectories of this di
                -v /path/to/my/connector/connector.jar:/connectors/connector.jar \
                -v /path/to/my/multijar-connector-directory:/connectors/multijar-connector-directory \
                lensesio/fast-data-dev
-
-#### Build Kafka-Connect clusters
-
-*Note:* This feature is deprecated.
-
-If you already have your Kafka brokers and ZKs infrastructure in place and you need
-to spin up a few Kafka-Connect clusters, check the [fast-data-connect-cluster](https://github.com/landoop/fast-data-connect-cluster),
-a spinoff of fast-data-dev aimed at running many connect clusters concurrently.
-
-In short, you can run a docker Kafka-Connect instance to join the connect-cluster with ID = `01` with:
-
-    docker run -d --net=host \
-               -e ID=01 \
-               -e BS=broker1:9092,broker2:9092 \
-               -e ZK=zk1:2181,zk2:2181 \
-               -e SC=http://schema-registry:8081 \
-               -e HOST=<IP OR FQDN>
-               lensesio/fast-data-dev-connect-cluster
 
 ### FAQ
 

@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "aisClassAPositionReport",
-  "namespace": "com.landoop.ais",
+  "namespace": "com.lensesio.ais",
   "doc": "Schema for AIS Class A Position Reports.",
   "fields": [
     {
