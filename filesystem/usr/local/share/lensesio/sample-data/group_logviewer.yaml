@@ -12,5 +12,5 @@ dataNamespaces:
     - QueryTopic
     - ShowTopic
     - ViewSchema
-  system: Kafka
+  connection: kafka
   instance: Dev

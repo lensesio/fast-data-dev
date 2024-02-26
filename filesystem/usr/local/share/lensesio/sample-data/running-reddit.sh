@@ -33,5 +33,6 @@ for key in 1; do
             --property parse.key=true \
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
-            --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}"
+            --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}" \
+            --property client.id="redis-feed"
 done

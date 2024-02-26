@@ -38,5 +38,6 @@ for key in 5; do
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
             --broker-list "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
-            --topic "${TOPICS[key]}"
+            --topic "${TOPICS[key]}" \
+            --property client.id="tweets-scraper"
 done

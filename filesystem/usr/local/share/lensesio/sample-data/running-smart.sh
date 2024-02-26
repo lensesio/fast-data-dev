@@ -31,5 +31,6 @@ for key in 2; do
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
-            --property "key.separator=#"
+            --property "key.separator=#" \
+            --property client.id="dc-monitoring"
 done
