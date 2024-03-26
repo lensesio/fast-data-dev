@@ -35,7 +35,7 @@ for key in 4; do
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
             --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}" \
-            --property client.id="telecom-crm"
+            --producer-property client.id="telecom-crm"
 done
 
 # Insert data with key
@@ -53,5 +53,5 @@ for key in 3; do
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
             --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}" \
-            --property client.id="telecom-crm"
+            --producer-property client.id="telecom-crm"
 done

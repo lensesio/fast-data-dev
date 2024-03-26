@@ -32,5 +32,5 @@ for key in 1; do
             --topic "${TOPICS[key]}" \
             --property value.schema="$(cat "${VALUES[key]}")" \
             --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}" \
-            --property client.id="trips-feed"
+            --producer-property client.id="trips-feed"
 done

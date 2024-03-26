@@ -39,5 +39,5 @@ for key in 5; do
             --broker-list "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
-            --property client.id="tweets-scraper"
+            --producer-property client.id="tweets-scraper"
 done

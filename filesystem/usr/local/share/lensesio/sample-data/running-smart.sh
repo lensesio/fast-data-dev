@@ -32,5 +32,5 @@ for key in 2; do
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
             --property "key.separator=#" \
-            --property client.id="dc-monitoring"
+            --producer-property client.id="dc-monitoring"
 done

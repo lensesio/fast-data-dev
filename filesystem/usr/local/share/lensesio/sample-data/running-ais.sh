@@ -34,5 +34,5 @@ for key in 0; do
             --property key.schema="$(cat "${KEYS[key]}")" \
             --property value.schema="$(cat "${VALUES[key]}")" \
             --property schema.registry.url="${GENERATOR_SCHEMA_REGISTRY_URL}" \
-            --property client.id="ais-receiver"
+            --producer-property client.id="ais-receiver"
 done
