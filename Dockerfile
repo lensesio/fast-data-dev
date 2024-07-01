@@ -7,8 +7,10 @@ ARG LC_URL=https://archive.lenses.io/lenses/5.5/cli/lenses-cli-$TARGETOS-$TARGET
 
 #== Docker image that builds Lenses.io's Kafka Distributions and tools ==#
 
-FROM debian:bullseye as compile-lkd
-MAINTAINER Marios Andreopoulos <marios@lenses.io>
+FROM debian:bullseye AS compile-lkd
+LABEL org.opencontainers.image.authors="Marios Andreopoulos <marios@lenses.io>"
+LABEL org.opencontainers.imave.vendor="Lenses.io"
+
 ARG TARGETARCH TARGETOS
 
 RUN printenv \
@@ -334,7 +336,7 @@ CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt lensesio; ch
 #= Docker Images that bring in Lenses, either from a remote or using files on disk =#
 
 # This is the default image we use for installing Lenses
-FROM alpine as lenses_archive_remote
+FROM alpine AS lenses_archive_remote
 ONBUILD ARG AD_UN
 ONBUILD ARG AD_PW
 ONBUILD ARG AD_URL
@@ -347,13 +349,13 @@ ONBUILD RUN apk add --no-cache wget \
         && rm /lenses.tgz
 
 # This image gets Lenses from a local file instead of a remote URL
-FROM alpine as lenses_archive_local
+FROM alpine AS lenses_archive_local
 ONBUILD ARG AD_FILENAME
 ONBUILD RUN mkdir -p /opt
 ONBUILD ADD $AD_FILENAME /opt
 
 # This image gets Lenses and a custom Lenses frontend from a local file
-FROM alpine as lenses_archive_local_with_ui
+FROM alpine AS lenses_archive_local_with_ui
 ONBUILD ARG AD_FILENAME
 ONBUILD RUN mkdir -p /opt
 ONBUILD ADD $AD_FILENAME /opt
@@ -366,13 +368,13 @@ ONBUILD RUN rm -rf /opt/lenses/ui \
                  -i /opt/lenses/bin/lenses
 
 # This image is here to just trigger the build of any of the above 3 images
-FROM lenses_archive_${LENSES_ARCHIVE} as lenses_archive
+FROM lenses_archive_${LENSES_ARCHIVE} AS lenses_archive
 
 
 #= Docker Images that bring in lenses-cli, either from a remote or using files on disk =#
 
 # This is the default image we use for installing Lenses
-FROM alpine as lenses_cli_remote
+FROM alpine AS lenses_cli_remote
 ARG TARGETARCH TARGETOS
 ONBUILD ARG CAD_UN
 ONBUILD ARG CAD_PW
@@ -383,7 +385,7 @@ ONBUILD RUN wget $CAD_UN $CAD_PW "$LC_URL" -O /lenses-cli.tgz \
           && rm -f /lenses-cli.tgz
 
 # This image gets Lenses from a local file instead of a remote URL
-FROM alpine as lenses_cli_local
+FROM alpine AS lenses_cli_local
 ONBUILD ARG LC_FILENAME
 ONBUILD RUN mkdir -p /lenses-cli
 ONBUILD COPY $LC_FILENAME /lenses-cli.tgz
@@ -392,12 +394,17 @@ ONBUILD RUN mkdir  -p /usr/local/bin && \
 
 # This image is here to just trigger the build of any of the above 3 images
 ARG LENSESCLI_ARCHIVE
-FROM lenses_cli_${LENSESCLI_ARCHIVE} as lenses_cli
+FROM lenses_cli_${LENSESCLI_ARCHIVE} AS lenses_cli
 
 #= Final Docker Image =#
 
 FROM debian:bullseye-slim
-MAINTAINER Marios Andreopoulos <marios@lenses.io>
+ARG LENSES_VERSION
+LABEL org.opencontainers.image.authors="Marios Andreopoulos <marios@lenses.io>"
+LABEL org.opencontainers.image.ref.name="lensesio/box"
+LABEL org.opencontainers.image.version=${LENSES_VERSION}
+LABEL org.opencontainers.imave.vendor="Lenses.io"
+
 COPY --from=compile-lkd /opt /opt
 ARG TARGETOS TARGETARCH
 
