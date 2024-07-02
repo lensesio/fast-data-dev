@@ -9,8 +9,8 @@ echo "BUILD_TIME: ${BUILD_TIME}"
 echo "DOCKER_REPO: ${DOCKER_REPO}"
 
 # Load build information
-LKD_VERSION=$(grep "ARG LKD_VERSION" Dockerfile | cut -d'=' -f2)
-LENSES_VERSION=$(grep "ARG LENSES_VERSION" Dockerfile | cut -d'=' -f2)
+LKD_VERSION=$(grep --max-count 1 "ARG LKD_VERSION" Dockerfile | cut -d'=' -f2)
+LENSES_VERSION=$(grep --max-count 1 "ARG LENSES_VERSION" Dockerfile | cut -d'=' -f2)
 if [[ -z $SOURCE_BRANCH ]]; then
     if [[ -z $GIT_BRANCH ]]; then
         echo "GIT_BRANCH not set"
@@ -90,6 +90,7 @@ docker buildx create \
        --driver docker-container \
        --bootstrap \
        --use
+
 docker buildx build \
        --platform=linux/amd64,linux/arm64 \
        --push \
