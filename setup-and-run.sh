@@ -88,7 +88,6 @@ export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/lensesio/wa
 export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
 export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
 export WAIT_SCRIPT_LENSES=${WAIT_SCRIPT_LENSES:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
-export WAIT_SCRIPT_LENSES_PROVISION=${WAIT_SCRIPT_LENSES_PROVISION:-/usr/local/share/lensesio/wait-scripts/wait-for-lenses.sh}
 
 # These ports are always used.
 PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT $LENSES_PORT $ELASTICSEARCH_PORT $ELASTICSEARCH_TRASNPORT_PORT"
@@ -180,12 +179,12 @@ export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -
 # Set env var for Lenses
 #export LENSES_PORT=${LENSES_PORT:-9991}
 ## These settings are deprecated with Lenses 5.0 and will prevent the software
-## from booting, but now we use them for provision.yaml
+## from booting, but now we use them for provisioning.yaml
 export LENSES_ZOOKEEPER_HOSTS=[${LENSES_ZOOKEEPER_HOSTS:-0.0.0.0:$ZK_PORT}]
 export LENSES_KAFKA_BROKERS=[${LENSES_KAFKA_BROKERS:-PLAINTEXT://0.0.0.0:$BROKER_PORT}]
 export LENSES_SCHEMA_REGISTRY_URLS=[${LENSES_SCHEMA_REGISTRY_URLS:-http://0.0.0.0:$REGISTRY_PORT}]
 export LENSES_KAFKA_CONNECT_CLUSTERS=[${LENSES_KAFKA_CONNECT_CLUSTERS:-http://0.0.0.0:$CONNECT_PORT}]
-export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses-provision/license.conf}
+export LENSES_LICENSE_FILE=${LENSES_LICENSE_FILE:-/var/run/lenses/provision/license.json}
 ##
 export LENSES_SECRET_FILE=${LENSES_SECRET_FILE:-/var/run/lenses/security.conf}
 LEN_USER=${USER:-admin}
@@ -199,6 +198,9 @@ export LENSES_STORAGE_DIRECTORY=${LENSES_STORAGE_DIRECTORY:-/data/lenses}
 export LENSES_PLUGINS_CLASSPATH_OPTS=${LENSES_PLUGINS_CLASSPATH_OPTS:-/plugins}
 LENSES_ROOT_PATH=${LENSES_ROOT_PATH:-}
 export LENSES_ROOT_PATH=${LENSES_ROOT_PATH%/}
+if [[ $PROVISION_LENSES =~ $TRUE_REG ]]; then
+    export LENSES_PROVISIONING_PATH=${LENSES_PROVISIONING_PATH:-/var/run/lenses/provision}
+fi
 
 # Set env vars for generator (also used in provision unit)
 export GENERATOR_BROKER=${GENERATOR_BROKER:-127.0.0.1:$BROKER_PORT}
@@ -267,7 +269,7 @@ mkdir -p \
       /var/run/caddy \
       /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} \
       /var/run/lenses \
-      /var/run/lenses-provision \
+      /var/run/lenses/provision \
       /var/run/elasticsearch/logs
 chmod 777 /data/{zookeeper,kafka,lsql-state-dir,lenses,elasticsearch} /var/run/elasticsearch /var/run/elasticsearch/logs
 
@@ -340,7 +342,6 @@ if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
 if [[ $LENSES_PORT == 0 ]];   then rm /etc/supervisord.d/*lenses.conf; fi
 if [[ $ELASTICSEARCH_PORT == 0 ]]; then rm /etc/supervisord.d/*elasticsearch.conf; fi
 if [[ $WEB_TERMINAL_PORT == 0 ]];      then rm /etc/supervisord.d/*gotty-web-terminal.conf; fi
-if [[ $PROVISION_LENSES =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*lenses-provision.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
 if [[ $RUNTESTS =~ $FALSE_REG ]]; then
     rm /etc/supervisord.d/*smoke-tests.conf
@@ -718,72 +719,114 @@ else
     echo -e "If you already obtained a license, please either provide it at '/license.json'"
     echo -e "inside the container or export its contents as the environment variable 'LICENSE'.\e[39m"
 fi
-cat <<EOF > /var/run/lenses-provision/provision.yaml
-license:
-  fileRef:
-    filePath: $LENSES_LICENSE_FILE
+if [[ $PROVISION_LENSES =~ $TRUE_REG ]]; then
+    mkdir -p /var/run/lenses/provision
+    if [[ $BROKER_PORT != 0 ]]; then
+        cat <<EOF > /var/run/lenses/provision/provisioning.yaml
+kafka:
+  - name: kafka
+    version: 1
+    tags: [ 'kafka', 'dev' ]
+    configuration:
+      metricsType:
+        value: JMX
+      metricsPort:
+        value: $BROKER_JMX_PORT
 EOF
-## Conections
-cat <<EOF >> /var/run/lenses-provision/provision.yaml
-connections:
+        if [[ $ENABLE_SSL =~ $TRUE_REG ]]; then
+            mkdir -p /var/run/lenses/provision/files
+            cp /tmp/certs/client.jks /var/run/lenses/provision/files
+            cp /tmp/certs/truststore.jks /var/run/lenses/provision/files
+            cat <<EOF >> /var/run/lenses/provision/provisioning.yaml
+      kafkaBootstrapServers:
+        value:
+          - SSL://127.0.0.1:$BROKER_SSL_PORT
+      protocol:
+        value: SSL
+      sslKeystore:
+        file: client.jks
+      sslKeystorePassword:
+        value: fastdata
+      sslKeyPassword:
+        value: fastdata
+      sslTruststore:
+        file: truststore.jks
+      sslTruststorePassword:
+        value: fastdata
 EOF
-if [[ $ZK_PORT != 0 ]]; then
-    cat <<EOF >> /var/run/lenses-provision/provision.yaml
-  zookeeper:
-    tags: []
-    templateName: Zookeeper
-    configurationObject:
-      zookeeperUrls: $LENSES_ZOOKEEPER_HOSTS
-      metricsPort: $ZK_JMX_PORT
-      metricsType: JMX
-      zookeeperSessionTimeout: 18000
-      zookeeperConnectionTimeout: 18000
+        else
+            cat <<EOF >> /var/run/lenses/provision/provisioning.yaml
+      kafkaBootstrapServers:
+        value: $LENSES_KAFKA_BROKERS
+      protocol:
+        value: PLAINTEXT
 EOF
-fi
-if [[ $BROKER_PORT != 0 ]];   then
-    cat <<EOF >> /var/run/lenses-provision/provision.yaml
-  kafka:
-    tags: []
-    templateName: Kafka
-    configurationObject:
-      kafkaBootstrapServers: $LENSES_KAFKA_BROKERS
-      protocol: PLAINTEXT
-      metricsPort: $BROKER_JMX_PORT
-      metricsType: JMX
+        fi
+    fi
+    if [[ $REGISTRY_PORT != 0 ]]; then
+        cat <<EOF >> /var/run/lenses/provision/provisioning.yaml
+confluentSchemaRegistry:
+  - name: schema-registry
+    version: 1
+    tags: [ 'dev' ]
+    configuration:
+      schemaRegistryUrls:
+        value: $LENSES_SCHEMA_REGISTRY_URLS
+      metricsType:
+        value: JMX
+      metricsPort:
+        value: $REGISTRY_JMX_PORT
 EOF
-fi
-if [[ $REGISTRY_PORT != 0 ]]; then
-    cat <<EOF >> /var/run/lenses-provision/provision.yaml
-  schema-registry:
-    templateName: SchemaRegistry
-    tags: []
-    configurationObject:
-      schemaRegistryUrls: $LENSES_SCHEMA_REGISTRY_URLS
-      metricsPort: $REGISTRY_JMX_PORT
-      metricsType: JMX
+    fi
+    if [[ $CONNECT_PORT != 0 ]]; then
+        cat <<EOF >> /var/run/lenses/provision/provisioning.yaml
+connect:
+  - name: dev
+    version: 1
+    tags: [ 'dev' ]
+    configuration:
+      workers:
+        value: $LENSES_KAFKA_CONNECT_CLUSTERS
+      aes256Key:
+        value: 0123456789abcdef0123456789abcdef
+      metricsType:
+        value: JMX
+      metricsPort:
+        value: $CONNECT_JMX_PORT
 EOF
-fi
-if [[ $CONNECT_PORT != 0 ]]; then
-   cat <<EOF >> /var/run/lenses-provision/provision.yaml
-  dev:
-    templateName: KafkaConnect
-    tags: []
-    configurationObject:
-      workers: $LENSES_KAFKA_CONNECT_CLUSTERS
-      aes256Key: 0123456789abcdef0123456789abcdef
-      metricsPort: $CONNECT_JMX_PORT
-      metricsType: JMX
+    fi
+    if [[ $ZK_PORT != 0 ]]; then
+        cat <<EOF >> /var/run/lenses/provision/provisioning.yaml
+zookeeper:
+  - name: zookeeper
+    tags: [ 'dev' ]
+    version: 1
+    configuration:
+      zookeeperUrls:
+        value: $LENSES_ZOOKEEPER_HOSTS
+      metricsPort:
+        value: $ZK_JMX_PORT
+      metricsType:
+        value: JMX
+      zookeeperSessionTimeout:
+        value: 18000
+      zookeeperConnectionTimeout:
+        value: 18000
 EOF
-fi
-if [ -f /provision.yaml ]; then
-    echo "Found '/provision.yaml', appending to autocreated one. For common settings, the user provided takes precedence."
-    cat /provision.yaml >> /var/run/lenses-provision/provision.yaml
+    fi
+    if [ -f /provisioning.append.yaml ]; then
+        echo "Found '/provisioning.append.yaml', appending to autocreated one. For common settings, the user provided takes precedence."
+        cat /provisioning.append.yaml >> /var/run/lenses/provision/provisioning.yaml
+    fi
+    PROVISIONING_APPEND_YAML=${PROVISIONING_APPEND_YAML:-}
+    if [[ -n "$PROVISIONING_APPEND_YAML" ]]; then
+        echo "Found 'PROVISIONING_APPEND_YAML' env var, appending to autocreated one. For common settings, the user provided takes precedence."
+        echo "$PROVISIONING_APPEND_YAML" >> /var/run/lenses/provision/provisioning.yaml
+    fi
 fi
 
 chown nobody:nogroup "$LENSES_LICENSE_FILE"
 mkdir -p /var/run/lenses/logs
-#chmod 777 /var/run/lenses/logs
-rm -rf /tmp/vlxjre
 chown nobody:nogroup /var/run/lenses/*
 rm -rf /var/www-lenses
 mkdir /var/www-lenses
