@@ -337,6 +337,7 @@ if [[ $ZK_PORT == 0 ]] || [[ $GENERATOR_ZK_HOST != "127.0.0.1" ]];       then rm
 if [[ $BROKER_PORT == 0 ]];   then rm /etc/supervisord.d/*broker.conf; fi
 if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; fi
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
+if [[ $CONNECT_PORT == 0 ]];  then rm /etc/*lenses-provision-connect-distributed.conf; fi
 if [[ $REST_PORT == 0 ]];     then rm /etc/supervisord.d/*rest-proxy.conf; fi
 if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
 if [[ $LENSES_PORT == 0 ]];   then rm /etc/supervisord.d/*lenses.conf; fi
@@ -779,7 +780,10 @@ confluentSchemaRegistry:
 EOF
     fi
     if [[ $CONNECT_PORT != 0 ]]; then
-        cat <<EOF >> /var/run/lenses/provision/provisioning.yaml
+        # We differ connect provisioning because Lenses will not apply the
+        # connections until it can validate all of them. Connect often takes the
+        # longest to start, keeping Lenses longer at the wizard screen.
+        cat <<EOF > /tmp/connect-provisioning.yaml
 connect:
   - name: dev
     version: 1
@@ -827,7 +831,7 @@ fi
 
 chown nobody:nogroup "$LENSES_LICENSE_FILE"
 mkdir -p /var/run/lenses/logs
-chown nobody:nogroup /var/run/lenses/*
+chown -R nobody:nogroup /var/run/lenses/*
 rm -rf /var/www-lenses
 mkdir /var/www-lenses
 ln -s /var/www /var/www-lenses/fdd
