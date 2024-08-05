@@ -1,4 +1,4 @@
-ARG LENSES_VERSION=5.5.5
+ARG LENSES_VERSION=5.5.6
 ARG LENSES_ARCHIVE=remote
 ARG AD_URL=https://archive.lenses.io/lenses/5.5/lenses-$LENSES_VERSION-linux64.tar.gz
 ARG LENSESCLI_ARCHIVE=remote
