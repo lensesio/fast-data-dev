@@ -93,6 +93,7 @@ docker buildx create \
 
 docker buildx build \
        --platform=linux/amd64,linux/arm64 \
+       --sbom=true \
        --push \
        --build-arg "BUILD_BRANCH=${SOURCE_BRANCH}" \
        --build-arg "BUILD_COMMIT=${BUILD_COMMIT}" \
