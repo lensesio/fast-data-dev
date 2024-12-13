@@ -36,7 +36,7 @@ if [[ -n "$PRE_SETUP_URL" ]]; then
 fi
 
 # Default values
-export ZK_PORT=${ZK_PORT:-2181}
+export ZK_PORT=${ZK_PORT:-0}
 export ZK_JMX_PORT=${ZK_JMX_PORT:-9585}
 export BROKER_PORT=${BROKER_PORT:-9092}
 export BROKER_JMX_PORT=${BROKER_JMX_PORT:-9581}
@@ -45,8 +45,6 @@ export REGISTRY_PORT=${REGISTRY_PORT:-8081}
 export REGISTRY_JMX_PORT=${REGISTRY_JMX_PORT:-9582}
 export CONNECT_PORT=${CONNECT_PORT:-8083}
 export CONNECT_JMX_PORT=${CONNECT_JMX_PORT:-9584}
-export REST_PORT=${REST_PORT:-8082}
-export REST_JMX_PORT=${REST_JMX_PORT:-9583}
 export WEB_PORT=${WEB_PORT:-3030}
 RUN_AS_ROOT=${RUN_AS_ROOT:-false}
 DISABLE_JMX=${DISABLE_JMX:-false}
@@ -61,7 +59,6 @@ export ADV_HOST=${ADV_HOST:-}
 export ADV_HOST_JMX=${ADV_HOST_JMX:-${ADV_HOST}}
 export ADV_HOST_JMX=${ADV_HOST_JMX:-127.0.0.1}
 CONNECT_HEAP=${CONNECT_HEAP:-}
-WEB_ONLY=${WEB_ONLY:-0}
 export FORWARDLOGS=${FORWARDLOGS:-1}
 export RUNTESTS=${RUNTESTS:-1}
 export BROWSECONFIGS=${BROWSECONFIGS:-1}
@@ -69,13 +66,12 @@ export SUPERVISORWEB=${SUPERVISORWEB:-0}
 export SUPERVISORWEB_PORT=${SUPERVISORWEB_PORT:-9001}
 export WEB_TERMINAL_PORT=${WEB_TERMINAL_PORT:-0}
 export DEBUG_AUTH=${DEBUG_AUTH:-0}
-export WAIT_SCRIPT_BROKER=${WAIT_SCRIPT_BROKER:-/usr/local/share/lensesio/wait-scripts/wait-for-zookeeper.sh}
+export WAIT_SCRIPT_BROKER=${WAIT_SCRIPT_BROKER:-/usr/local/share/lensesio/wait-scripts/init-broker.sh}
 export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/lensesio/wait-scripts/wait-for-kafka.sh}
 export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
-export WAIT_SCRIPT_RESTPROXY=${WAIT_SCRIPT_RESTPROXY:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
 
 # These ports are always used.
-PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $REST_PORT $CONNECT_PORT $WEB_PORT"
+PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $CONNECT_PORT $WEB_PORT"
 
 # Export versions so envsubst will work
 source build.info
@@ -83,7 +79,13 @@ source build.info
 export $(cut -d= -f1 /build.info)
 
 # Set env vars to configure Kafka
-export KAFKA_BROKER_ID=${KAFKA_BROKER_ID:-0}
+export KAFKA_NODE_ID=${KAFKA_NODE_ID:-101}
+export KAFKA_PROCESS_ROLES=${KAFKA_PROCESS_ROLES:-broker,controller}
+export KAFKA_INTER_BROKER_LISTENER_NAME=${KAFKA_INTER_BROKER_LISTENER_NAME:-PLAINTEXT}
+export KAFKA_CONTROLLER_LISTENER_NAMES=${KAFKA_CONTROLLER_LISTENER_NAMES:-CONTROLLER}
+export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT,CONTROLLER://:16062}
+export KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:-CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL}
+export KAFKA_CONTROLLER_QUORUM_VOTERS=${KAFKA_CONTROLLER_QUORUM_VOTERS:-101@127.0.0.1:16062}
 export KAFKA_NUM_NETWORK_THREADS=${KAFKA_NUM_NETWORK_THREADS:-2}
 export KAFKA_NUM_IO_THREADS=${KAFKA_NUM_IO_THREADS:-4}
 export KAFKA_LOG_DIRS=${KAFKA_LOG_DIRS:-/data/kafka/logdir}
@@ -93,9 +95,7 @@ export KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=${KAFKA_TRANSACTION_STATE_
 export KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-1}
 export KAFKA_LOG_RETENTION_HOURS=${KAFKA_LOG_RETENTION_HOURS:-168}
 export KAFKA_LOG_SEGMENT_BYTES=${KAFKA_LOG_SEGMENT_BYTES:-104857600}
-export KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT:-127.0.0.1:$ZK_PORT}
 export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS:-1000}
-export KAFKA_LISTENERS=${KAFKA_LISTENERS:-PLAINTEXT://:$BROKER_PORT}
 export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
 export KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS:-}
 export BROKER_JMX_OPTS=${BROKER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$BROKER_JMX_PORT}
@@ -133,22 +133,9 @@ export CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME:-}
 export CONNECT_JMX_OPTS=${CONNECT_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$CONNECT_JMX_PORT}
 export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/connect/connect-log4j.properties}
 
-# Set env vars for REST Proxy
-export KAFKA_REST_BOOTSTRAP_SERVERS=${KAFKA_REST_BOOTSTRAP_SERVERS:-PLAINTEXT://127.0.0.1:$BROKER_PORT}
-export KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS=${KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
-export KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN=${KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
-export KAFKA_REST_LISTENERS=${KAFKA_REST_LISTENERS:-http://0.0.0.0:$REST_PORT}
-export KAFKA_REST_SCHEMA_REGISTRY_URL=${KAFKA_REST_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
-# Next two lines are a fix for REST Proxy
-export KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS=${KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS:-20000}
-export KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS=${KAFKA_REST_CONSUMER_MAX_POLL_INTERVAL_MS:-18000}
-export KAFKA_REST_ZOOKEEPER_CONNECT=${KAFKA_REST_ZOOKEEPER_CONNECT:-127.0.0.1:$ZK_PORT}
-export KAFKAREST_JMX_OPTS=${KAFKA_REST_JMX_OPTS:-}
-export KAFKAREST_JMX_OPTS=${KAFKAREST_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REST_JMX_PORT}
-export KAFKAREST_LOG4J_OPTS=${KAFKA_REST_LOG4J_OPTS:-}
-export KAFKAREST_LOG4J_OPTS=${KAFKAREST_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/rest-proxy/log4j.properties}
-
 # Set env vars for ZOOKEEPER
+## We have switch to KRaft but we keep Zookeeper as an option until it is
+## completely removed from Kafka
 export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/data/zookeeper}
 export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
 export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
@@ -170,12 +157,11 @@ export CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:--Xmx640M -Xms128M}
 export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}
 export ZOOKEEPER_HEAP_OPTS=${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}
 export SCHEMA_REGISTRY_HEAP_OPTS=${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}
-export KAFKA_REST_HEAP_OPTS=${KAFKA_REST_HEAP_OPTS:--Xmx256M -Xms128M}
 
 # Configure JMX if needed or disable it.
 if [[ ! $DISABLE_JMX =~ $TRUE_REG ]]; then
     # If JMX is not disabled, we should check for port availability
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $REST_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
 else
     # This does not really disable JMX, but each service will start JMX
     # in an ephemeral port, so it won't cause issues to the process.
@@ -183,7 +169,6 @@ else
     export BROKER_JMX_PORT=0
     export REGISTRY_JMX_PORT=0
     export CONNECT_JMX_PORT=0
-    export REST_JMX_PORT=0
 fi
 
 # Create run directories for various services and initialize where applicable with configuration files.
@@ -193,7 +178,6 @@ mkdir -p \
       /var/run/schema-registry \
       /var/run/connect \
       /var/run/connect/connectors/{stream-reactor,third-party} \
-      /var/run/rest-proxy \
       /var/run/coyote \
       /var/run/caddy \
       /data/{zookeeper,kafka}
@@ -208,8 +192,6 @@ cp /opt/lensesio/kafka/etc/schema-registry/log4j.properties \
    /var/run/schema-registry/
 cp /opt/lensesio/kafka/etc/kafka/connect-log4j.properties \
    /var/run/connect/
-cp /opt/lensesio/kafka/etc/kafka-rest/log4j.properties \
-   /var/run/rest-proxy/
 
 # Copy tests
 # This differs in that we need to adjust it later
@@ -220,7 +202,6 @@ sed -e "s/3030/$WEB_PORT/" \
     -e "s/2181/$ZK_PORT/" \
     -e "s/9092/$BROKER_PORT/" \
     -e "s/8081/$REGISTRY_PORT/" \
-    -e "s/8082/$REST_PORT/" \
     -e "s/8083/$CONNECT_PORT/" \
     -i /var/run/coyote/simple-integration-tests.yml
 
@@ -257,7 +238,6 @@ if [[ $ZK_PORT == 0 ]] || [[ $GENERATOR_ZK_HOST != "127.0.0.1" ]];       then rm
 if [[ $BROKER_PORT == 0 ]];   then rm /etc/supervisord.d/*broker.conf; fi
 if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; fi
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
-if [[ $REST_PORT == 0 ]];     then rm /etc/supervisord.d/*rest-proxy.conf; fi
 if [[ $WEB_PORT == 0 ]];      then rm /etc/supervisord.d/*caddy.conf; fi
 if [[ $WEB_TERMINAL_PORT == 0 ]];      then rm /etc/supervisord.d/*gotty-web-terminal.conf; fi
 if [[ $FORWARDLOGS =~ $FALSE_REG ]]; then rm /etc/supervisord.d/*logs-to-kafka.conf; fi
@@ -478,16 +458,6 @@ else
     sed -e 's/ssl_browse/"enabled" : false/' -i /var/www/env.js
 fi
 
-# Set web-only mode if needed
-if [[ $WEB_ONLY =~ $TRUE_REG ]]; then
-    PORTS="$WEB_PORT"
-    echo -e "\e[92mWeb only mode. Kafka services will be disabled.\e[39m"
-    rm -rf /etc/supervisord.d/*
-    cp /usr/local/share/etc/lensesio/supervisord.d/supervisord-web-only.conf /etc/supervisord.d/
-    envsubst < /usr/local/share/lensesio/etc/fast-data-dev-ui/env-webonly.js > /var/www/env.js
-    export RUNTESTS="${RUNTESTS:-0}"
-fi
-
 # Set supervisord to output all logs to stdout
 if [[ $DEBUG =~ $TRUE_REG ]]; then
     sed -e 's/loglevel=info/loglevel=debug/' -i /etc/supervisord.d/*
@@ -509,7 +479,7 @@ done
 if [[ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]]; then
     MLB="$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)"
     MLMB="$(( MLB / 1024 / 1024 ))"
-    MLREC=3584
+    MLREC=2000
     if [[ "$MLMB" -lt "$MLREC" ]]; then
         echo -e "\e[91mMemory limit for container is \e[93m${MLMB} MiB\e[91m, which is less than the lowest"
         echo -e "recommended of \e[93m${MLREC} MiB\e[91m. You will probably experience instability issues.\e[39m"
@@ -535,9 +505,9 @@ fi
 DAM="$(df /tmp --output=avail -BM | tail -n1 | sed -r -e 's/M//' -e 's/[ ]*([0-9]+)[ ]*/\1/')"
 if [[ -z "$DAM" ]] || ! [[ "$DAM" =~ ^[0-9]+$ ]]; then
     echo -e "\e[91mCould not detect available Disk space."
-    echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m256 MiB\e[91m disk space available for '/tmp' directory.\e[39m"
+    echo -e "\e[91mPlease make sure you have the recommended minimum of \e[93m512 MiB\e[91m disk space available.\e[39m"
 else
-    DAREC=256
+    DAREC=512
     if [[ "$DAM" -lt $DAREC ]]; then
         echo -e "\e[91mDisk space available for the '/tmp' directory is just \e[93m${DAM} MiB\e[91m which is less than the lowest"
         echo -e "recommended of \e[93m${DAREC} MiB\e[91m. The container’s services may fail to start.\e[39m"

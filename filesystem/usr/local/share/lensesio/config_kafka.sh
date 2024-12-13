@@ -12,7 +12,7 @@ function process_variable {
     fi
 
     # If _OPTS they are already exported, so continue
-    if [[ $var =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|KAFKA_REST|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
+    if [[ $var =~ ^(KAFKA|CONNECT|SCHEMA_REGISTRY|ZOOKEEPER)_(OPTS|HEAP_OPTS|JMX_OPTS|LOG4J_OPTS|PERFORMANCE_OPTS)$ ]]; then
         # export "${var}"="${!var}"
         return
     fi
@@ -49,7 +49,7 @@ CONFIG="/var/run/broker/server.properties"
 if [[ ! -f "$CONFIG" ]]; then
     printenv \
         | grep -E "^KAFKA_" \
-        | grep -vE "^KAFKA_(REST|CONNECT)_" \
+        | grep -vE "^KAFKA_CONNECT_" \
         | grep -vE "KAFKA_PORT" \
         | sed -e 's/=.*//' \
         | while read var
@@ -98,24 +98,6 @@ if [[ ! -f "$CONFIG" ]]; then
     sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
 else
     echo "Schema registry config found at '$CONFIG'. We won't process variables."
-fi
-
-# Setup REST Proxy
-CONFIG="/var/run/rest-proxy/kafka-rest.properties"
-if [[ ! -f "$CONFIG" ]]; then
-    printenv \
-        | grep -E "^KAFKA_REST_" \
-        | sed -e 's/=.*//' \
-        | while read var
-    do
-        process_variable "$var" "KAFKA_REST_" "$CONFIG"
-    done
-    # Clean empty variables
-    sed -r -e '/^[^=]*=\s*$/d' -i "$CONFIG"
-    # Allow empty variables
-    sed -r -e 's/(^[^=]*=)#(NULL|EMPTY)#$/\1/' -i "$CONFIG"
-else
-    echo "REST Proxy config found at '$CONFIG'. We won't process variables."
 fi
 
 # Setup Zookeeper

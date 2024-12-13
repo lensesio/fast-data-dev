@@ -1,4 +1,4 @@
-FROM debian:bullseye as compile-lkd
+FROM debian:bullseye AS compile-lkd
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
 ARG TARGETARCH TARGETOS
 
@@ -21,14 +21,14 @@ WORKDIR /
 ARG DEVARCH_USER
 ARG DEVARCH_PASS
 ARG ARCHIVE_SERVER=https://archive.lenses.io
-ARG LKD_VERSION=3.6.1-L0
+ARG LKD_VERSION=3.9.0-L0
 
 ############
 # Add kafka/
 ############
 
 # Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION=3.6.1
+ARG KAFKA_VERSION=3.9.0
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
 ARG KAFKA_URL="${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.13-${KAFKA_LVERSION}-lkd.tar.gz"
 
@@ -37,23 +37,16 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && mkdir /opt/lensesio/kafka/logs && chmod 1777 /opt/lensesio/kafka/logs \
     && rm -rf /opt/kafka.tar.gz
 
-# Add Schema Registry and REST Proxy
-ARG REGISTRY_VERSION=7.5.3-lkd-r0
+# Add Schema Registry
+ARG REGISTRY_VERSION=7.7.1-lkd-r0
 ARG REGISTRY_URL="${ARCHIVE_SERVER}/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
     && rm -rf /opt/registry.tar.gz
 
-ARG REST_VERSION=7.5.3-lkd-r0
-ARG REST_URL="${ARCHIVE_SERVER}/lkd/packages/rest-proxy/rest-proxy-${REST_VERSION}.tar.gz"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$REST_URL" -O /opt/rest.tar.gz \
-    && tar --no-same-owner -xzf /opt/rest.tar.gz -C /opt/ \
-    && rm -rf /opt/rest.tar.gz
-
 # Configure Connect and Confluent Components to support CORS
 RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.control.allow.origin=*' \
          | tee -a /opt/lensesio/kafka/etc/schema-registry/schema-registry.properties \
-         | tee -a /opt/lensesio/kafka/etc/kafka-rest/kafka-rest.properties \
          | tee -a /opt/lensesio/kafka/etc/schema-registry/connect-avro-distributed.properties
 
 
@@ -62,7 +55,7 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=7.4.1
+ARG STREAM_REACTOR_VERSION=8.1.23
 ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}.tar.gz"
 ARG ACTIVEMQ_VERSION=5.12.3
 
@@ -73,14 +66,13 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
            --strip-components=1 \
            -C /opt/lensesio/connectors/stream-reactor \
     && rm /stream-reactor.tar.gz \
-    && rm -rf /opt/lensesio/connectors/stream-reactor/kafka-connect-hive-1.1 \
     && wget https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVEMQ_VERSION}/activemq-all-${ACTIVEMQ_VERSION}.jar \
             -P /opt/lensesio/connectors/stream-reactor/kafka-connect-jms \
     && mkdir -p /opt/lensesio/kafka/share/java/lensesio-common \
     && export _NUM_CONNECTORS=$(ls /opt/lensesio/connectors/stream-reactor | wc -l) \
-    && for file in $(find /opt/lensesio/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | grep jar | grep -v log4j-over-slf4j | sort | uniq -c | grep -E "^\s+${_NUM_CONNECTORS} " | awk '{print $2}' ); do \
-         cp /opt/lensesio/connectors/stream-reactor/kafka-connect-aws-s3/$file /opt/lensesio/kafka/share/java/lensesio-common/; \
-         rm -f /opt/lensesio/connectors/stream-reactor/kafka-connect-*/$file; \
+    && for file in $(find /opt/lensesio/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | grep jar | grep -v log4j-over-slf4j | sort | uniq -c | awk '{if ($1>5) print $2}' ); do \
+         cp $(find /opt/lensesio/connectors/stream-reactor/ -type f -name $file | head -n1) /opt/lensesio/kafka/share/java/lensesio-common/; \
+         find /opt/lensesio/connectors/stream-reactor/ -type f -name $file -delete; \
        done \
     && for file in $(find /opt/lensesio/kafka/share/java/{kafka,lensesio-common} -maxdepth 1 -type f -exec basename {} \; | sort | uniq -c | grep -E "^\s+2 " | awk '{print $2}' ); do \
          echo "Removing duplicate /opt/lensesio/kafka/share/java/lensesio-common/$file."; \
@@ -106,65 +98,21 @@ RUN mkdir -p /opt/lensesio/connectors/stream-reactor/kafka-connect-smt \
 
 ## Filesource
 RUN mkdir -p /opt/lensesio/connectors/third-party/kafka-connect-file \
-    && ln -s /opt/lensesio/kafka/share/java/kafka/connect-file-${KAFKA_LVERSION}.jar /opt/lensesio/connectors/third-party/kafka-connect-file/connect-file-${KAFKA_LVERSION}.jar
-
-## Twitter
-ARG TWITTER_CONNECTOR_URL="https://archive.lenses.io/third-party/kafka-connect-twitter/kafka-connect-twitter-0.1-master-33331ea-connect-1.0.0-jar-with-dependencies.jar"
-RUN mkdir -p /opt/lensesio/connectors/third-party/kafka-connect-twitter \
-    && wget "$TWITTER_CONNECTOR_URL" -P /opt/lensesio/connectors/third-party/kafka-connect-twitter
-
-## Kafka Connect JDBC
-ARG KAFKA_CONNECT_JDBC_VERSION=10.7.4-lkd-r0
-ARG KAFKA_CONNECT_JDBC_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-jdbc/kafka-connect-jdbc-${KAFKA_CONNECT_JDBC_VERSION}.tar.gz"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_JDBC_URL" \
-         -O /opt/kafka-connect-jdbc.tar.gz \
-    && mkdir -p /opt/lensesio/connectors/third-party/ \
-    && tar --no-same-owner -xf /opt/kafka-connect-jdbc.tar.gz \
-           -C /opt/lensesio/connectors/third-party/ \
-    && rm -rf /opt/kafka-connect-jdbc.tar.gz
-
-## Kafka Connect ELASTICSEARCH
-ARG KAFKA_CONNECT_ELASTICSEARCH_VERSION=14.0.12-lkd-r0
-ARG KAFKA_CONNECT_ELASTICSEARCH_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-elasticsearch/kafka-connect-elasticsearch-${KAFKA_CONNECT_ELASTICSEARCH_VERSION}.tar.gz"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_ELASTICSEARCH_URL" \
-         -O /opt/kafka-connect-elasticsearch.tar.gz \
-    && mkdir -p /opt/lensesio/connectors/third-party/ \
-    && tar --no-same-owner -xf /opt/kafka-connect-elasticsearch.tar.gz \
-           -C /opt/lensesio/connectors/third-party/ \
-    && rm -rf /opt/kafka-connect-elasticsearch.tar.gz
-
-## Kafka Connect HDFS
-ARG KAFKA_CONNECT_HDFS_VERSION=10.2.5-lkd-r0
-ARG KAFKA_CONNECT_HDFS_URL="${ARCHIVE_SERVER}/lkd/packages/connectors/third-party/kafka-connect-hdfs/kafka-connect-hdfs-${KAFKA_CONNECT_HDFS_VERSION}.tar.gz"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_HDFS_URL" \
-         -O /opt/kafka-connect-hdfs.tar.gz \
-    && mkdir -p /opt/lensesio/connectors/third-party/ \
-    && tar --no-same-owner -xf /opt/kafka-connect-hdfs.tar.gz \
-           -C /opt/lensesio/connectors/third-party/ \
-    && rm -rf /opt/kafka-connect-hdfs.tar.gz
-
-# Kafka Connect Couchbase
-ARG KAFKA_CONNECT_COUCHBASE_VERSION=4.1.9
-ARG KAFKA_CONNECT_COUCHBASE_URL="http://packages.couchbase.com/clients/kafka/${KAFKA_CONNECT_COUCHBASE_VERSION}/couchbase-kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}.zip"
-RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_CONNECT_COUCHBASE_URL" \
-         -O /couchbase.zip \
-    && mkdir -p /couchbase /opt/lensesio/connectors/third-party/kafka-connect-couchbase \
-    && unzip /couchbase.zip -d /couchbase \
-    && cp -ax /couchbase/couchbase-kafka-connect-couchbase-${KAFKA_CONNECT_COUCHBASE_VERSION}/* \
-          /opt/lensesio/connectors/third-party/kafka-connect-couchbase \
-    && chown -R root:root /opt/lensesio/connectors/third-party/kafka-connect-couchbase \
-    && rm -rf /couchbase.zip /couchbase
+    && ln -s /opt/lensesio/kafka/share/java/kafka/connect-file-${KAFKA_LVERSION}.jar \
+          /opt/lensesio/connectors/third-party/kafka-connect-file/connect-file-${KAFKA_LVERSION}.jar
 
 # Kafka Connect Debezium MongoDB / MySQL / Postgres / MsSQL
-ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=2.4.2.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=2.7.4.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MONGODB_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mongodb/${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}/debezium-connector-mongodb-${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=2.4.2.Final
+ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=2.7.4.Final
 ARG KAFKA_CONNECT_DEBEZIUM_MYSQL_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-mysql/${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}/debezium-connector-mysql-${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=2.4.2.Final
+ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=2.7.4.Final
 ARG KAFKA_CONNECT_DEBEZIUM_POSTGRES_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-postgres/${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}/debezium-connector-postgres-${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}-plugin.tar.gz"
-ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=2.4.2.Final
+ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION=2.7.4.Final
 ARG KAFKA_CONNECT_DEBEZIUM_SQLSERVER_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-sqlserver/${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}/debezium-connector-sqlserver-${KAFKA_CONNECT_DEBEZIUM_SQLSERVER_VERSION}-plugin.tar.gz"
-RUN mkdir -p /opt/lensesio/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,sqlserver} \
+ARG KAFKA_CONNECT_DEBEZIUM_JDBC_VERSION=2.7.4.Final
+ARG KAFKA_CONNECT_DEBEZIUM_JDBC_URL="https://search.maven.org/remotecontent?filepath=io/debezium/debezium-connector-jdbc/${KAFKA_CONNECT_DEBEZIUM_JDBC_VERSION}/debezium-connector-jdbc-${KAFKA_CONNECT_DEBEZIUM_JDBC_VERSION}-plugin.tar.gz"
+RUN mkdir -p /opt/lensesio/connectors/third-party/kafka-connect-debezium-{mongodb,mysql,postgres,sqlserver,jdbc} \
     && wget "$KAFKA_CONNECT_DEBEZIUM_MONGODB_URL" -O /debezium-mongodb.tgz \
     && file /debezium-mongodb.tgz \
     && tar -xf /debezium-mongodb.tgz \
@@ -184,14 +132,11 @@ RUN mkdir -p /opt/lensesio/connectors/third-party/kafka-connect-debezium-{mongod
     && tar -xf /debezium-sqlserver.tgz \
            --owner=root --group=root --strip-components=1 \
            -C  /opt/lensesio/connectors/third-party/kafka-connect-debezium-sqlserver \
-    && rm -rf /debezium-{mongodb,mysql,postgres,sqlserver}.tgz
-
-# Kafka Connect Splunk
-ARG KAFKA_CONNECT_SPLUNK_VERSION="2.2.0"
-ARG KAFKA_CONNECT_SPLUNK_URL="https://github.com/splunk/kafka-connect-splunk/releases/download/v${KAFKA_CONNECT_SPLUNK_VERSION}/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar"
-RUN mkdir -p /opt/lensesio/connectors/third-party/kafka-connect-splunk \
-    && wget "$KAFKA_CONNECT_SPLUNK_URL" \
-       -O /opt/lensesio/connectors/third-party/kafka-connect-splunk/splunk-kafka-connect-v${KAFKA_CONNECT_SPLUNK_VERSION}.jar
+    && wget "$KAFKA_CONNECT_DEBEZIUM_JDBC_URL" -O /debezium-jdbc.tgz \
+    && tar -xf /debezium-jdbc.tgz \
+           --owner=root --group=root --strip-components=1 \
+           -C  /opt/lensesio/connectors/third-party/kafka-connect-debezium-jdbc \
+    && rm -rf /debezium-{mongodb,mysql,postgres,sqlserver,jdbc}.tgz
 
 ############
 # Add tools/
@@ -204,27 +149,6 @@ RUN mkdir -p /opt/lensesio/tools/bin /opt/lensesio/tools/share/coyote/examples \
     && wget "$COYOTE_URL" -O /opt/lensesio/tools/bin/coyote \
     && chmod +x /opt/lensesio/tools/bin/coyote
 ADD lkd/simple-integration-tests.yml /opt/lensesio/tools/share/coyote/examples/
-
-# Add Kafka Topic UI, Schema Registry UI, Kafka Connect UI
-ARG KAFKA_TOPICS_UI_VERSION=0.9.4
-ARG KAFKA_TOPICS_UI_URL="https://github.com/lensesio/kafka-topics-ui/releases/download/v${KAFKA_TOPICS_UI_VERSION}/kafka-topics-ui-${KAFKA_TOPICS_UI_VERSION}.tar.gz"
-ARG SCHEMA_REGISTRY_UI_VERSION=0.9.5
-ARG SCHEMA_REGISTRY_UI_URL="https://github.com/lensesio/schema-registry-ui/releases/download/v.${SCHEMA_REGISTRY_UI_VERSION}/schema-registry-ui-${SCHEMA_REGISTRY_UI_VERSION}.tar.gz"
-ARG KAFKA_CONNECT_UI_VERSION=0.9.7
-ARG KAFKA_CONNECT_UI_URL="https://github.com/lensesio/kafka-connect-ui/releases/download/v.${KAFKA_CONNECT_UI_VERSION}/kafka-connect-ui-${KAFKA_CONNECT_UI_VERSION}.tar.gz"
-RUN mkdir -p /opt/lensesio/tools/share/kafka-topics-ui/ \
-             /opt/lensesio/tools/share/schema-registry-ui/ \
-             /opt/lensesio/tools/share/kafka-connect-ui/ \
-    && wget "$KAFKA_TOPICS_UI_URL" -O /kafka-topics-ui.tar.gz \
-    && tar xvf /kafka-topics-ui.tar.gz -C /opt/lensesio/tools/share/kafka-topics-ui \
-    && mv /opt/lensesio/tools/share/kafka-topics-ui/env.js /opt/lensesio/tools/share/kafka-topics-ui/env.js.sample \
-    && wget "$SCHEMA_REGISTRY_UI_URL" -O /schema-registry-ui.tar.gz \
-    && tar xvf /schema-registry-ui.tar.gz -C /opt/lensesio/tools/share/schema-registry-ui \
-    && mv /opt/lensesio/tools/share/schema-registry-ui/env.js /opt/lensesio/tools/share/schema-registry-ui/env.js.sample \
-    && wget "$KAFKA_CONNECT_UI_URL" -O /kafka-connect-ui.tar.gz \
-    && tar xvf /kafka-connect-ui.tar.gz -C /opt/lensesio/tools/share/kafka-connect-ui \
-    && mv /opt/lensesio/tools/share/kafka-connect-ui/env.js /opt/lensesio/tools/share/kafka-connect-ui/env.js.sample \
-    && rm -f /kafka-topics-ui.tar.gz /schema-registry-ui.tar.gz /kafka-connect-ui.tar.gz
 
 # Add Kafka Autocomplete
 ARG KAFKA_AUTOCOMPLETE_VERSION=0.3
@@ -248,11 +172,6 @@ RUN wget "$NORMCAT_URL"-lowmem.tar.gz -O /normcat-linux.tgz \
     && chmod +x /opt/lensesio/tools/bin/normcat \
     && rm -f /normcat-linux.tgz
 
-# Add connect-cli
-ARG CONNECT_CLI_VERSION=1.0.9
-ARG CONNECT_CLI_URL="https://github.com/lensesio/kafka-connect-tools/releases/download/v${CONNECT_CLI_VERSION}/connect-cli"
-RUN wget "$CONNECT_CLI_URL" -O /opt/lensesio/tools/bin/connect-cli && chmod +x /opt/lensesio/tools/bin/connect-cli
-
 ##########
 # Finalize
 ##########
@@ -261,15 +180,8 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "KAFKA_VERSION=${KAFKA_LVERSION}"                          | tee -a /opt/lensesio/build.info \
     && echo "CONNECT_VERSION=${KAFKA_LVERSION}"                        | tee -a /opt/lensesio/build.info \
     && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /opt/lensesio/build.info \
-    && echo "REST_PROXY_VERSION=${REST_VERSION}"                       | tee -a /opt/lensesio/build.info \
     && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /opt/lensesio/build.info \
     && echo "SECRET_PROVIDER_VERSION=${SECRET_PROVIDER_VERSION}"       | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_CONNECT_JDBC_VERSION=${KAFKA_CONNECT_JDBC_VERSION}" | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_CONNECT_ELASTICSEARCH_VERSION=${KAFKA_CONNECT_ELASTICSEARCH_VERSION}" \
-                                                                       | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_CONNECT_HDFS_VERSION=${KAFKA_CONNECT_HDFS_VERSION}" | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_CONNECT_COUCHBASE_VERSION=${KAFKA_CONNECT_COUCHBASE_VERSION}" \
-                                                                       | tee -a /opt/lensesio/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
                                                                        | tee -a /opt/lensesio/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION=${KAFKA_CONNECT_DEBEZIUM_MYSQL_VERSION}" \
@@ -278,15 +190,11 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
                                                                        | tee -a /opt/lensesio/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION=${KAFKA_CONNECT_DEBEZIUM_POSTGRES_VERSION}" \
                                                                        | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_CONNECT_SPLUNK_VERSION=${KAFKA_CONNECT_SPLUNK_VERSION}" \
+    && echo "KAFKA_CONNECT_DEBEZIUM_JDBC_VERSION=${KAFKA_CONNECT_DEBEZIUM_JDBC_VERSION}" \
                                                                        | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_TOPICS_UI_VERSION=${KAFKA_TOPICS_UI_VERSION}"       | tee -a /opt/lensesio/build.info \
-    && echo "SCHEMA_REGISTRY_UI_VERSION=${SCHEMA_REGISTRY_UI_VERSION}" | tee -a /opt/lensesio/build.info \
-    && echo "KAFKA_CONNECT_UI_VERSION=${KAFKA_CONNECT_UI_VERSION}"     | tee -a /opt/lensesio/build.info \
     && echo "COYOTE_VERSION=${COYOTE_VERSION}"                         | tee -a /opt/lensesio/build.info \
     && echo "KAFKA_AUTOCOMPLETE_VERSION=${KAFKA_AUTOCOMPLETE_VERSION}" | tee -a /opt/lensesio/build.info \
-    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/lensesio/build.info \
-    && echo "CONNECT_CLI_VERSION=${CONNECT_CLI_VERSION}"               | tee -a /opt/lensesio/build.info
+    && echo "NORMCAT_VERSION=${NORMCAT_VERSION}"                       | tee -a /opt/lensesio/build.info
 
 # duphard (replace duplicates with hard links) and create archive
 # We run as two separate commands because otherwise the build fails in docker hub (but not locally)
@@ -392,15 +300,6 @@ RUN wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/ka
          -P /opt/lensesio/kafka/share/docs/kafka-custom-principal-builder \
     && wget https://archive.lenses.io/third-party/kafka-custom-principal-builder/README.md \
          -P /opt/lensesio/kafka/share/docs/kafka-custom-principal-builder
-
-# Setup Kafka Topics UI, Schema Registry UI, Kafka Connect UI
-RUN mkdir -p \
-      /var/www/kafka-topics-ui \
-      /var/www/schema-registry-ui \
-      /var/www/kafka-connect-ui \
-    && cp -ax /opt/lensesio/tools/share/kafka-topics-ui/* /var/www/kafka-topics-ui/ \
-    && cp -ax /opt/lensesio/tools/share/schema-registry-ui/* /var/www/schema-registry-ui/ \
-    && cp -ax /opt/lensesio/tools/share/kafka-connect-ui/* /var/www/kafka-connect-ui/
 
 RUN ln -s /var/log /var/www/logs
 

@@ -1,0 +1,69 @@
+/* Structure */
+json-tree {
+  box-sizing: border-box;
+}
+json-tree *,
+json-tree *:before,
+json-tree *:after {
+  box-sizing: border-box;
+}
+json-tree .key {
+  vertical-align: middle;
+}
+json-tree .expandable {
+  position: relative;
+}
+json-tree .expandable::before {
+  pointer-events: none;
+}
+json-tree .expandable::before,
+json-tree .expandable > .key {
+  cursor: pointer;
+}
+json-tree .branch-preview {
+  display: inline-block;
+  vertical-align: middle;
+}
+/* Looks */
+json-tree ul {
+  padding-left: 20px;
+}
+json-tree li,
+json-tree ul {
+  list-style: none;
+}
+json-tree li {
+  line-height: 1.5em;
+}
+json-tree .key {
+  color: #D02828;
+  padding: 5px 10px 5px 15px;
+}
+json-tree .key::after {
+  content: ':';
+}
+json-tree json-node.expandable::before {
+  content: '\25b6';
+  position: absolute;
+  left: 0px;
+  font-size: 10px;
+  -webkit-transition: -webkit-transform .1s ease;
+  transition: -webkit-transform .1s ease;
+  transition: transform .1s ease;
+  transition: transform .1s ease, -webkit-transform .1s ease;
+}
+json-tree json-node.expandable.expanded::before {
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+json-tree .leaf-value,
+json-tree .branch-preview {
+  word-break: break-all;
+}
+json-tree .branch-preview {
+  overflow: hidden;
+  font-style: italic;
+  max-width: 40%;
+  height: 1.5em;
+  opacity: .7;
+}
