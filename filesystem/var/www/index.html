@@ -172,6 +172,45 @@
           <div flex style="font-family:Tahoma;font-size:12px;color:#666;padding-left:10px;margin:10px;font-weight:normal;overflow-y:auto;max-height:300px;">
             <ul style="padding-left:10px;">
                 <li>
+                  <h4>Total Makeover</h4>
+                  <p>
+                    Kafka 3.9.0 is here with a big round of changes.
+                  </p>
+                  <p>
+                    Our open source UIs have been unmaintained for too long, so
+                    we decided to remove them. Our product, Lenses, has always
+                    been free for developers, and with Lenses 6 you can just
+                    <a href="https://lenses.io/apache-kafka-docker/?s=from-fdd"
+                    target="_blank">download our docker-compose</a> and get
+                    started. No registration required. Lenses is the leading
+                    Developer Experience for anyone working with Kafka since its
+                    inception in 2017. :)
+                  </p>
+                  <p>
+                    Together with the UIs we removed the REST Proxy since it
+                    doesn't make sense without the Kafka Topics UI. Again, try
+                    Lenses! We also removed most third party connectors except
+                    for Debezium ones. You can always add any connector you want
+                    by mounting it under <code>/connectors</code>.
+                  </p>
+                  <p>
+                    We also switched to KRaft to make things lighter and speedier.
+                  </p>
+                  <p>
+                    Furthermore we were a little more aggresive than usual when
+                    moving Stream Reactor libraries to the Connect Classpath.
+                  </p>
+                  <p>
+                    The result of all these? The fastest and lighest fast-data-dev so
+                    far!
+                  </p>
+                  <p>
+                    Other changes include the upgrade to the latest stable
+                    version of Debian for the docker image and the switch to
+                    Caddy 2.x webserver.
+                  </p>
+                </li>
+                <li>
                   <h4>Kafka 3.6.1 and some filesystem changes</h4>
                   <p>
                     Fast Data Dev with Apache Kafka 3.6.1 and Confluent
@@ -537,7 +576,7 @@
             <div flex layout-align="center center">
                 <p class="summary">
                     Learn more about fast-data-dev from our
-                    <a style="text-decoration:none;" href="https://github.com/Landoop/fast-data-dev" target="_blank">README</a>.
+                    <a style="text-decoration:none;" href="https://github.com/lensesio/fast-data-dev" target="_blank">README</a>.
                 </p>
             </div>
         </md-card-content>
@@ -550,8 +589,8 @@
 <h6 style="text-align:center;margin-bottom:5px;">Report Issues & Stars!</h6>
 <div flex layout="row" layout-align="center center">
 
-  <a class="github-button" href="https://github.com/Landoop/fast-data-dev/issues" data-count-api="/repos/Landoop/fast-data-dev#open_issues_count" data-count-aria-label="# issues on GitHub" aria-label="Issue Landoop/fast-data-dev on GitHub">Issue</a>
-  <a class="github-button" href="https://github.com/Landoop/fast-data-dev" data-count-href="/Landoop/fast-data-dev/stargazers" data-count-api="/repos/Landoop/fast-data-dev#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Landoop/fast-data-dev on GitHub">Star</a>
+  <a class="github-button" href="https://github.com/lensesio/fast-data-dev/issues" data-count-api="/repos/lensesio/fast-data-dev#open_issues_count" data-count-aria-label="# issues on GitHub" aria-label="Issue lensesio/fast-data-dev on GitHub">Issue</a>
+  <a class="github-button" href="https://github.com/lensesio/fast-data-dev" data-count-href="/lensesio/fast-data-dev/stargazers" data-count-api="/repos/lensesio/fast-data-dev#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star lensesio/fast-data-dev on GitHub">Star</a>
 </div>
 
 <div flex layout="row" layout-align="center center">

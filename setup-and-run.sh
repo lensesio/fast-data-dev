@@ -257,13 +257,19 @@ PASSWORD=${PASSWORD:-}
 export USER
 if [[ ! -z $PASSWORD ]]; then
     echo -e "\e[92mEnabling login credentials '\e[96m${USER}\e[34m\e[92m' '\e[96mxxxxxxxx'\e[34m\e[92m.\e[34m"
-    echo "basicauth / \"${USER}\" \"${PASSWORD}\"" >> /var/run/caddy/Caddyfile
+    _CAD_PASS=$(caddy hash-password --plaintext "${PASSWORD}")
+    cat <<EOF >> /var/run/caddy/Caddyfile
+basicauth {
+ ${USER} ${_CAD_PASS}
+}
+EOF
+
 fi
 # If BROWSECONFIGS, expose configs under /config
 if [[ $BROWSECONFIGS =~ $TRUE_REG ]]; then
     rm -f /var/www/config
     ln -s /var/run /var/www/config
-    echo "browse /config" >> /var/run/caddy/Caddyfile
+    echo "file_server /config/* browse" >> /var/run/caddy/Caddyfile
     sed -e 's/browseconfigs/"enabled" : true/' -i /var/www/env.js
 else
     sed -e 's/browseconfigs/"enabled" : false/' -i /var/www/env.js

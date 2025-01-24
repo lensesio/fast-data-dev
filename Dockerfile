@@ -1,4 +1,6 @@
-FROM debian:bullseye AS compile-lkd
+ARG LKD_VERSION=3.9.0-L0
+
+FROM debian:12 AS compile-lkd
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
 ARG TARGETARCH TARGETOS
 
@@ -21,7 +23,7 @@ WORKDIR /
 ARG DEVARCH_USER
 ARG DEVARCH_PASS
 ARG ARCHIVE_SERVER=https://archive.lenses.io
-ARG LKD_VERSION=3.9.0-L0
+ARG LKD_VERSION
 
 ############
 # Add kafka/
@@ -214,16 +216,23 @@ ENV LKD_VERSION=${LKD_VERSION}
 # If this stage is run as container and you mount `/mnt`, we will create the LKD archive there.
 CMD ["bash", "-c", "tar -czf /mnt/LKD-${LKD_VERSION}.tar.gz -C /opt lensesio; chown --reference=/mnt /mnt/LKD-${LKD_VERSION}.tar.gz"]
 
-FROM debian:bullseye-slim
+FROM debian:12-slim
+
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
 COPY --from=compile-lkd /opt /opt
 ARG TARGETOS TARGETARCH
+ARG LKD_VERSION
+LABEL org.opencontainers.image.authors="Marios Andreopoulos <marios@lenses.io>"
+LABEL org.opencontainers.image.ref.name="lensesio/fast-data-dev"
+LABEL org.opencontainers.image.version=${LKD_VERSION}
+LABEL org.opencontainers.imave.vendor="Lenses.io"
 
 # Update, install tooling and some basic setup
 RUN apt-get update \
     && apt-get install -y \
         bash-completion \
         bzip2 \
+        caddy \
         coreutils \
         curl \
         default-jre-headless \
@@ -232,7 +241,7 @@ RUN apt-get update \
         gzip \
         jq \
         locales \
-        netcat \
+        netcat-openbsd \
         openssl \
         sqlite3 \
         supervisor \
@@ -256,21 +265,13 @@ WORKDIR /
 #            needed by some apps (e.g jvm's rocksdb jni — HDFS connector, Lenses, etc),
 #            so we add glibc to make them work. Also now we can add en_US.UTF-8 locale.
 #            https://github.com/sgerrand/alpine-pkg-glibc
-# caddy    : an excellent web server we use to serve fast-data-dev UI, proxy various REST
-#            endpoints, etc
-#            https://github.com/mholt/caddy
 ARG CHECKPORT_URL="https://github.com/andmarios/checkport/releases/download/0.1/checkport-${TARGETOS}-${TARGETARCH}"
 ARG QUICKCERT_URL="https://github.com/andmarios/quickcert/releases/download/1.1/quickcert-1.1-${TARGETOS}-${TARGETARCH}"
-ARG CADDY_URL=https://github.com/caddyserver/caddy/releases/download/v0.11.5/caddy_v0.11.5_${TARGETOS}_${TARGETARCH}.tar.gz
 ARG GOTTY_URL_AMD64=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
 ARG GOTTY_URL_ARM64=https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_arm.tar.gz
 RUN wget "$CHECKPORT_URL" -O /usr/local/bin/checkport \
     && wget "$QUICKCERT_URL" -O /usr/local/bin/quickcert \
     && chmod 0755 /usr/local/bin/quickcert /usr/local/bin/checkport \
-    && wget "$CADDY_URL" -O /caddy.tgz \
-    && mkdir -p /opt/caddy \
-    && tar xzf /caddy.tgz -C /opt/caddy \
-    && rm -f /caddy.tgz \
     && if [[ $TARGETARCH == amd64 ]]; then GOTTY_URL=$GOTTY_URL_AMD64; elif [[ $TARGETARCH == arm64 ]]; then GOTTY_URL=$GOTTY_URL_ARM64; fi \
     && wget "$GOTTY_URL" -O /gotty.tar.gz \
     && mkdir -p /opt/gotty \

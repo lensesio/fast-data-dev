@@ -1,24 +1,23 @@
-0.0.0.0:$WEB_PORT
-tls off
-log stdout
-errors stdout
-
-root /var/www
-
-proxy /api/schema-registry 0.0.0.0:$REGISTRY_PORT {
-    without /api/schema-registry
+{
+  auto_https off
+  log stdout
 }
 
-proxy /api/kafka-rest-proxy 0.0.0.0:$REST_PORT {
-    without /api/kafka-rest-proxy
+:${WEB_PORT}
+
+handle_path /api/schema-registry/* {
+  reverse_proxy 0.0.0.0:$REGISTRY_PORT
 }
 
-proxy /api/kafka-connect 0.0.0.0:$CONNECT_PORT {
-    without /api/kafka-connect
+handle_path /api/kafka-connect/* {
+  reverse_proxy 0.0.0.0:$CONNECT_PORT
 }
 
-browse /certs
-browse /logs
+root * /var/www
 
 header /coyote-tests/results Cache-Control "no-store"
 header /coyote-tests/index.html Cache-Control "no-store"
+
+file_server
+file_server /certs/* browse
+file_server /logs/* browse
