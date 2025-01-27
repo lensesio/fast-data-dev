@@ -52,12 +52,12 @@ var servicesInfo = [
 var exposedDirectories = [
   {
     "name" : "certificates (truststore and client keystore)",
-    "url" : "/certs",
+    "url" : "/certs/",
     ssl_browse
   },
   {
     "name" : "configuration files of running services",
-    "url"  : "/config",
+    "url"  : "/config/",
     browseconfigs
   },
   {
@@ -67,7 +67,7 @@ var exposedDirectories = [
   },
   {
     "name" : "log files of running services",
-    "url" : "/logs",
+    "url" : "/logs/",
     "enabled" : true
   }
 ];
