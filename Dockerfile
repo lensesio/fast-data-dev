@@ -153,7 +153,7 @@ RUN mkdir -p /opt/lensesio/tools/bin /opt/lensesio/tools/share/coyote/examples \
 ADD lkd/simple-integration-tests.yml /opt/lensesio/tools/share/coyote/examples/
 
 # Add Kafka Autocomplete
-ARG KAFKA_AUTOCOMPLETE_VERSION=0.3
+ARG KAFKA_AUTOCOMPLETE_VERSION=0.4
 ARG KAFKA_AUTOCOMPLETE_URL="https://github.com/lensesio/kafka-autocomplete/releases/download/${KAFKA_AUTOCOMPLETE_VERSION}/kafka"
 RUN mkdir -p /opt/lensesio/tools/share/kafka-autocomplete \
              /opt/lensesio/tools/share/bash-completion/completions \
