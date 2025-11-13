@@ -91,10 +91,10 @@ RUN mkdir -p /opt/lensesio/connectors/stream-reactor/kafka-connect-secret-provid
     && wget "${SECRET_PROVIDER_URL}" -P "/opt/lensesio/connectors/stream-reactor/kafka-connect-secret-provider"
 
 # Add Kafka Connect SMTs
-ARG KAFKA_CONNECT_VERSION=1.0.2
-ARG KAFKA_CONNECT_URL="https://github.com/lensesio/kafka-connect-smt/releases/download/v${KAFKA_CONNECT_VERSION}/kafka-connect-smt-${KAFKA_CONNECT_VERSION}.jar"
+ARG KAFKA_CONNECT_SMT_VERSION=1.5.0
+ARG KAFKA_CONNECT_SMT_URL="https://github.com/lensesio/kafka-connect-smt/releases/download/v${KAFKA_CONNECT_SMT_VERSION}/kafka-connect-smt-${KAFKA_CONNECT_SMT_VERSION}.jar"
 RUN mkdir -p /opt/lensesio/connectors/stream-reactor/kafka-connect-smt \
-    && wget "${KAFKA_CONNECT_URL}" -P "/opt/lensesio/connectors/stream-reactor/kafka-connect-smt"
+    && wget "${KAFKA_CONNECT_SMT_URL}" -P "/opt/lensesio/connectors/stream-reactor/kafka-connect-smt"
 
 # Add Third Party Connectors
 
@@ -183,6 +183,7 @@ RUN echo    "LKD_VERSION=${LKD_VERSION}"                               | tee -a 
     && echo "CONNECT_VERSION=${KAFKA_LVERSION}"                        | tee -a /opt/lensesio/build.info \
     && echo "SCHEMA_REGISTRY_VERSION=${REGISTRY_VERSION}"              | tee -a /opt/lensesio/build.info \
     && echo "STREAM_REACTOR_VERSION=${STREAM_REACTOR_VERSION}"         | tee -a /opt/lensesio/build.info \
+    && echo "KAFKA_CONNECT_SMT_VERSION=${KAFKA_CONNECT_SMT_VERSION}"   | tee -a /opt/lensesio/build.info \
     && echo "SECRET_PROVIDER_VERSION=${SECRET_PROVIDER_VERSION}"       | tee -a /opt/lensesio/build.info \
     && echo "KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION=${KAFKA_CONNECT_DEBEZIUM_MONGODB_VERSION}" \
                                                                        | tee -a /opt/lensesio/build.info \
