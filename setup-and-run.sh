@@ -36,8 +36,6 @@ if [[ -n "$PRE_SETUP_URL" ]]; then
 fi
 
 # Default values
-export ZK_PORT=${ZK_PORT:-0}
-export ZK_JMX_PORT=${ZK_JMX_PORT:-9585}
 export BROKER_PORT=${BROKER_PORT:-9092}
 export BROKER_JMX_PORT=${BROKER_JMX_PORT:-9581}
 export BROKER_SSL_PORT=${BROKER_SSL_PORT:-9093}
@@ -71,7 +69,7 @@ export WAIT_SCRIPT_REGISTRY=${WAIT_SCRIPT_REGISTRY:-/usr/local/share/lensesio/wa
 export WAIT_SCRIPT_CONNECT=${WAIT_SCRIPT_CONNECT:-/usr/local/share/lensesio/wait-scripts/wait-for-registry.sh}
 
 # These ports are always used.
-PORTS="$ZK_PORT $BROKER_PORT $REGISTRY_PORT $CONNECT_PORT $WEB_PORT"
+PORTS="$BROKER_PORT $REGISTRY_PORT $CONNECT_PORT $WEB_PORT"
 
 # Export versions so envsubst will work
 source build.info
@@ -99,7 +97,7 @@ export KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=${KAFKA_GROUP_INITIAL_REBALANCE_DE
 export KAFKA_DELETE_TOPIC_ENABLE=${KAFKA_DELETE_TOPIC_ENABLE:-true}
 export KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS:-}
 export BROKER_JMX_OPTS=${BROKER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$BROKER_JMX_PORT}
-export BROKER_LOG4J_OPTS=${BROKER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/broker/log4j.properties}
+export BROKER_LOG4J_OPTS=${BROKER_LOG4J_OPTS:--Dlog4j2.configurationFile=/var/run/broker/log4j2.yaml}
 
 # Set env vars to configure Schema Registry
 export SCHEMA_REGISTRY_LISTENERS=${SCHEMA_REGISTRY_LISTENERS:-http://0.0.0.0:$REGISTRY_PORT}
@@ -107,7 +105,7 @@ export SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=${SCHEMA_REGISTRY_KAFKASTORE
 export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS}
 export SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN=${SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN:-*}
 export SCHEMA_REGISTRY_JMX_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$REGISTRY_JMX_PORT}
-export SCHEMA_REGISTRY_LOG4J_OPTS=${SCHEMA_REGISTRY_JMX_OPTS:--Dlog4j.configuration=file:/var/run/schema-registry/log4j.properties}
+export SCHEMA_REGISTRY_LOG4J_OPTS=${SCHEMA_REGISTRY_LOG4J_OPTS:--Dlog4j2.configurationFile=/var/run/schema-registry/log4j2.yaml}
 
 # Set env vars for Kafka Connect Distributed
 export CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS:-PLAINTEXT://127.0.0.1:$BROKER_PORT}
@@ -131,22 +129,14 @@ export CONNECT_PLUGIN_PATH=${CONNECT_PLUGIN_PATH:-/var/run/connect/connectors/st
 export CONNECT_REST_PORT=${CONNECT_REST_PORT:-$CONNECT_PORT}
 export CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME:-}
 export CONNECT_JMX_OPTS=${CONNECT_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$CONNECT_JMX_PORT}
-export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/connect/connect-log4j.properties}
+export CONNECT_LOG4J_OPTS=${CONNECT_LOG4J_OPTS:--Dlog4j2.configurationFile=/var/run/connect/connect-log4j2.yaml}
 
-# Set env vars for ZOOKEEPER
-## We have switch to KRaft but we keep Zookeeper as an option until it is
-## completely removed from Kafka
-export ZOOKEEPER_dataDir=${ZOOKEEPER_dataDir:-/data/zookeeper}
-export ZOOKEEPER_clientPort=${ZOOKEEPER_clientPort:-$ZK_PORT}
-export ZOOKEEPER_maxClientCnxns=${ZOOKEEPER_maxClientCnxnxs:-0}
-ZOOKEEPER_OPTS=${ZOOKEEPER_OPTS:-}
-export ZOOKEEPER_OPTS="${ZOOKEEPER_OPTS} -Dzookeeper.4lw.commands.whitelist=ruok,dump"
-export ZOOKEEPER_LOG4J_OPTS=${ZOOKEEPER_LOG4J_OPTS:--Dlog4j.configuration=file:/var/run/zookeeper/log4j.properties}
-export ZOOKEEPER_JMX_OPTS=${ZOOKEEPER_JMX_OPTS:--Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=$ADV_HOST_JMX -Dcom.sun.management.jmxremote.rmi.port=$ZK_JMX_PORT}
+# Kafka 4.0 is KRaft-only -- ZooKeeper was removed from Kafka entirely (KIP-833),
+# and LKD 4.0 ships no zookeeper-server-start binary, so there is nothing left to
+# configure or fall back to.
 
 # Set env vars for generator
 export GENERATOR_BROKER=${GENERATOR_BROKER:-127.0.0.1:$BROKER_PORT}
-export GENERATOR_ZK_HOST=${GENERATOR_ZK_HOST:-127.0.0.1}
 export GENERATOR_SCHEMA_REGISTRY_URL=${GENERATOR_SCHEMA_REGISTRY_URL:-http://127.0.0.1:$REGISTRY_PORT}
 
 # Set memory limits
@@ -155,17 +145,15 @@ if [[ -n $CONNECT_HEAP ]]; then CONNECT_HEAP="-Xmx$CONNECT_HEAP"; fi
 CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:-$CONNECT_HEAP}
 export CONNECT_HEAP_OPTS=${CONNECT_HEAP_OPTS:--Xmx640M -Xms128M}
 export BROKER_HEAP_OPTS=${BROKER_HEAP_OPTS:--Xmx320M -Xms320M}
-export ZOOKEEPER_HEAP_OPTS=${ZOOKEEPER_HEAP_OPTS:--Xmx256M -Xms64M}
 export SCHEMA_REGISTRY_HEAP_OPTS=${SCHEMA_REGISTRY_HEAP_OPTS:--Xmx256M -Xms128M}
 
 # Configure JMX if needed or disable it.
 if [[ ! $DISABLE_JMX =~ $TRUE_REG ]]; then
     # If JMX is not disabled, we should check for port availability
-    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $CONNECT_JMX_PORT $ZK_JMX_PORT"
+    PORTS="$PORTS $BROKER_JMX_PORT $REGISTRY_JMX_PORT $CONNECT_JMX_PORT"
 else
     # This does not really disable JMX, but each service will start JMX
     # in an ephemeral port, so it won't cause issues to the process.
-    export ZK_JMX_PORT=0
     export BROKER_JMX_PORT=0
     export REGISTRY_JMX_PORT=0
     export CONNECT_JMX_PORT=0
@@ -173,24 +161,22 @@ fi
 
 # Create run directories for various services and initialize where applicable with configuration files.
 mkdir -p \
-      /var/run/zookeeper \
       /var/run/broker \
       /var/run/schema-registry \
       /var/run/connect \
       /var/run/connect/connectors/{stream-reactor,third-party} \
       /var/run/coyote \
       /var/run/caddy \
-      /data/{zookeeper,kafka}
-chmod 777 /data/{zookeeper,kafka}
+      /data/kafka
+chmod 777 /data/kafka
 
-# Copy log4j files
-cp /opt/lensesio/kafka/etc/kafka/log4j.properties \
-   /var/run/zookeeper/
-cp /opt/lensesio/kafka/etc/kafka/log4j.properties \
+# Copy Log4j2 config files. Kafka 4.0 and Confluent 8.0 both dropped Log4j 1.x,
+# so these are now YAML (log4j2.yaml) rather than .properties.
+cp /opt/lensesio/kafka/etc/kafka/log4j2.yaml \
    /var/run/broker/
-cp /opt/lensesio/kafka/etc/schema-registry/log4j.properties \
+cp /opt/lensesio/kafka/etc/schema-registry/log4j2.yaml \
    /var/run/schema-registry/
-cp /opt/lensesio/kafka/etc/kafka/connect-log4j.properties \
+cp /opt/lensesio/kafka/etc/kafka/connect-log4j2.yaml \
    /var/run/connect/
 
 # Copy tests
@@ -199,7 +185,6 @@ cp /opt/lensesio/tools/share/coyote/examples/simple-integration-tests.yml \
    /var/run/coyote/simple-integration-tests.yml
 ## Fix ports for integration-tests
 sed -e "s/3030/$WEB_PORT/" \
-    -e "s/2181/$ZK_PORT/" \
     -e "s/9092/$BROKER_PORT/" \
     -e "s/8081/$REGISTRY_PORT/" \
     -e "s/8083/$CONNECT_PORT/" \
@@ -234,7 +219,6 @@ for service in /usr/local/share/lensesio/etc/supervisord.templates.d/*.conf; do
     envsubst < "$service" > /etc/supervisord.d/"$(basename "$service")"
 done
 # Disable services if asked
-if [[ $ZK_PORT == 0 ]] || [[ $GENERATOR_ZK_HOST != "127.0.0.1" ]];       then rm /etc/supervisord.d/*zookeeper.conf; fi
 if [[ $BROKER_PORT == 0 ]];   then rm /etc/supervisord.d/*broker.conf; fi
 if [[ $REGISTRY_PORT == 0 ]]; then rm /etc/supervisord.d/*schema-registry.conf; fi
 if [[ $CONNECT_PORT == 0 ]];  then rm /etc/supervisord.d/*connect-distributed.conf; fi
@@ -447,15 +431,11 @@ EOF
     if [[ $DEBUG_AUTH =~ $TRUE_REG ]]; then
         touch /var/log/kafka-authorizer.log
         chmod 666 /var/log/kafka-authorizer.log
-        cat <<EOF >> /var/run/broker/log4j.properties
-log4j.appender.authorizerAppender=org.apache.log4j.DailyRollingFileAppender
-log4j.appender.authorizerAppender.DatePattern='.'yyyy-MM-dd-HH
-log4j.appender.authorizerAppender.File=/var/log/kafka-authorizer.log
-log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
-log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-log4j.logger.kafka.authorizer.logger=INFO, authorizerAppender
-log4j.additivity.kafka.authorizer.logger=false
-EOF
+	# Kafka 4.0 default setup already defines AuthorizerAppender
+	# and routes kafka.authorizer.logger to it.
+	# We just move it to /var/log from the default location
+        sed -e 's|${sys:kafka.logs.dir}/kafka-authorizer\.log|/var/log/kafka-authorizer.log|g' \
+            -i /var/run/broker/log4j2.yaml
     fi
 
     sed -e 's/ssl_browse/"enabled" : true/' -i /var/www/env.js

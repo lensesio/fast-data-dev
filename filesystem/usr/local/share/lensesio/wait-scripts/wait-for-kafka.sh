@@ -2,14 +2,14 @@
 
 W_ITERATIONS=${W_ITERATIONS:-60}
 W_PERIOD_SECS=${W_PERIOD_SECS:-2}
-W_BROKERS_WANTED=${W_BROKERS_WANTED:-1}
 W_CONTROLLER_HOST=${W_CONTROLLER_ADDRESS:-localhost}
 W_CONTROLLER_PORT=${W_CONTROLLER_PORT:-16062}
-W_ZK_ADDRESS=${W_ZK_ADDRESS:-127.0.0.1}
-W_ZK_PORT=${W_ZK_PORT:-$ZK_PORT}
-W_ZK_PORT=${W_ZK_PORT:-2181}
 W_BROKER_CONFIG=${W_BROKER_CONFIG:-/var/run/broker/server.properties}
 
+# Kafka 4.0 is KRaft-only, so the broker always carries a node.id and we always
+# probe the controller quorum. The ZooKeeper detection path was dropped with 4.0.
+# Note we do not sleep between attempts on purpose: request.timeout.ms below makes
+# each kafka-features call block for roughly W_PERIOD_SECS, which paces the loop.
 if grep -sq "node.id=" $W_BROKER_CONFIG; then
     echo "Broker setup with KRaft, using KRaft detection mode"
     echo request.timeout.ms=${W_PERIOD_SECS}000 > /tmp/wait-for-kafka-config-$$.prop
@@ -22,21 +22,8 @@ if grep -sq "node.id=" $W_BROKER_CONFIG; then
         fi
     done
     rm -f /tmp/wait-for-kafka-config-$$.prop
-
-elif grep -sq "broker.id=" $W_BROKER_CONFIG; then
-    echo "Broker setup with Zookeeper, using Zookeeper detection mode"
-
-    for ((i=0;i<$W_ITERATIONS;i++)); do
-        sleep $W_PERIOD_SECS
-        _BROKER_NUM="$(echo dump | nc $W_ZK_ADDRESS $W_ZK_PORT | grep -c brokers/ids)"
-        echo "Brokers detected/wanted: $_BROKER_NUM / $W_BROKERS_WANTED"
-        if [[ ${_BROKER_NUM} -ge ${W_BROKERS_WANTED} ]]; then
-            sleep 1
-            exit 0
-        fi
-    done
 else
-    echo "Broker setup with unknown configuration, cannot detect whether Kafka is running"
+    echo "Broker config has no node.id, cannot detect whether Kafka is running"
 fi
 
 if [[ $W_ITERATIONS == 0 ]]; then

@@ -28,7 +28,7 @@ for key in 4; do
     unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
@@ -45,7 +45,7 @@ for key in 3; do
     unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \

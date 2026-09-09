@@ -25,7 +25,7 @@ for key in 0 3 4; do
     unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \
@@ -42,7 +42,7 @@ for key in 1; do
     unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         kafka-avro-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property value.schema="$(cat "${VALUES[key]}")" \
@@ -58,7 +58,7 @@ for key in 2; do
     /usr/local/bin/normcat -r 5000 "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         kafka-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \

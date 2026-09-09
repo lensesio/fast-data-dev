@@ -6,7 +6,7 @@
   entries:
 # BASIC / PERFORMANCE
     - name: Wait for broker to get up
-      command: bash -c 'for ((i=0;i<60;i++)); do sleep 2; echo dump | nc 127.0.0.1 2181 | grep brokers && { sleep 5; break; }; done'
+      command: bash -c 'for ((i=0;i<60;i++)); do kafka-topics --bootstrap-server 127.0.0.1:9092 --list >/dev/null 2>&1 && { sleep 5; exit 0; }; sleep 2; done; exit 1'
       nolog: true
 
     - name: Create Topic (basic kafka)

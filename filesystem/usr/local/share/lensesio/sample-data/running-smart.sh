@@ -27,7 +27,7 @@ for key in 2; do
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         sed -r -e 's/([A-Z0-9-]*):/{"serial_number":"\1"}#/' | \
         KAFKA_HEAP_OPTS="-Xmx50m" kafka-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property parse.key=true \

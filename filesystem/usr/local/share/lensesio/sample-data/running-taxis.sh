@@ -27,7 +27,7 @@ for key in 1; do
     unset SCHEMA_REGISTRY_LOG4J_OPTS
     /usr/local/bin/normcat -r "${RATES[key]}" -j "${JITTER[key]}" -p "${PERIOD[key]}" -c -v "${DATA[key]}" | \
         SCHEMA_REGISTRY_HEAP_OPTS="-Xmx50m" kafka-avro-console-producer \
-            --broker-list "${GENERATOR_BROKER}" \
+            --bootstrap-server "${GENERATOR_BROKER}" \
             ${GENERATOR_PRODUCER_PROPERTIES} \
             --topic "${TOPICS[key]}" \
             --property value.schema="$(cat "${VALUES[key]}")" \

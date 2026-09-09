@@ -1,4 +1,4 @@
-ARG LKD_VERSION=3.9.0-L0
+ARG LKD_VERSION=4.0.2-L0
 
 FROM debian:12 AS compile-lkd
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
@@ -29,8 +29,8 @@ ARG LKD_VERSION
 # Add kafka/
 ############
 
-# Add Apache Kafka (includes Connect and Zookeeper)
-ARG KAFKA_VERSION=3.9.0
+# Add Apache Kafka (includes Connect; KRaft-only, no ZooKeeper since 4.0)
+ARG KAFKA_VERSION=4.0.2
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
 ARG KAFKA_URL="${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.13-${KAFKA_LVERSION}-lkd.tar.gz"
 
@@ -40,7 +40,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry
-ARG REGISTRY_VERSION=7.7.1-lkd-r0
+ARG REGISTRY_VERSION=8.0.7-lkd-r0
 ARG REGISTRY_URL="${ARCHIVE_SERVER}/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
@@ -57,10 +57,15 @@ RUN echo -e 'access.control.allow.methods=GET,POST,PUT,DELETE,OPTIONS\naccess.co
 #################
 
 # Add Stream Reactor and needed components
-ARG STREAM_REACTOR_VERSION=10.0.2
+ARG STREAM_REACTOR_VERSION=12.1.1
 ARG STREAM_REACTOR_URL="https://archive.lenses.io/lkd/packages/connectors/stream-reactor/stream-reactor-${STREAM_REACTOR_VERSION}.tar.gz"
 ARG ACTIVEMQ_VERSION=5.12.3
 
+# Jars common to >5 connectors are moved into share/java/lensesio-common, which
+# connect-distributed puts on its classpath. Both SLF4J<->Log4j2 bridges are excluded:
+# Kafka 4.0 ships log4j-slf4j-impl (SLF4J -> Log4j2) as the worker's logging backend,
+# and Log4j2 aborts at startup if log4j-to-slf4j (the opposite direction) is also
+# present.
 RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.tar.gz \
     && mkdir -p /opt/lensesio/connectors/stream-reactor \
     && tar -xf /stream-reactor.tar.gz \
@@ -72,7 +77,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "${STREAM_REACTOR_URL}" -O /stream-reactor.
             -P /opt/lensesio/connectors/stream-reactor/kafka-connect-jms \
     && mkdir -p /opt/lensesio/kafka/share/java/lensesio-common \
     && export _NUM_CONNECTORS=$(ls /opt/lensesio/connectors/stream-reactor | wc -l) \
-    && for file in $(find /opt/lensesio/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | grep jar | grep -v log4j-over-slf4j | sort | uniq -c | awk '{if ($1>5) print $2}' ); do \
+    && for file in $(find /opt/lensesio/connectors/stream-reactor -maxdepth 2 -type f -exec basename {} \; | grep -Ev "scala-logging|kafka-connect-common|scala-" | grep jar | grep -Ev "log4j-over-slf4j|log4j-to-slf4j" | sort | uniq -c | awk '{if ($1>5) print $2}' ); do \
          cp $(find /opt/lensesio/connectors/stream-reactor/ -type f -name $file | head -n1) /opt/lensesio/kafka/share/java/lensesio-common/; \
          find /opt/lensesio/connectors/stream-reactor/ -type f -name $file -delete; \
        done \
@@ -161,10 +166,6 @@ RUN mkdir -p /opt/lensesio/tools/share/kafka-autocomplete \
             -O /opt/lensesio/tools/share/kafka-autocomplete/kafka \
     && wget "$KAFKA_AUTOCOMPLETE_URL" \
             -O /opt/lensesio/tools/share/bash-completion/completions/kafka
-
-# Enable jline for Zookeeper
-RUN TJLINE="$(find /opt/lensesio/kafka -name "jline-0*.jar" | head -n1)" \
-    && if [[ -n $TJLINE ]]; then sed "s|^exec.*|export CLASSPATH=\"\$CLASSPATH:$TJLINE\"\n&|" -i /opt/lensesio/kafka/bin/zookeeper-shell; fi
 
 # Add normcat
 ARG NORMCAT_VERSION=1.1.1
