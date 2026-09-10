@@ -1,4 +1,4 @@
-ARG LKD_VERSION=4.0.2-L0
+ARG LKD_VERSION=4.3.1-L0
 
 FROM debian:12 AS compile-lkd
 MAINTAINER Marios Andreopoulos <marios@lenses.io>
@@ -30,7 +30,7 @@ ARG LKD_VERSION
 ############
 
 # Add Apache Kafka (includes Connect; KRaft-only, no ZooKeeper since 4.0)
-ARG KAFKA_VERSION=4.0.2
+ARG KAFKA_VERSION=4.3.1
 ARG KAFKA_LVERSION="${KAFKA_VERSION}-L0"
 ARG KAFKA_URL="${ARCHIVE_SERVER}/lkd/packages/kafka/kafka-2.13-${KAFKA_LVERSION}-lkd.tar.gz"
 
@@ -40,7 +40,7 @@ RUN wget $DEVARCH_USER $DEVARCH_PASS "$KAFKA_URL" -O /opt/kafka.tar.gz \
     && rm -rf /opt/kafka.tar.gz
 
 # Add Schema Registry
-ARG REGISTRY_VERSION=8.0.7-lkd-r0
+ARG REGISTRY_VERSION=8.3.1-lkd-r0
 ARG REGISTRY_URL="${ARCHIVE_SERVER}/lkd/packages/schema-registry/schema-registry-${REGISTRY_VERSION}.tar.gz"
 RUN wget $DEVARCH_USER $DEVARCH_PASS "$REGISTRY_URL" -O /opt/registry.tar.gz \
     && tar --no-same-owner -xzf /opt/registry.tar.gz -C /opt/ \
