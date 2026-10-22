@@ -419,12 +419,18 @@ ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1
 ssl.keystore.type=JKS
 ssl.truststore.type=JKS
 EOF
-    sed -r -e "s|^(listeners=.*)|\1,SSL://:${BROKER_SSL_PORT}|" \
-        -i /var/run/broker/server.properties
-    if [[ -n ${ADV_HOST} ]] && [[ $TMP_ADV_LISTENERS_SET =~ $TRUE_REG ]]; then
-        sed -r \
-            -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
+    # Configuration files survive container restarts. Add SSL only if that
+    # listener name is not already present, preserving custom SSL endpoints.
+    if ! grep -Eq '^listeners=([^,]*,)*[[:space:]]*SSL://' /var/run/broker/server.properties; then
+        sed -r -e "s|^(listeners=.*)|\1,SSL://:${BROKER_SSL_PORT}|" \
             -i /var/run/broker/server.properties
+    fi
+    if [[ -n ${ADV_HOST} ]] && [[ $TMP_ADV_LISTENERS_SET =~ $TRUE_REG ]]; then
+        if ! grep -Eq '^advertised\.listeners=([^,]*,)*[[:space:]]*SSL://' /var/run/broker/server.properties; then
+            sed -r \
+                -e "s|^(advertised.listeners=.*)|\1,SSL://${ADV_HOST}:${BROKER_SSL_PORT}|" \
+                -i /var/run/broker/server.properties
+        fi
     fi
 
     # Log authorization requests
